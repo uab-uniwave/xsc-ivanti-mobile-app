@@ -1,0 +1,31 @@
+﻿@inherits LayoutComponentBase
+
+<MudThemeProvider />
+<MudPopoverProvider />
+<MudDialogProvider />
+<MudSnackbarProvider />
+
+<MudBreakpointProvider OnBreakpointChanged="OnBreakpointChanged" />
+
+@if (_isMobile)
+{
+    <MobileLayout>
+        @Body
+    </MobileLayout>
+}
+else
+{
+    <TabletLayout>
+        @Body
+    </TabletLayout>
+}
+
+@code {
+    private bool _isMobile;
+
+    private void OnBreakpointChanged(Breakpoint breakpoint)
+    {
+        _isMobile = breakpoint <= Breakpoint.Sm;
+        StateHasChanged();
+    }
+}

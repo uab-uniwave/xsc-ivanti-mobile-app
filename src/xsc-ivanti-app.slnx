@@ -1,0 +1,24 @@
+<Solution>
+  <Folder Name="/Assets/">
+    <File Path="../assets/IncidentRequest.json" />
+    <File Path="../assets/IncidentResponse.json" />
+    <File Path="../assets/metadata.xml" />
+  </Folder>
+  <Folder Name="/Solution Items/">
+    <Project Path="Application/Application.csproj" Id="0d4719c5-668f-4261-bcc4-d70ab9cd7e03" />
+    <Project Path="Domain/Domain.csproj" Id="88056bd8-d351-4be8-8637-c58dad5eb1bf" />
+    <Project Path="HeatSession/HeatReplayClient.csproj" />
+    <Project Path="Infrastructure/Infrastructure.csproj" Id="7cc808a6-23e9-4cbe-bff0-803aee66aa28" />
+    <Project Path="WebUI/WebUI.csproj" />
+  </Folder>
+  <Folder Name="/Solution Items/Common/" />
+  <Folder Name="/Solution Items/Models/">
+    <File Path="FieldMetadata.cs" />
+    <File Path="FormViewData.cs" />
+    <File Path="Session.cs" />
+    <File Path="UserData.cs" />
+    <File Path="ValidationList.cs" />
+    <File Path="Workspace.cs" />
+    <File Path="WorkspaceData.cs" />
+  </Folder>
+</Solution>

@@ -1,0 +1,50 @@
+﻿@page "/"
+@using Application.DTOs.Incident
+
+<MudPaper Class="pa-4">
+
+    <MudText Typo="Typo.h5" Class="mb-4">
+        Incidents
+    </MudText>
+
+    @if (ViewModel.IsLoading)
+    {
+        <MudProgressCircular Indeterminate="true" />
+    }
+    else if (ViewModel.HasError)
+    {
+        <MudAlert Severity="Severity.Error">
+            @ViewModel.ErrorMessage
+        </MudAlert>
+    }
+    else
+    {
+        <MudDataGrid T="IncidentListItemDto"
+                     Items="ViewModel.Items"
+                     Dense="true"
+                     Hover="true"
+                     Bordered="true">
+
+            <Columns>
+
+                <PropertyColumn Property="x => x.Number" Title="Number" />
+                <PropertyColumn Property="x => x.Subject" Title="Subject" />
+                <PropertyColumn Property="x => x.Status" Title="Status" />
+                <PropertyColumn Property="x => x.Priority" Title="Priority" />
+
+                <TemplateColumn Title="Actions">
+                    <CellTemplate Context="context">
+                        <MudButton Size="Size.Small"
+                                   Variant="Variant.Outlined"
+                                   OnClick="@(() => OpenEditDialog(context.Item.Id))">
+                            Edit
+                        </MudButton>
+                    </CellTemplate>
+                </TemplateColumn>
+
+            </Columns>
+
+        </MudDataGrid>
+    }
+
+</MudPaper>

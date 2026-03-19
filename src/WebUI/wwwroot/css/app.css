@@ -1,0 +1,12 @@
+﻿.bottom-nav {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    padding: 8px 0;
+    background-color: white;
+    z-index: 1000;
+}
+
+.pb-10 {
+    padding-bottom: 80px;
+}
