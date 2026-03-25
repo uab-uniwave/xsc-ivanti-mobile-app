@@ -1,5 +1,6 @@
 ﻿using Application.DTOs.Incident;
 using Application.Services;
+using Infrastructure.Ivanti;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
 
@@ -14,7 +15,7 @@ public partial class EditIncidentDialog
     public string Id { get; set; } = default!;
 
     [Inject]
-    private IIvantiService IvantiService { get; set; } = default!;
+    private IIvantiClient IvantiClient { get; set; } = default!;
 
     private IncidentDto Model { get; set; } = new();
     private bool IsLoading;
@@ -23,37 +24,16 @@ public partial class EditIncidentDialog
     {
         IsLoading = true;
 
-        var result = await IvantiService.GetIncidentByIdAsync(Id, CancellationToken.None);
-
-        if (result.IsSuccess)
-            Model = result.Value!;
+                   
 
         IsLoading = false;
     }
 
-    private async Task Save()
-    {
-        var request = new IncidentUpdateRequest
-        {
-            Status = Model.Status,
-            Priority = Model.Priority,
-            Service = Model.Service,
-            Category = Model.Category,
-            Urgency = Model.Urgency,
-            Impact = Model.Impact,
-            Owner = Model.Owner,
-            OwnerTeam = Model.OwnerTeam,
-            Subject = Model.Subject,
-            Description = Model.Description
-        };
 
-        await IvantiService.UpdateIncidentAsync(Id, request);
 
-        MudDialog.Close(DialogResult.Ok(true));
-    }
-
-    private void Cancel()
-    {
-        MudDialog.Cancel();
-    }
+  
+ 
+  
+       
+  
 }

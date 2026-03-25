@@ -1,1 +1,0 @@
-# xsc-ivanti-mobile-app

@@ -10,19 +10,22 @@ public class IvantiEndpoints
     }
 
     public string Incidents =>
-        $"{_tenant}api/odata/businessobject/incidents";
-    public string Session =>
+        $"{_tenant}/api/odata/businessobject/incidents";
+    public string InitializeSession =>
     $"{_tenant}/Services/Session.asmx/InitializeSession";
-    public string UserData =>
+    public string GetUserData =>
     $"{_tenant}/Services/Session.asmx/GetUserData";
-    public string WorkspaceRole =>
-    $"{_tenant}/Services/Session.asmx/GetRoleWorkspaces";
-    public string Workspaces =>
-    $"{_tenant}/Services/Session.asmx/GetWorkspaceData";
+    public string GetRoleWorkspaces =>
+    $"{_tenant}/Services/Workspace.asmx/GetRoleWorkspaces";
+    public string GetWorkspaceData =>
+    $"{_tenant}/Services/Workspace.asmx/GetWorkspaceData";
 
-    public string FormViewData =>
-$"{_tenant}/Services/Session.asmx/FindFormViewData";
+    public string FindFormViewData =>
+        $"{_tenant}/Services/Workspace.asmx/FindFormViewData";
+    public string GetFormDefaultData =>
+    $"{_tenant}/Services/FormService.asmx/GetFormDefaultData";
+
     public string FormValidationListData =>
-$"{_tenant}/Services/Session.asmx/GetFormValidationListData";
+        $"{_tenant}/Services/Session.asmx/GetFormValidationListData";
 
 }

@@ -1,23 +1,53 @@
-﻿using Domain.Enums;
+using System.Text.Json.Serialization;
+using Domain.Enums;
 
 namespace Application.DTOs.Incident;
 
-public sealed class IncidentDto
+/// <summary>
+/// DTO for complete incident data.
+/// Maps to Domain.Entities.Incident entity.
+/// </summary>
+public class IncidentDto
 {
-    public string Id { get; set; } = default!;
-    public string Number { get; set; } = default!;
+    [JsonPropertyName("RecordId")]
+    public string? RecordId { get; set; }
 
-    public IncidentStatus Status { get; set; }
+    [JsonPropertyName("DisplayValue")]
+    public string? DisplayValue { get; set; }
 
-    public string Priority { get; set; } = default!;
-    public string Service { get; set; } = default!;
-    public string Category { get; set; } = default!;
-    public string Urgency { get; set; } = default!;
-    public string Impact { get; set; } = default!;
+    [JsonPropertyName("Subject")]
+    public string? Subject { get; set; }
 
-    public string Owner { get; set; } = default!;
-    public string OwnerTeam { get; set; } = default!;
+    [JsonPropertyName("Status")]
+    public string? Status { get; set; }
 
-    public string Subject { get; set; } = default!;
-    public string Description { get; set; } = default!;
+    [JsonPropertyName("Priority")]
+    public string? Priority { get; set; }
+
+    [JsonPropertyName("Category")]
+    public string? Category { get; set; }
+
+    [JsonPropertyName("Service")]
+    public string? Service { get; set; }
+
+    [JsonPropertyName("Urgency")]
+    public string? Urgency { get; set; }
+
+    [JsonPropertyName("Impact")]
+    public string? Impact { get; set; }
+
+    [JsonPropertyName("Owner")]
+    public string? Owner { get; set; }
+
+    [JsonPropertyName("OwnerTeam")]
+    public string? OwnerTeam { get; set; }
+
+    [JsonPropertyName("CreatedDate")]
+    public DateTime? CreatedDate { get; set; }
+
+    [JsonPropertyName("LastModified")]
+    public DateTime? LastModified { get; set; }
+
+    [JsonPropertyName("Description")]
+    public string? Description { get; set; }
 }

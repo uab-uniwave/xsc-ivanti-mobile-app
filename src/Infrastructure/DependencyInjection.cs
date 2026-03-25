@@ -70,10 +70,14 @@ public static class DependencyInjection
         });
 
         // ======================================================
-        // HTTP CLIENT (Typed Client)
+        // HTTP CLIENT (Typed Client with Logging)
         // ======================================================
 
-        services.AddHttpClient<IIvantiService, IvantiClient>((sp, client) =>
+        services.AddScoped<HttpClientLoggingHandler>();
+
+        // Register IvantiClient as the typed client for IIvantiClient
+        // so the configured HttpClient (BaseAddress + headers) is injected
+        services.AddHttpClient<IIvantiClient, IvantiClient>((sp, client) =>
         {
             var options = sp
                 .GetRequiredService<IOptions<IvantiOptions>>()
@@ -86,7 +90,10 @@ public static class DependencyInjection
             client.DefaultRequestHeaders.TryAddWithoutValidation(
                 "Authorization",
                 $"rest_api_key={options.ApiKey}");
-        });
+            client.DefaultRequestHeaders.TryAddWithoutValidation(
+                "Cookie", options.Cookie);
+        })
+        .AddHttpMessageHandler<HttpClientLoggingHandler>();
 
         return services;
     }

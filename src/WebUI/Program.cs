@@ -1,14 +1,14 @@
 using MudBlazor.Services;
 using WebUI.Components;
 using Infrastructure;
-using WebUI.Components.ViewModels; // IMPORTANT
+using WebUI.Features.Incidents.ViewModels;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add MudBlazor services
 builder.Services.AddMudServices();
 
-// Add Infrastructure services (THIS WAS MISSING)
+// Add Infrastructure services
 builder.Services.AddInfrastructure(builder.Configuration);
 
 // Add Razor Components

@@ -9,7 +9,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="UseCases\" />
+    <Compile Remove="UseCases\**" />
+    <EmbeddedResource Remove="UseCases\**" />
+    <None Remove="UseCases\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -22,6 +24,14 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Domain\Domain.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Helpers\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Responses\GetFormDefaultDataResponse.cs" />
   </ItemGroup>
 
 </Project>

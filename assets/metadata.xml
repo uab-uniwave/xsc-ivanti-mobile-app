@@ -24,7 +24,7 @@
 				<Property Name="Collection" Type="Edm.String" MaxLength="100" />
 				<Property Name="CountFeedback" Type="Edm.Int32" />
 				<Property Name="CountHelpful" Type="Edm.Int32" />
-				<Property Name="CountNotHelpful" Type="Edm.Int32" />
+				<Property Name="CountNotHelpful" Type="Edm.Int32" />Inci
 				<Property Name="CountView" Type="Edm.Int32" />
 				<Property Name="EffectiveDate" Type="Edm.Date" />
 				<Property Name="Environment_Valid" Type="Edm.String" MaxLength="32" Unicode="false" />

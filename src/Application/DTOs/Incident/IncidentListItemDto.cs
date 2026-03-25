@@ -1,12 +1,31 @@
-﻿namespace Application.DTOs.Incident;
+using System.Text.Json.Serialization;
 
-public sealed class IncidentListItemDto
+namespace Application.DTOs.Incident;
+
+/// <summary>
+/// DTO for incident list item in paginated responses.
+/// Contains summary information for display in lists.
+/// </summary>
+public class IncidentListItemDto
 {
-    public string Id { get; set; } = default!;
-    public string Number { get; set; } = default!;
-    public string Subject { get; set; } = default!;
-    public string Status { get; set; } = default!;
-    public string Priority { get; set; } = default!;
-    public string Impact { get; set; } = default!;
-    public DateTimeOffset CreatedAt { get; set; }
+    [JsonPropertyName("RecordId")]
+    public string? RecordId { get; set; }
+
+    [JsonPropertyName("DisplayValue")]
+    public string? DisplayValue { get; set; }
+
+    [JsonPropertyName("Status")]
+    public string? Status { get; set; }
+
+    [JsonPropertyName("Priority")]
+    public string? Priority { get; set; }
+
+    [JsonPropertyName("Subject")]
+    public string? Subject { get; set; }
+
+    [JsonPropertyName("CreatedDate")]
+    public DateTime? CreatedDate { get; set; }
+
+    [JsonPropertyName("LastModified")]
+    public DateTime? LastModified { get; set; }
 }

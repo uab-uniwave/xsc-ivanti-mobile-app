@@ -1,0 +1,24 @@
+<Solution>
+  <Folder Name="/.github/">
+    <File Path=".github/copilot-blazor-separation.md" />
+    <File Path=".github/copilot-instructions-documents-management.md" />
+  </Folder>
+  <Folder Name="/assets/">
+    <File Path="assets/ActualCategories.json" />
+    <File Path="assets/FindFormViewData.json" />
+    <File Path="assets/FormDeafultData.json" />
+    <File Path="assets/FormViewData.json" />
+    <File Path="assets/FormViewDataRespondContent.Json" />
+    <File Path="assets/IncidentRequest.json" />
+    <File Path="assets/IncidentResponse.json" />
+    <File Path="assets/metadata.xml" />
+    <File Path="assets/ValidationListPayload.json" />
+    <File Path="assets/WorkspaceData.json" />
+  </Folder>
+  <Folder Name="/src/">
+    <Project Path="src/Application/Application.csproj" />
+    <Project Path="src/Domain/Domain.csproj" Id="88056bd8-d351-4be8-8637-c58dad5eb1bf" />
+    <Project Path="src/Infrastructure/Infrastructure.csproj" Id="7cc808a6-23e9-4cbe-bff0-803aee66aa28" />
+    <Project Path="src/WebUI/WebUI.csproj" />
+  </Folder>
+</Solution>

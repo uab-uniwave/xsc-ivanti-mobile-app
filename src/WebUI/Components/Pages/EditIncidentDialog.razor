@@ -4,10 +4,10 @@
 <MudDialog>
     <DialogContent>
 
-        <MudTextField @bind-Value="Model.Subject" Label="Subject" />
+       @*  <MudTextField @bind-Value="Model.Subject" Label="Subject" />
         <MudTextField @bind-Value="Model.Description" Label="Description" Lines="4" />
-
-        <MudSelect T="IncidentStatus"
+ *@
+       @*  <MudSelect T="IncidentStatus"
                    @bind-Value="Model.Status"
                    Label="Status">
 
@@ -17,16 +17,16 @@
                     @status
                 </MudSelectItem>
             }
-        </MudSelect>
+        </MudSelect> *@
 
-        <MudTextField @bind-Value="Model.Priority" Label="Priority" />
+      @*   <MudTextField @bind-Value="Model.Priority" Label="Priority" />
         <MudTextField @bind-Value="Model.Service" Label="Service" />
         <MudTextField @bind-Value="Model.Category" Label="Category" />
-
+ *@
     </DialogContent>
 
     <DialogActions>
-        <MudButton OnClick="Save" Color="Color.Primary">Save</MudButton>
-        <MudButton OnClick="Cancel">Cancel</MudButton>
+       @*  <MudButton OnClick="Save" Color="Color.Primary">Save</MudButton>
+        <MudButton OnClick="Cancel">Cancel</MudButton> *@
     </DialogActions>
 </MudDialog>

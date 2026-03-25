@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Components;
 using MudBlazor;
-using WebUI.Components.ViewModels;
+using WebUI.Features.Incidents.ViewModels;
 
 namespace WebUI.Components.Pages;
 

@@ -9,6 +9,13 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Compile Remove="Components\NewFolder\**" />
+    <Content Remove="Components\NewFolder\**" />
+    <EmbeddedResource Remove="Components\NewFolder\**" />
+    <None Remove="Components\NewFolder\**" />
+  </ItemGroup>
+
 
   <ItemGroup>
     <PackageReference Include="MudBlazor" Version="9.0.0" />
@@ -17,10 +24,5 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
-  </ItemGroup>
-
-
-  <ItemGroup>
-    <Folder Include="Components\NewFolder\" />
   </ItemGroup>
 </Project>
