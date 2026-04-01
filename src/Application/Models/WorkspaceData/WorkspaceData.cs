@@ -20,6 +20,14 @@ public class WorkspaceData
     [JsonPropertyName("SearchData")]
     public WorkspaceSearchData? SearchData { get; set; }
 
+
+    [JsonPropertyName("LayoutData")]
+    public WorkspaceLayoutData? LayoutData { get; set; }
+
+
+
+
+
     public class WorkspaceSearchData
     {
         [JsonPropertyName("previewGridName")]
@@ -211,4 +219,32 @@ public class WorkspaceData
         [JsonPropertyName("TargetType")]
         public int TargetType { get; set; }
     }
+
+    public class WorkspaceLayoutData
+    {
+        [JsonPropertyName("newRecordViews")]
+        public Dictionary<string, string>? NewRecordViews { get; set; }
+
+        [JsonPropertyName("oneNewRecordView")]
+        public string? OneNewRecordView { get; set; }
+
+        [JsonPropertyName("editRecordViews")]
+        public Dictionary<string, string>? EditRecordViews { get; set; }
+
+        [JsonPropertyName("oneEditRecordView")]
+        public string? OneEditRecordView { get; set; }
+
+        [JsonPropertyName("modalForms")]
+        public Dictionary<string, ModalFormDefinition>? ModalForms { get; set; }
+    }
+
+    public class ModalFormDefinition
+    {
+        [JsonPropertyName("CreationForm")]
+        public string? CreationForm { get; set; }
+
+        [JsonPropertyName("EditForm")]
+        public string? EditForm { get; set; }
+    }
+
 }

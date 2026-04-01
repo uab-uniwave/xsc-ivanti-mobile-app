@@ -98,8 +98,281 @@ public class TableMeta
     [JsonPropertyName("Fields")]
     public Dictionary<string, FieldMeta> Fields { get; set; } = new();
 
+    [JsonPropertyName("IsNeuronsWorkflowExecutedFieldRef")]
+    public string? IsNeuronsWorkflowExecutedFieldRef { get; set; }
+
+    [JsonPropertyName("IsRecordLockingEnabled")]
+    public bool IsRecordLockingEnabled { get; set; }
+
+    [JsonPropertyName("DisplayFieldRef")]
+    public string? DisplayFieldRef { get; set; }
+
+    [JsonPropertyName("TypeSelectorFieldRef")]
+    public string? TypeSelectorFieldRef { get; set; }
+
+    [JsonPropertyName("IsInChangeControl")]
+    public bool IsInChangeControl { get; set; }
+
+    [JsonPropertyName("CalculatedRules")]
+    public Dictionary<string, CalculatedRule>? CalculatedRules { get; set; }
+
+    [JsonPropertyName("FieldsEncryption")]
+    public Dictionary<string, object>? FieldsEncryption { get; set; }
+
+    [JsonPropertyName("ValidatedFields")]
+    public Dictionary<string, ValidatedField>? ValidatedFields { get; set; }
+
+    [JsonPropertyName("Relationships")]
+    public Dictionary<string, Relationship>? Relationships { get; set; }
+
+    [JsonPropertyName("Rel2")]
+    public Dictionary<string, Rel2Relationship>? Rel2 { get; set; }
+
+    [JsonPropertyName("PushToRelationships")]
+    public object? PushToRelationships { get; set; }
+
+    [JsonPropertyName("DerivedTypesRefs")]
+    public List<string> DerivedTypesRefs { get; set; } = new();
+
+    [JsonPropertyName("CompositeContracts")]
+    public List<object> CompositeContracts { get; set; } = new();
+
+    [JsonPropertyName("SearchPreviewFields")]
+    public List<SearchPreviewField>? SearchPreviewFields { get; set; }
+
     [JsonExtensionData]
     public Dictionary<string, JsonElement>? AdditionalData { get; set; }
+}
+
+public class CalculatedRule
+{
+    [JsonPropertyName("Calculated")]
+    public int Calculated { get; set; }
+
+    [JsonPropertyName("CalculatedExpression")]
+    public Expression? CalculatedExpression { get; set; }
+
+    [JsonPropertyName("Description")]
+    public string? Description { get; set; }
+
+    [JsonPropertyName("Name")]
+    public string? Name { get; set; }
+
+    [JsonPropertyName("RecalculateOnLoad")]
+    public bool RecalculateOnLoad { get; set; }
+}
+
+public class ValidatedField
+{
+    [JsonPropertyName("Condition")]
+    public Expression? Condition { get; set; }
+
+    [JsonPropertyName("IsStateTransition")]
+    public bool IsStateTransition { get; set; }
+
+    [JsonPropertyName("ValidatedIdFieldRef")]
+    public string? ValidatedIdFieldRef { get; set; }
+
+    [JsonPropertyName("ValidatorRef")]
+    public string? ValidatorRef { get; set; }
+}
+
+public class Relationship
+{
+    [JsonPropertyName("Binding")]
+    public int Binding { get; set; }
+
+    [JsonPropertyName("CompositeTypeFilter")]
+    public List<string>? CompositeTypeFilter { get; set; }
+
+    [JsonPropertyName("Condition")]
+    public Expression? Condition { get; set; }
+
+    [JsonPropertyName("DesignerName")]
+    public string? DesignerName { get; set; }
+
+    [JsonPropertyName("Direction")]
+    public int Direction { get; set; }
+
+    [JsonPropertyName("DisplayName")]
+    public string? DisplayName { get; set; }
+
+    [JsonPropertyName("ForeignKey")]
+    public ForeignKeyInfo? ForeignKey { get; set; }
+
+    [JsonPropertyName("FullTextSearchIndex")]
+    public bool FullTextSearchIndex { get; set; }
+
+    [JsonPropertyName("HereCardinality")]
+    public int HereCardinality { get; set; }
+
+    [JsonPropertyName("HerePreventDelete")]
+    public bool HerePreventDelete { get; set; }
+
+    [JsonPropertyName("HereRequired")]
+    public bool HereRequired { get; set; }
+
+    [JsonPropertyName("Implementation")]
+    public int Implementation { get; set; }
+
+    [JsonPropertyName("IncludeObjectsFromFields")]
+    public List<IncludeObjectsFromField>? IncludeObjectsFromFields { get; set; }
+
+    [JsonPropertyName("IsASymmetric")]
+    public bool IsASymmetric { get; set; }
+
+    [JsonPropertyName("IsCommonlyUsed")]
+    public bool IsCommonlyUsed { get; set; }
+
+    [JsonPropertyName("IsDeprecated")]
+    public bool IsDeprecated { get; set; }
+
+    [JsonPropertyName("LinkTableFieldMapping")]
+    public object? LinkTableFieldMapping { get; set; }
+
+    [JsonPropertyName("LinkTableName")]
+    public string? LinkTableName { get; set; }
+
+    [JsonPropertyName("OwnerTargetSubtypeFieldRef")]
+    public string? OwnerTargetSubtypeFieldRef { get; set; }
+
+    [JsonPropertyName("Permissions")]
+    public int? Permissions { get; set; }
+
+    [JsonPropertyName("Tag")]
+    public string? Tag { get; set; }
+
+    [JsonPropertyName("TargetDefaultSubtype")]
+    public string? TargetDefaultSubtype { get; set; }
+
+    [JsonPropertyName("ThereCardinality")]
+    public int ThereCardinality { get; set; }
+
+    [JsonPropertyName("ThereRequired")]
+    public bool ThereRequired { get; set; }
+
+    [JsonPropertyName("UpdateFields")]
+    public List<UpdateField>? UpdateFields { get; set; }
+
+    [JsonExtensionData]
+    public Dictionary<string, JsonElement>? AdditionalData { get; set; }
+}
+
+public class ForeignKeyInfo
+{
+    [JsonPropertyName("PKField")]
+    public string? PKField { get; set; }
+
+    [JsonPropertyName("FKField")]
+    public string? FKField { get; set; }
+
+    [JsonPropertyName("FKCategoryField")]
+    public string? FKCategoryField { get; set; }
+}
+
+public class IncludeObjectsFromField
+{
+    [JsonPropertyName("Field")]
+    public string? Field { get; set; }
+}
+
+public class UpdateField
+{
+    [JsonPropertyName("LeftField")]
+    public string? LeftField { get; set; }
+
+    [JsonPropertyName("RightField")]
+    public string? RightField { get; set; }
+
+    [JsonPropertyName("RightValue")]
+    public string? RightValue { get; set; }
+
+    [JsonPropertyName("PushValueOnlyWhenTargetEmpty")]
+    public bool PushValueOnlyWhenTargetEmpty { get; set; }
+
+    [JsonPropertyName("PreserveUserEdits")]
+    public bool PreserveUserEdits { get; set; }
+}
+
+public class Rel2Relationship
+{
+    [JsonPropertyName("Binding")]
+    public int Binding { get; set; }
+
+    [JsonPropertyName("DesignerName")]
+    public string? DesignerName { get; set; }
+
+    [JsonPropertyName("HereCardinality")]
+    public int HereCardinality { get; set; }
+
+    [JsonPropertyName("HereName")]
+    public string? HereName { get; set; }
+
+    [JsonPropertyName("HereRequired")]
+    public bool HereRequired { get; set; }
+
+    [JsonPropertyName("IncludeObjectsFromFields")]
+    public object? IncludeObjectsFromFields { get; set; }
+
+    [JsonPropertyName("JoinCondition")]
+    public object? JoinCondition { get; set; }
+
+    [JsonPropertyName("LinkTable")]
+    public LinkTableInfo? LinkTable { get; set; }
+
+    [JsonPropertyName("MasterHere")]
+    public bool MasterHere { get; set; }
+
+    [JsonPropertyName("R148RelTag")]
+    public string? R148RelTag { get; set; }
+
+    [JsonPropertyName("System")]
+    public bool System { get; set; }
+
+    [JsonPropertyName("TableRefThere")]
+    public string? TableRefThere { get; set; }
+
+    [JsonPropertyName("ThereCardinality")]
+    public int ThereCardinality { get; set; }
+
+    [JsonPropertyName("ThereName")]
+    public string? ThereName { get; set; }
+
+    [JsonPropertyName("ThereRequired")]
+    public bool ThereRequired { get; set; }
+
+    [JsonPropertyName("UpdateFields")]
+    public object? UpdateFields { get; set; }
+
+    [JsonPropertyName("WhereCondition")]
+    public object? WhereCondition { get; set; }
+}
+
+public class LinkTableInfo
+{
+    [JsonPropertyName("LinkTableName")]
+    public string? LinkTableName { get; set; }
+
+    [JsonPropertyName("LinkDataTableRef")]
+    public string? LinkDataTableRef { get; set; }
+
+    [JsonPropertyName("LinkDataUpNameField")]
+    public string? LinkDataUpNameField { get; set; }
+
+    [JsonPropertyName("LinkDataDownNameField")]
+    public string? LinkDataDownNameField { get; set; }
+
+    [JsonPropertyName("LinkConstraintsTableRef")]
+    public string? LinkConstraintsTableRef { get; set; }
+}
+
+public class SearchPreviewField
+{
+    [JsonPropertyName("FieldRef")]
+    public string? FieldRef { get; set; }
+
+    [JsonPropertyName("DisplayName")]
+    public string? DisplayName { get; set; }
 }
 
 public class FieldMeta

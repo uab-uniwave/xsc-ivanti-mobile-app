@@ -1,0 +1,135 @@
+{
+    "d": {
+        "__type": "HEAT.WebUI.Security.Session.SessionStatus",
+        "ActiveRole": "ResponsiveAnalyst",
+        "ActiveRoleDisplayName": "Mobile Analyst",
+        "AppName": "stg-heat20254.synergy.lt",
+        "Authorized": true,
+        "ConnectionName": "stg-heat20254.synergy.lt",
+        "RoleAssigned": true,
+        "SessionLength": 0,
+        "SessionStarted": "/Date(-62135596800000)/",
+        "UserName": "HEATAdmin",
+        "IsSuperAdmin": false,
+        "ImageManagerUseDB": true,
+        "Actions": [],
+        "IsFRSAdmin": false,
+        "IPCMKey1": "Z3Q/hznRp0WU0LPnRZ600Q",
+        "IPCMKey2": "8NmRUNd5FkK0wsCeYYy2+g",
+        "SessionCsrfToken": "voNMrttJzTenDzM_4DIjeCD6KT8",
+        "BuildVersion": "2025.4.0.20251224",
+        "IsOnPremise": true,
+        "IsMobileUI": false,
+        "IsResponsiveAnalystUI": false,
+        "IsAnonymous": false,
+        "SelfServiceSocialIT": false,
+        "HasMultipleRoles": true,
+        "IsMetaReadOnly": false,
+        "MetaReadOnlyExclusionList": [],
+        "AvailableLanguages": [
+            {
+                "Name": "ar-SA",
+                "DisplayName": "Arabic (Saudi Arabia)"
+            },
+            {
+                "Name": "de-DE",
+                "DisplayName": "German (Germany)"
+            },
+            {
+                "Name": "en-AU",
+                "DisplayName": "English (Australia)"
+            },
+            {
+                "Name": "en-CA",
+                "DisplayName": "English (Canada)"
+            },
+            {
+                "Name": "en-GB",
+                "DisplayName": "English (United Kingdom)"
+            },
+            {
+                "Name": "en-IE",
+                "DisplayName": "English (Ireland)"
+            },
+            {
+                "Name": "en-NZ",
+                "DisplayName": "English (New Zealand)"
+            },
+            {
+                "Name": "en-US",
+                "DisplayName": "English (United States)"
+            },
+            {
+                "Name": "en-ZA",
+                "DisplayName": "English (South Africa)"
+            },
+            {
+                "Name": "es-ES",
+                "DisplayName": "Spanish (Spain)"
+            },
+            {
+                "Name": "fr-CA",
+                "DisplayName": "French (Canada)"
+            },
+            {
+                "Name": "fr-FR",
+                "DisplayName": "French (France)"
+            },
+            {
+                "Name": "it-IT",
+                "DisplayName": "Italian (Italy)"
+            },
+            {
+                "Name": "ja-JP",
+                "DisplayName": "Japanese (Japan)"
+            },
+            {
+                "Name": "nl-NL",
+                "DisplayName": "Dutch (Netherlands)"
+            },
+            {
+                "Name": "pl-PL",
+                "DisplayName": "Polish (Poland)"
+            },
+            {
+                "Name": "pt-BR",
+                "DisplayName": "Portuguese (Brazil)"
+            },
+            {
+                "Name": "ru-RU",
+                "DisplayName": "Russian (Russia)"
+            },
+            {
+                "Name": "zh-CN",
+                "DisplayName": "Chinese (Simplified, PRC)"
+            },
+            {
+                "Name": "zh-TW",
+                "DisplayName": "Chinese (Traditional, Taiwan)"
+            },
+            {
+                "Name": "lt-LT",
+                "DisplayName": "Lithuanian (Lithuania)"
+            }
+        ],
+        "AvailableLanguagePacks": null,
+        "TimezoneName": "Europe/Kiev",
+        "SessionKey": null,
+        "ClientLogLevel": "ERROR",
+        "updateObjectMaxRow": "500",
+        "LogoutOnSessionExpiry": false,
+        "IsFedRamp": false,
+        "UseRoleCloningFeature": false,
+        "AppSettings": {
+            "CsvRTLTextCultures": "ar-SA",
+            "MaxDecisionLinks": "40",
+            "IsCoreEnvironment": "true"
+        },
+        "UnoTenantUrl": "",
+        "LinkedTenants": null,
+        "AccessToken": null,
+        "UEMBaseURL": null,
+        "LandscapeName": null,
+        "IsWorkflowPriorityEnabled": true
+    }
+}

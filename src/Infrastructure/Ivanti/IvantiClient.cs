@@ -4,6 +4,7 @@ using System.Text.Json.Serialization;
 using Application.Common;
 using Application.DTOs;
 using Application.Models.FormDefaultData;
+using Application.Models.FormValidationListData;
 using Application.Models.FormViewData;
 using Application.Models.RoleWorkspaces;
 using Application.Models.SessonData;
@@ -207,9 +208,9 @@ public sealed class IvantiClient :IIvantiClient
                 CreatedViewsOnClient = new(),
                 IsNewRecord = true,
                 LayoutName = workspace.LayoutName,
-                ObjectId = workspace.Id,
-                ViewName = "responsive.analyst.new",
-                CsrfToken = _sessionData.SessionCsrfToken
+                ObjectId = _workspaceData.ObjectId,
+                ViewName = _workspaceData.LayoutData?.OneNewRecordView ?? "formEdit",
+                CsrfToken = _sessionData.SessionCsrfToken       
             };
 
             //    var json = JsonSerializer.Serialize(request);
@@ -247,6 +248,12 @@ public sealed class IvantiClient :IIvantiClient
             return Result<FormViewData>.Failure(ex.Message ?? "Unknown error");
         }
     }
+
+    //=====================================================================
+    //  Form Default Data
+    //=====================================================================
+
+
     public async Task<Result<FormDefaultData>>
         GetFormDefaultDataAsync(CancellationToken ct)
     {
@@ -258,7 +265,7 @@ public sealed class IvantiClient :IIvantiClient
             var request = new GetFormDefaultDataRequest()
             {
                 
-                FormName = _formViewData.FormDef.FormMeta.Name,
+                FormName = _formViewData.FormDef.FormMeta?.Name,
                 LayoutName = null,
                 MasterData = null,
                 ObjectId = "",
@@ -270,7 +277,7 @@ public sealed class IvantiClient :IIvantiClient
                 CsrfToken = _sessionData.SessionCsrfToken
              
             };
-            var response = await PostAsync<FindFormViewDataResponse>(_endpoints.FindFormViewData,
+            var response = await PostAsync<GetFormDefaultDataResponse>(_endpoints.GetFormDefaultData,
   request,
   ct);
 
@@ -303,6 +310,69 @@ public sealed class IvantiClient :IIvantiClient
             return Result<FormDefaultData>.Failure(ex.Message ?? "Unknown error");
         }
     }
+
+
+    //=====================================================================
+    //  Form Validation List    Data
+    //=====================================================================
+
+
+    public async Task<Result<FormValidationListData>>
+        GetFormValidationListDataAsync(CancellationToken ct)
+    {
+        try
+        {
+
+            var workspace = _roleWorkspaces.Workspaces.FirstOrDefault(w => w.Name == "Incident")
+        ?? _roleWorkspaces.Workspaces.FirstOrDefault();
+            var request = new GetFormDefaultDataRequest()
+            {
+
+                FormName = _formViewData.FormDef.FormMeta?.Name,
+                LayoutName = null,
+                MasterData = null,
+                ObjectId = "",
+
+
+                DependentInfo = null,
+                ObjectType = workspace.Id,
+                ViewName = _formViewData.ViewName,
+                CsrfToken = _sessionData.SessionCsrfToken
+
+            };
+            var response = await PostAsync<FormValidationListDataResponse>(_endpoints.GetFormDefaultData,
+  request,
+  ct);
+
+            if (response.IsFailure || response.Value == null)
+            {
+                _logger.LogError("Failed to get form validation list data: {Error}", response.Error);
+                return Result<FormValidationListData>.Failure(response.Error ?? "Unknown error");
+            }
+
+            return Result<FormValidationListData>.Success(response.Value.D);
+
+        }
+        catch (JsonSerializationException ex)
+        {
+
+            _logger.LogError(ex, "JSON deserialization error while getting form validation list data ");
+            return Result<FormValidationListData>.Failure(ex.Message ?? "Unknown error");
+        }
+        catch (HttpRequestException ex)
+        {
+            _logger.LogError(ex, "HTTP request error while  getting form validation list data");
+            return Result<FormValidationListData>.Failure(ex.Message ?? "Unknown error");
+        }
+        catch (Exception ex)
+        {
+
+            _logger.LogError("Exception getting form validation list data : {Message}", ex.Message);
+            return Result<FormValidationListData>.Failure(ex.Message ?? "Unknown error");
+        }
+    }
+
+
     private async Task<Result<T>> PostAsync<T>(string endpoint, object request, CancellationToken ct)
     {
         try
@@ -326,52 +396,7 @@ public sealed class IvantiClient :IIvantiClient
     }
 
 
-    private async Task<Result<string>> PostStringAsync(string endpoint, object request, CancellationToken ct)
-    {
-        try
-        {
-            var response = await _http.PostAsJsonAsync(endpoint, request, JsonOptions, ct);
-            if (!response.IsSuccessStatusCode)
-            {
-                _logger.LogError("HTTP request failed with status {StatusCode}", response.StatusCode);
-                return Result<string>.Failure($"HTTP request failed with status {response.StatusCode}");
-            }
-
-            var json = await response.Content.ReadAsStringAsync(ct);
-                return Result<string>.Success(json!);
-        } 
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error making POST request to {Endpoint}", endpoint);
-            return Result<string>.Failure($"Error: {ex.Message}");
-        }
-    }
-    //public async Task<Result<object>>
-    //    GetFormValidationListDataAsync(CancellationToken ct)
-    //{
-    //    if (_formViewData?.FormDef == null)
-    //    {
-    //        _logger.LogError("Form view data is not initialized");
-    //        return Result<object>.Failure("Form view data not initialized");
-    //    }
-
-    //    var request = new GetFormValidationListDataRequest()
-    //    {
-    //        CsrfToken = _sessionData.SessionCsrfToken
-    //    };
-
-    //    var response = await PostAsync<object>(_endpoints.GetFormValidationListData,
-    //        request,
-    //        ct);
-
-    //    if (response.IsFailure || response.Value == null)
-    //    {
-    //        _logger.LogError("Failed to get form validation list data: {Error}", response.Error);
-    //        return Result<object>.Failure(response.Error ?? "Unknown error");
-    //    }
-
-    //    return Result<object>.Success(response.Value);
-    //}
+  
 
     /// <summary>
     /// Calculates the UTC offset in minutes for a given timezone name.

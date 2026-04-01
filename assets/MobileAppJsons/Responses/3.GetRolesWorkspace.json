@@ -1,0 +1,264 @@
+{
+    "d": {
+        "__type": "SaaS.WebUI.Layout.RoleWorkspaces",
+        "Workspaces": [
+            {
+                "ID": "Incident#",
+                "LayoutName": "IncidentLayout.ResponsiveAnalyst",
+                "Name": "Incident",
+                "Behavior": "single",
+                "Profile": "ObjectWorkspace",
+                "Link": null,
+                "Module": null,
+                "RecentList": false,
+                "Default": false,
+                "Visible": false,
+                "VisibleInMainMenu": true,
+                "Closable": true,
+                "Searchable": false,
+                "AdminRoleRequired": false,
+                "Configuration": {
+                    "objectName": "Incident",
+                    "objectRef": "Incident#",
+                    "layout": "IncidentLayout.ResponsiveAnalyst"
+                },
+                "HiddenExpression": null,
+                "isUIV3": false
+            },
+            {
+                "ID": "Task#Assignment",
+                "LayoutName": "Task.ResponsiveAnalyst",
+                "Name": "Task",
+                "Behavior": "single",
+                "Profile": "ObjectWorkspace",
+                "Link": null,
+                "Module": null,
+                "RecentList": false,
+                "Default": false,
+                "Visible": false,
+                "VisibleInMainMenu": true,
+                "Closable": true,
+                "Searchable": false,
+                "AdminRoleRequired": false,
+                "Configuration": {
+                    "objectName": "Task",
+                    "objectRef": "Task#Assignment",
+                    "layout": "Task.ResponsiveAnalyst"
+                },
+                "HiddenExpression": null,
+                "isUIV3": false
+            },
+            {
+                "ID": "ServiceReq#",
+                "LayoutName": "ServiceReq.ResponsiveAnalyst.DefaultLayout",
+                "Name": " Service Request",
+                "Behavior": "single",
+                "Profile": "ObjectWorkspace",
+                "Link": null,
+                "Module": null,
+                "RecentList": false,
+                "Default": false,
+                "Visible": false,
+                "VisibleInMainMenu": true,
+                "Closable": true,
+                "Searchable": false,
+                "AdminRoleRequired": false,
+                "Configuration": {
+                    "objectName": "Service Request",
+                    "objectRef": "ServiceReq#",
+                    "layout": "ServiceReq.ResponsiveAnalyst.DefaultLayout"
+                },
+                "HiddenExpression": null,
+                "isUIV3": false
+            },
+            {
+                "ID": "CI#",
+                "LayoutName": "AssetManagerMobile.Asset.Default",
+                "Name": "CI",
+                "Behavior": "single",
+                "Profile": "ObjectWorkspace",
+                "Link": null,
+                "Module": null,
+                "RecentList": false,
+                "Default": false,
+                "Visible": false,
+                "VisibleInMainMenu": true,
+                "Closable": true,
+                "Searchable": false,
+                "AdminRoleRequired": false,
+                "Configuration": {
+                    "objectName": "CI",
+                    "objectRef": "CI#",
+                    "layout": "AssetManagerMobile.Asset.Default"
+                },
+                "HiddenExpression": null,
+                "isUIV3": false
+            }
+        ],
+        "RecentWorkspaces": [
+            "Incident#"
+        ],
+        "AllWorkspaces": [
+            {
+                "ID": "Incident#",
+                "LayoutName": "IncidentLayout.ResponsiveAnalyst",
+                "Name": "Incident",
+                "Behavior": "single",
+                "Profile": "ObjectWorkspace",
+                "Link": null,
+                "Module": null,
+                "RecentList": false,
+                "Default": false,
+                "Visible": false,
+                "VisibleInMainMenu": true,
+                "Closable": true,
+                "Searchable": false,
+                "AdminRoleRequired": false,
+                "Configuration": {
+                    "objectName": "Incident",
+                    "objectRef": "Incident#",
+                    "layout": "IncidentLayout.ResponsiveAnalyst"
+                },
+                "HiddenExpression": null,
+                "isUIV3": false
+            },
+            {
+                "ID": "Task#Assignment",
+                "LayoutName": "Task.ResponsiveAnalyst",
+                "Name": "Task",
+                "Behavior": "single",
+                "Profile": "ObjectWorkspace",
+                "Link": null,
+                "Module": null,
+                "RecentList": false,
+                "Default": false,
+                "Visible": false,
+                "VisibleInMainMenu": true,
+                "Closable": true,
+                "Searchable": false,
+                "AdminRoleRequired": false,
+                "Configuration": {
+                    "objectName": "Task",
+                    "objectRef": "Task#Assignment",
+                    "layout": "Task.ResponsiveAnalyst"
+                },
+                "HiddenExpression": null,
+                "isUIV3": false
+            },
+            {
+                "ID": "ServiceReq#",
+                "LayoutName": "ServiceReq.ResponsiveAnalyst.DefaultLayout",
+                "Name": " Service Request",
+                "Behavior": "single",
+                "Profile": "ObjectWorkspace",
+                "Link": null,
+                "Module": null,
+                "RecentList": false,
+                "Default": false,
+                "Visible": false,
+                "VisibleInMainMenu": true,
+                "Closable": true,
+                "Searchable": false,
+                "AdminRoleRequired": false,
+                "Configuration": {
+                    "objectName": "Service Request",
+                    "objectRef": "ServiceReq#",
+                    "layout": "ServiceReq.ResponsiveAnalyst.DefaultLayout"
+                },
+                "HiddenExpression": null,
+                "isUIV3": false
+            },
+            {
+                "ID": "CI#",
+                "LayoutName": "AssetManagerMobile.Asset.Default",
+                "Name": "CI",
+                "Behavior": "single",
+                "Profile": "ObjectWorkspace",
+                "Link": null,
+                "Module": null,
+                "RecentList": false,
+                "Default": false,
+                "Visible": false,
+                "VisibleInMainMenu": true,
+                "Closable": true,
+                "Searchable": false,
+                "AdminRoleRequired": false,
+                "Configuration": {
+                    "objectName": "CI",
+                    "objectRef": "CI#",
+                    "layout": "AssetManagerMobile.Asset.Default"
+                },
+                "HiddenExpression": null,
+                "isUIV3": false
+            }
+        ],
+        "MobileWorkspaces": [],
+        "Notifications": {
+            "MaintenanceNotification": null,
+            "ReleaseNotification": null,
+            "AllReleaseNotification": null
+        },
+        "BrandingOptions": {
+            "BrandingID": "93cb09fd6781442d8f58ac02615b5c80",
+            "SkinCssName": "",
+            "SkinCssParameters": null,
+            "LogoImage": "C7359BC87F494586B8112237BB4DCC79",
+            "SystemMenuOptions": {
+                "EnableLogout": false,
+                "EnableChangePassword": false,
+                "EnableChatAsAnalyst": false,
+                "EnableChatAsUser": false,
+                "EnableEditProfile": false,
+                "EnableHelp": false,
+                "EnableChangeRole": false
+            },
+            "TopLinks": [],
+            "BottomLinks": [],
+            "SelectorOptions": {
+                "NewWindow": false,
+                "SelectorMenu": false,
+                "SelectorMenuOther": false
+            },
+            "EnableNewUI": false,
+            "EnableNewSSLandingPage": false,
+            "SSExtendedRole": false,
+            "EnableMobileAnalystUI": true,
+            "SelfServiceRole": false,
+            "UiOptions": {},
+            "Id": "93cb09fd6781442d8f58ac02615b5c80",
+            "LastModified": "/Date(1742187059000)/",
+            "TenantMetaRevision": 745,
+            "ModifiedBy": "ATaylor",
+            "Revision": null
+        },
+        "AllowClick2Talk": false,
+        "HelpLinks": [
+            {
+                "Category": "",
+                "DisplayName": "Admin Help",
+                "Editable": false,
+                "HelpEnable": false,
+                "Language": "All",
+                "URL": "https://help.ivanti.com/ht/help/en_US/ISM/ISM_ReleaseYear/admin-user/Index.html#cshid={CSHID}"
+            },
+            {
+                "Category": "",
+                "DisplayName": "User Help",
+                "Editable": false,
+                "HelpEnable": false,
+                "Language": "All",
+                "URL": "https://help.ivanti.com/ht/help/en_US/ISM/ISM_ReleaseYear/admin-user/Index.html#cshid={CSHID}"
+            },
+            {
+                "Category": "",
+                "DisplayName": "Self Service Help",
+                "Editable": false,
+                "HelpEnable": false,
+                "Language": "All",
+                "URL": "https://help.ivanti.com/ht/help/en_US/ISM/ISM_ReleaseYear/self/Index.html#cshid={CSHID}"
+            }
+        ],
+        "ChatEnabled": false,
+        "MSTeamsIntegrationEnabled": false
+    }
+}

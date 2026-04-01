@@ -3,17 +3,25 @@
     <File Path=".github/copilot-blazor-separation.md" />
     <File Path=".github/copilot-instructions-documents-management.md" />
   </Folder>
-  <Folder Name="/assets/">
-    <File Path="assets/ActualCategories.json" />
-    <File Path="assets/FindFormViewData.json" />
-    <File Path="assets/FormDeafultData.json" />
-    <File Path="assets/FormViewData.json" />
-    <File Path="assets/FormViewDataRespondContent.Json" />
-    <File Path="assets/IncidentRequest.json" />
-    <File Path="assets/IncidentResponse.json" />
-    <File Path="assets/metadata.xml" />
-    <File Path="assets/ValidationListPayload.json" />
-    <File Path="assets/WorkspaceData.json" />
+  <Folder Name="/assets/" />
+  <Folder Name="/assets/MobileAppJsons/" />
+  <Folder Name="/assets/MobileAppJsons/Requests/">
+    <File Path="assets/MobileAppJsons/Requests/1.InitializeSession.json" />
+    <File Path="assets/MobileAppJsons/Requests/2.GetUserData.Json" />
+    <File Path="assets/MobileAppJsons/Requests/3.GetRolesWorkspace.json" />
+    <File Path="assets/MobileAppJsons/Requests/4.GetWorkspaceData.json" />
+    <File Path="assets/MobileAppJsons/Requests/5.FindFormViewdata.json" />
+    <File Path="assets/MobileAppJsons/Requests/6.GetFormDefaultData.json" />
+    <File Path="assets/MobileAppJsons/Requests/7.GetFormValidationListData.json" />
+  </Folder>
+  <Folder Name="/assets/MobileAppJsons/Respones/">
+    <File Path="assets/MobileAppJsons/Responses/1.InitializeSession.json" />
+    <File Path="assets/MobileAppJsons/Responses/2.GetUserData.Json" />
+    <File Path="assets/MobileAppJsons/Responses/3.GetRolesWorkspace.json" />
+    <File Path="assets/MobileAppJsons/Responses/4.GetWorkspaceData.json" />
+    <File Path="assets/MobileAppJsons/Responses/5.FindFormViewdata.json" />
+    <File Path="assets/MobileAppJsons/Responses/6.GetFormDefaultData.json" />
+    <File Path="assets/MobileAppJsons/Responses/7.GetFormValidationListData.json" />
   </Folder>
   <Folder Name="/src/">
     <Project Path="src/Application/Application.csproj" />

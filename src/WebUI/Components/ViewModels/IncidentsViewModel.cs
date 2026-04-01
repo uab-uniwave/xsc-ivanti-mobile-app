@@ -61,7 +61,7 @@ public sealed class IncidentsViewModel
             {
                 throw new InvalidOperationException($"Failed to get form view data: {formViewDataResult.Error}");
             }
-            // Get form view data
+            // Get form default data
             var formDataDefaultReult = await _ivanti.GetFormDefaultDataAsync(ct);
             if (formDataDefaultReult.IsFailure)
             {

@@ -1,0 +1,11 @@
+{
+    "formName": "Incident.ResponsiveAnalyst.NewForm",
+    "layoutName": null,
+    "masterData": null,
+    "objectId": "",
+    "objectType": "Incident#",
+    "overridings": null,
+    "viewName": "responsive.analyst.new",
+    "_csrfToken": "voNMrttJzTenDzM_4DIjeCD6KT8",
+    "dependentInfo": null
+}
