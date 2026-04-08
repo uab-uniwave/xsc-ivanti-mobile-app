@@ -1,25 +1,26 @@
-﻿using System.Net.Http.Json;
-using System.Text.Json;
-using System.Text.Json.Serialization;
-using Application.Common;
+﻿using Application.Common;
 using Application.Common.Models.SessonData;
-using Application.Interfaces.State;
 using Application.Common.Models.UserData;
 using Application.Features.Authentication.DTOs;
+using Application.Features.Authentication.Models;
 using Application.Features.Workspaces.DTOs;
-using Application.Features.Workspaces.Models;
 using Application.Features.Workspaces.Models.FormDefaultData;
+using Application.Features.Workspaces.Models.FormValidationList;
 using Application.Features.Workspaces.Models.FormValidationListData;
 using Application.Features.Workspaces.Models.FormViewData;
-using Application.Features.Workspaces.Models.RoleWorkspaces;
-using Application.Features.Workspaces.Models.WorkspaceData;
-using Application.Features.Workspaces.Models.ValidatedSearch;
 using Application.Features.Workspaces.Models.GridDataHandler;
+using Application.Features.Workspaces.Models.RoleWorkspaces;
+using Application.Features.Workspaces.Models.ValidatedSearch;
+using Application.Features.Workspaces.Models.WorkspaceData;
+using Application.Interfaces.State;
 using Application.Services;
+using Domain.Entities;
 using MapsterMapper;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using Application.Features.Authentication.Models;
+using System.Net.Http.Json;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace Infrastructure.Ivanti;
 
@@ -706,16 +707,25 @@ public sealed class IvantiClient : IIvantiClient
     /// <summary>
     /// Loads complete form data for a specific workspace by ID.
     /// Called when user navigates to a workspace (e.g., Incidents).
+    /// If the workspace is not already in AllWorkspacesData, it will be created from RoleWorkspaces.
     /// </summary>
     public async Task<Result<WorkspaceFullData>> LoadWorkspaceFormDataAsync(string workspaceId, CancellationToken ct)
     {
+        // First check if workspace is already loaded in AllWorkspacesData
         var workspaceFullData = _stateService.AllWorkspacesData
             .FirstOrDefault(w => w.Workspace.Id.Equals(workspaceId, StringComparison.OrdinalIgnoreCase));
 
+        // If not found, create from RoleWorkspaces definition (lazy loading)
         if (workspaceFullData == null)
         {
-            _logger.LogError("Workspace not found: {WorkspaceId}", workspaceId);
-            return Result<WorkspaceFullData>.Failure($"Workspace not found: {workspaceId}");
+            _logger.LogInformation("Workspace {WorkspaceId} not in AllWorkspacesData, creating from RoleWorkspaces...", workspaceId);
+            workspaceFullData = await CreateWorkspaceFullDataByIdAsync(workspaceId, ct);
+
+            if (workspaceFullData == null)
+            {
+                _logger.LogError("Workspace not found in RoleWorkspaces: {WorkspaceId}", workspaceId);
+                return Result<WorkspaceFullData>.Failure($"Workspace not found: {workspaceId}");
+            }
         }
 
         return await LoadWorkspaceFormDataInternalAsync(workspaceFullData, ct);
@@ -724,19 +734,94 @@ public sealed class IvantiClient : IIvantiClient
     /// <summary>
     /// Loads complete form data for a specific workspace by name.
     /// Called when user navigates to a workspace (e.g., Incidents).
+    /// If the workspace is not already in AllWorkspacesData, it will be created from RoleWorkspaces.
     /// </summary>
     public async Task<Result<WorkspaceFullData>> LoadWorkspaceFormDataByNameAsync(string workspaceName, CancellationToken ct)
     {
+        // First check if workspace is already loaded in AllWorkspacesData
         var workspaceFullData = _stateService.AllWorkspacesData
             .FirstOrDefault(w => w.Workspace.Name.Equals(workspaceName, StringComparison.OrdinalIgnoreCase));
 
+        // If not found, create from RoleWorkspaces definition (lazy loading)
         if (workspaceFullData == null)
         {
-            _logger.LogError("Workspace not found: {WorkspaceName}", workspaceName);
-            return Result<WorkspaceFullData>.Failure($"Workspace not found: {workspaceName}");
+            _logger.LogInformation("Workspace {WorkspaceName} not in AllWorkspacesData, creating from RoleWorkspaces...", workspaceName);
+            workspaceFullData = await CreateWorkspaceFullDataByNameAsync(workspaceName, ct);
+
+            if (workspaceFullData == null)
+            {
+                _logger.LogError("Workspace not found in RoleWorkspaces: {WorkspaceName}", workspaceName);
+                return Result<WorkspaceFullData>.Failure($"Workspace not found: {workspaceName}");
+            }
         }
 
         return await LoadWorkspaceFormDataInternalAsync(workspaceFullData, ct);
+    }
+
+    /// <summary>
+    /// Creates a WorkspaceFullData from RoleWorkspaces by workspace ID.
+    /// Loads basic WorkspaceData and adds it to AllWorkspacesData.
+    /// </summary>
+    private async Task<WorkspaceFullData?> CreateWorkspaceFullDataByIdAsync(string workspaceId, CancellationToken ct)
+    {
+        var workspace = _stateService.GetWorkspaceDefinitionById(workspaceId);
+        if (workspace == null)
+        {
+            return null;
+        }
+
+        return await CreateAndLoadWorkspaceFullDataAsync(workspace, ct);
+    }
+
+    /// <summary>
+    /// Creates a WorkspaceFullData from RoleWorkspaces by workspace name.
+    /// Loads basic WorkspaceData and adds it to AllWorkspacesData.
+    /// </summary>
+    private async Task<WorkspaceFullData?> CreateWorkspaceFullDataByNameAsync(string workspaceName, CancellationToken ct)
+    {
+        var workspace = _stateService.GetWorkspaceDefinitionByName(workspaceName);
+        if (workspace == null)
+        {
+            return null;
+        }
+
+        return await CreateAndLoadWorkspaceFullDataAsync(workspace, ct);
+    }
+
+    /// <summary>
+    /// Creates a WorkspaceFullData from a Workspace definition, loads basic data, and adds to state.
+    /// </summary>
+    private async Task<WorkspaceFullData> CreateAndLoadWorkspaceFullDataAsync(Workspace workspace, CancellationToken ct)
+    {
+        var workspaceFullData = new WorkspaceFullData
+        {
+            Workspace = workspace
+        };
+
+        // Load basic WorkspaceData
+        _logger.LogInformation("Loading WorkspaceData for: {WorkspaceName} (ID: {WorkspaceId})", 
+            workspace.Name, workspace.Id);
+
+        var workspaceDataResult = await GetWorkspaceDataAsync(workspace, ct);
+
+        if (workspaceDataResult.IsSuccess && workspaceDataResult.Value != null)
+        {
+            workspaceFullData.WorkspaceData = workspaceDataResult.Value;
+            _logger.LogInformation("Successfully loaded WorkspaceData for: {WorkspaceName}", workspace.Name);
+        }
+        else
+        {
+            workspaceFullData.ErrorMessage = workspaceDataResult.Error;
+            _logger.LogWarning("Failed to load WorkspaceData for {WorkspaceName}: {Error}", 
+                workspace.Name, workspaceDataResult.Error);
+        }
+
+        // Add to AllWorkspacesData for future reference
+        _stateService.AllWorkspacesData.Add(workspaceFullData);
+        _logger.LogDebug("Added {WorkspaceName} to AllWorkspacesData (total: {Count})", 
+            workspace.Name, _stateService.AllWorkspacesData.Count);
+
+        return workspaceFullData;
     }
 
     /// <summary>
@@ -785,16 +870,27 @@ public sealed class IvantiClient : IIvantiClient
                     _logger.LogWarning("Failed to load FormDefaultData: {Error}", formDefaultResult.Error);
                 }
 
-                // 3. FormValidationListData (requires FormViewData)
-                _logger.LogInformation("Step 3/4: Loading FormValidationListData for {WorkspaceName}...", workspace.Name);
-                var validationListResult = await GetFormValidationListDataAsync(workspace, workspaceFullData.FormViewData, ct);
-                if (validationListResult.IsSuccess && validationListResult.Value != null)
+                // 3. FormValidationListData (requires FormViewData + FormDefaultData)
+                if (workspaceFullData.FormDefaultData != null)
                 {
-                    workspaceFullData.FormValidationListData = validationListResult.Value;
+                    _logger.LogInformation("Step 3/4: Loading FormValidationListData for {WorkspaceName}...", workspace.Name);
+                    var validationListResult = await GetFormValidationListDataAsync(
+                        workspace,
+                        workspaceFullData.FormViewData,
+                        workspaceFullData.FormDefaultData,
+                        ct);
+                    if (validationListResult.IsSuccess && validationListResult.Value != null)
+                    {
+                        workspaceFullData.FormValidationListData = validationListResult.Value;
+                    }
+                    else
+                    {
+                        _logger.LogWarning("Failed to load FormValidationListData: {Error}", validationListResult.Error);
+                    }
                 }
                 else
                 {
-                    _logger.LogWarning("Failed to load FormValidationListData: {Error}", validationListResult.Error);
+                    _logger.LogWarning("Skipping FormValidationListData because FormDefaultData was not loaded");
                 }
             }
 
@@ -864,22 +960,50 @@ public sealed class IvantiClient : IIvantiClient
     }
 
     /// <summary>
-    /// Gets form view data for a specific workspace.
+    /// Gets form view data for a specific workspace using the specified view mode.
     /// </summary>
+    /// <param name="workspace">The workspace definition containing layout information.</param>
+    /// <param name="workspaceData">The workspace data containing layout data and object ID.</param>
+    /// <param name="viewMode">The form view mode (Create or Edit). Determines which view name to use.</param>
+    /// <param name="ct">Cancellation token for the async operation.</param>
+    /// <returns>Result containing FormViewData with ViewMode set appropriately.</returns>
+    /// <remarks>
+    /// This method loads form view data based on the specified mode:
+    /// - Create mode: Uses workspaceData.LayoutData?.OneNewRecordView
+    /// - Edit mode: Uses workspaceData.LayoutData?.OneEditRecordView (default)
+    /// 
+    /// The returned FormViewData will have its ViewMode property set to indicate which mode was used.
+    /// This allows downstream methods to understand the context and apply appropriate logic.
+    /// </remarks>
     public async Task<Result<FormViewData>> FindFormViewDataAsync(
         Workspace workspace, 
-        WorkspaceData workspaceData, 
+        WorkspaceData workspaceData,
+        FormViewMode viewMode,
         CancellationToken ct)
     {
         try
         {
+            // Determine view name based on mode
+            var viewName = viewMode switch
+            {
+                FormViewMode.Create => workspaceData.LayoutData?.OneNewRecordView ?? "formView",
+                FormViewMode.Edit => workspaceData.LayoutData?.OneEditRecordView ?? "formView",
+                _ => workspaceData.LayoutData?.OneEditRecordView ?? "formView"
+            };
+
+            var isNewRecord = viewMode == FormViewMode.Create;
+
+            _logger.LogInformation(
+                "Loading FormViewData for {WorkspaceName} in {Mode} mode using view: {ViewName}",
+                workspace.Name, viewMode, viewName);
+
             var request = new FindFormViewDataRequest()
             {
                 CreatedViewsOnClient = new(),
-                IsNewRecord = true,
+                IsNewRecord = isNewRecord,
                 LayoutName = workspace.LayoutName,
                 ObjectId = workspaceData.ObjectId,
-                ViewName = workspaceData.LayoutData?.OneNewRecordView ?? "formView",
+                ViewName = viewName,
                 CsrfToken = _stateService.SessionData!.SessionCsrfToken
             };
 
@@ -887,17 +1011,66 @@ public sealed class IvantiClient : IIvantiClient
 
             if (response.IsFailure || response.Value == null)
             {
+                _logger.LogWarning("Failed to load FormViewData in {Mode} mode: {Error}", viewMode, response.Error);
                 return Result<FormViewData>.Failure(response.Error ?? "Unknown error");
             }
 
-            return Result<FormViewData>.Success(_mapper.Map<FormViewData>(response.Value.D));
+            var formViewData = _mapper.Map<FormViewData>(response.Value.D);
+            formViewData.ViewMode = viewMode;
+
+            _logger.LogInformation("Successfully loaded FormViewData for {WorkspaceName} in {Mode} mode", workspace.Name, viewMode);
+
+            return Result<FormViewData>.Success(formViewData);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Exception finding form view data for {WorkspaceName}", workspace.Name);
+            _logger.LogError(ex, "Exception finding form view data for {WorkspaceName} in {Mode} mode", workspace.Name, viewMode);
             return Result<FormViewData>.Failure(ex.Message ?? "Unknown error");
         }
     }
+
+    /// <summary>
+    /// Gets form view data for editing an existing record (default mode).
+    /// Convenience overload that uses FormViewMode.Edit.
+    /// </summary>
+    /// <param name="workspace">The workspace definition containing layout information.</param>
+    /// <param name="workspaceData">The workspace data containing layout data and object ID.</param>
+    /// <param name="ct">Cancellation token for the async operation.</param>
+    /// <returns>Result containing FormViewData for Edit mode (OneEditRecordView).</returns>
+    /// <remarks>
+    /// This is the default form data loading method.
+    /// Uses workspaceData.LayoutData?.OneEditRecordView to load form structure for editing existing entities.
+    /// Equivalent to calling FindFormViewDataAsync(workspace, workspaceData, FormViewMode.Edit, ct).
+    /// </remarks>
+    public async Task<Result<FormViewData>> FindFormViewDataAsync(
+        Workspace workspace, 
+        WorkspaceData workspaceData, 
+        CancellationToken ct)
+    {
+        return await FindFormViewDataAsync(workspace, workspaceData, FormViewMode.Edit, ct);
+    }
+
+    /// <summary>
+    /// Gets form view data for creating a new record.
+    /// Convenience overload that uses FormViewMode.Create.
+    /// </summary>
+    /// <param name="workspace">The workspace definition containing layout information.</param>
+    /// <param name="workspaceData">The workspace data containing layout data and object ID.</param>
+    /// <param name="ct">Cancellation token for the async operation.</param>
+    /// <returns>Result containing FormViewData for Create mode (OneNewRecordView).</returns>
+    /// <remarks>
+    /// This is used for lazy loading when creating new entities.
+    /// Uses workspaceData.LayoutData?.OneNewRecordView to load form structure for new entity creation.
+    /// Equivalent to calling FindFormViewDataAsync(workspace, workspaceData, FormViewMode.Create, ct).
+    /// </remarks>
+    public async Task<Result<FormViewData>> FindFormViewDataForCreateAsync(
+        Workspace workspace, 
+        WorkspaceData workspaceData, 
+        CancellationToken ct)
+    {
+        return await FindFormViewDataAsync(workspace, workspaceData, FormViewMode.Create, ct);
+    }
+
 
     /// <summary>
     /// Gets form default data for a specific workspace.
@@ -945,6 +1118,7 @@ public sealed class IvantiClient : IIvantiClient
     public async Task<Result<FormValidationListData>> GetFormValidationListDataAsync(
         Workspace workspace,
         FormViewData formViewData,
+        FormDefaultData formDefaultData,
         CancellationToken ct)
     {
         try
@@ -956,7 +1130,7 @@ public sealed class IvantiClient : IIvantiClient
                     NamedValidators = System.Text.Json.JsonSerializer.Serialize(
                         formViewData?.FormDef?.TableMeta?.ValidatedFields, JsonOptions),
                     ValidatorsOverride = "{}",
-                    MasterFormValues = null,
+                    MasterFormValues = formDefaultData.Data,
                     ObjectId = workspace.Id
                 },
                 CsrfToken = _stateService.SessionData!.SessionCsrfToken
@@ -1000,24 +1174,51 @@ public sealed class IvantiClient : IIvantiClient
 
             foreach (var favorite in favoriteSearches)
             {
-                if (string.IsNullOrEmpty(favorite.Id)) continue;
+                if (ct.IsCancellationRequested)
+                {
+                    _logger.LogWarning("Validated search loading canceled for workspace: {WorkspaceName}", workspace.Name);
+                    break;
+                }
+
+                if (string.IsNullOrWhiteSpace(favorite.Id))
+                {
+                    continue;
+                }
+
+                if (!Guid.TryParse(favorite.Id, out var searchId))
+                {
+                    _logger.LogWarning("Skipping validated search with invalid GUID: {SearchId}", favorite.Id);
+                    continue;
+                }
 
                 try
                 {
+                    // Keep workspace loading responsive even if one validated search endpoint is slow.
+                    using var searchCts = CancellationTokenSource.CreateLinkedTokenSource(ct);
+                    searchCts.CancelAfter(TimeSpan.FromSeconds(8));
+
                     var request = new GetValideatedSearchRequest()
                     {
-                        SearchId = Guid.Parse(favorite.Id),
+                        SearchId = searchId,
                         ObjectId = workspaceData!.ObjectId,
                         LayoutName = workspace.LayoutName,
                         CsrfToken = _stateService.SessionData!.SessionCsrfToken
                     };
 
-                    var response = await PostAsync<GetValideatedSearchResponse>(_endpoints.GetValidatedSearch, request, ct);
+                    var response = await PostAsync<GetValideatedSearchResponse>(_endpoints.GetValidatedSearch, request, searchCts.Token);
 
                     if (response.IsSuccess && response.Value != null)
                     {
                         validatedSearches.Add(_mapper.Map<ValidatedSearch>(response.Value.D));
                     }
+                    else
+                    {
+                        _logger.LogWarning("Validated search request failed for {SearchId}: {Error}", favorite.Id, response.Error);
+                    }
+                }
+                catch (OperationCanceledException) when (!ct.IsCancellationRequested)
+                {
+                    _logger.LogWarning("Validated search request timed out for {SearchId}", favorite.Id);
                 }
                 catch (Exception ex)
                 {
@@ -1056,24 +1257,44 @@ public sealed class IvantiClient : IIvantiClient
                 return Result<GridDataHandler>.Failure($"Workspace not found or not loaded: {workspaceId}");
             }
 
-            var request = new GridDataHandlerRequest
+            var request = new GetGridDataHandlerRequest
             {
-                SearchId = searchId,
-                ObjectId = workspaceData.WorkspaceData.ObjectId,
-                LayoutName = workspaceData.Workspace.LayoutName,
-                Skip = skip,
-                Take = take,
-                CsrfToken = _stateService.SessionData!.SessionCsrfToken
+                GridDefName = BuildGridDefName(workspaceData, _stateService.UserData?.UserRole),
+                StartRow = skip,
+                PageSize = take,
+                BestFit = false,
+                SearchInfo = BuildSearchInfoPayload(workspaceData, searchId)
             };
 
-            var response = await PostAsync<GridDataHandlerResponse>(_endpoints.GridDataHandler, request, ct);
+            var formValues = new Dictionary<string, string>
+            {
+                ["gridDefName"] = request.GridDefName ?? string.Empty,
+                ["startRow"] = request.StartRow.ToString(),
+                ["pageSize"] = request.PageSize.ToString(),
+                ["bestFit"] = request.BestFit.ToString().ToLowerInvariant(),
+                ["searchInfo"] = request.SearchInfo ?? string.Empty
+            };
+
+
+            var response = await PostFormAsync<GetGridDataHandlerResponse>(
+                _endpoints.GridDataHandler,
+                formValues,
+                _stateService.SessionData!.SessionCsrfToken,
+                ct);
 
             if (response.IsFailure || response.Value == null)
             {
                 return Result<GridDataHandler>.Failure(response.Error ?? "Unknown error");
             }
 
-            return Result<GridDataHandler>.Success(_mapper.Map<GridDataHandler>(response.Value.D));
+            var payload = GetGridDataHandlerPayload(response.Value);
+            if (payload == null)
+            {
+                return Result<GridDataHandler>.Failure("Invalid GridDataHandler response payload");
+            }
+
+            var mappedGridData = MapGridDataHandlerPayload(payload);
+            return Result<GridDataHandler>.Success(mappedGridData);
         }
         catch (Exception ex)
         {
@@ -1082,117 +1303,133 @@ public sealed class IvantiClient : IIvantiClient
         }
     }
 
-    //=====================================================================
-    // Legacy Methods (deprecated - for backward compatibility)
-    //=====================================================================
-
-    [Obsolete("Use GetWorkspaceDataAsync(Workspace, CancellationToken) instead")]
-    public async Task<Result<WorkspaceData>> GetWorkspaceDataAsync(CancellationToken ct)
+    private static GridDataHandlerPayload? GetGridDataHandlerPayload(GetGridDataHandlerResponse response)
     {
-        var firstWorkspace = _stateService.RoleWorkspaces?.Workspaces?.FirstOrDefault();
-        if (firstWorkspace == null)
-            return Result<WorkspaceData>.Failure("No workspaces available");
-
-        var result = await GetWorkspaceDataAsync(firstWorkspace, ct);
-        if (result.IsSuccess)
+        if (response.D.ValueKind == JsonValueKind.Object)
         {
-#pragma warning disable CS0618
-            _stateService.WorkspaceData = result.Value;
-#pragma warning restore CS0618
+            return System.Text.Json.JsonSerializer.Deserialize<GridDataHandlerPayload>(response.D.GetRawText(), JsonOptions);
         }
-        return result;
-    }
 
-    [Obsolete("Use FindFormViewDataAsync(Workspace, WorkspaceData, CancellationToken) instead")]
-    public async Task<Result<FormViewData>> FindFormViewDataAsync(CancellationToken ct)
-    {
-        var workspace = _stateService.RoleWorkspaces?.Workspaces?.FirstOrDefault();
-#pragma warning disable CS0618
-        var workspaceData = _stateService.WorkspaceData;
-#pragma warning restore CS0618
-
-        if (workspace == null || workspaceData == null)
-            return Result<FormViewData>.Failure("Workspace or WorkspaceData not available");
-
-        var result = await FindFormViewDataAsync(workspace, workspaceData, ct);
-        if (result.IsSuccess)
+        if (response.MetaData != null || response.Rows != null)
         {
-#pragma warning disable CS0618
-            _stateService.FormViewData = result.Value;
-#pragma warning restore CS0618
+            return new GridDataHandlerPayload
+            {
+                MetaData = response.MetaData,
+                Rows = response.Rows
+            };
         }
-        return result;
+
+        return null;
     }
 
-    [Obsolete("Use GetFormDefaultDataAsync(Workspace, WorkspaceData, FormViewData, CancellationToken) instead")]
-    public async Task<Result<FormDefaultData>> GetFormDefaultDataAsync(CancellationToken ct)
+    private static GridDataHandler MapGridDataHandlerPayload(GridDataHandlerPayload payload)
     {
-        var workspace = _stateService.RoleWorkspaces?.Workspaces?.FirstOrDefault();
-#pragma warning disable CS0618
-        var workspaceData = _stateService.WorkspaceData;
-        var formViewData = _stateService.FormViewData;
-#pragma warning restore CS0618
-
-        if (workspace == null || workspaceData == null || formViewData == null)
-            return Result<FormDefaultData>.Failure("Required data not available");
-
-        var result = await GetFormDefaultDataAsync(workspace, workspaceData, formViewData, ct);
-        if (result.IsSuccess)
+        // Legacy shape support: Data + Columns already returned in normalized format.
+        if (payload.Data != null)
         {
-#pragma warning disable CS0618
-            _stateService.FormDefaultData = result.Value;
-#pragma warning restore CS0618
+            return new GridDataHandler
+            {
+                TotalCount = payload.TotalCount ?? payload.Data.Count,
+                Skip = payload.Skip ?? 0,
+                Take = payload.Take ?? payload.Data.Count,
+                Sort = payload.Sort,
+                Filter = payload.Filter,
+                Data = payload.Data.Select(MapJsonDictionaryToObjects).ToList(),
+                Columns = payload.Columns ?? new List<GridDataMetaColumn>()
+            };
         }
-        return result;
-    }
 
-    [Obsolete("Use GetFormValidationListDataAsync(Workspace, FormViewData, CancellationToken) instead")]
-    public async Task<Result<FormValidationListData>> GetFormValidationListDataAsync(CancellationToken ct)
-    {
-        var workspace = _stateService.RoleWorkspaces?.Workspaces?.FirstOrDefault();
-#pragma warning disable CS0618
-        var formViewData = _stateService.FormViewData;
-#pragma warning restore CS0618
+        var metaData = payload.MetaData;
+        var rows = payload.Rows ?? new List<Dictionary<string, JsonElement>>();
 
-        if (workspace == null || formViewData == null)
-            return Result<FormValidationListData>.Failure("Required data not available");
+        var fieldMappings = (metaData?.Fields ?? new List<GridDataField>())
+            .Where(f => !string.IsNullOrWhiteSpace(f.Mapping) && !string.IsNullOrWhiteSpace(f.Name))
+            .ToDictionary(f => f.Mapping!, f => f.Name!, StringComparer.OrdinalIgnoreCase);
 
-        var result = await GetFormValidationListDataAsync(workspace, formViewData, ct);
-        if (result.IsSuccess)
+        var fieldTypes = (metaData?.Fields ?? new List<GridDataField>())
+            .Where(f => !string.IsNullOrWhiteSpace(f.Name) && !string.IsNullOrWhiteSpace(f.Type))
+            .ToDictionary(f => f.Name!, f => f.Type!, StringComparer.OrdinalIgnoreCase);
+
+        var data = rows.Select(row =>
         {
-#pragma warning disable CS0618
-            _stateService.FormValidationListData = result.Value;
-#pragma warning restore CS0618
+            var mappedRow = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
+            foreach (var kvp in row)
+            {
+                var key = fieldMappings.TryGetValue(kvp.Key, out var mappedKey) ? mappedKey : kvp.Key;
+                mappedRow[key] = ConvertJsonElement(kvp.Value);
+            }
+
+            return mappedRow;
+        }).ToList();
+
+        var columns = (metaData?.Columns ?? new List<GridDataMetaColumn>())
+            .Where(c => !string.IsNullOrWhiteSpace(c.DataIndex))
+            .Select(c => new GridDataMetaColumn
+            {
+                Header = c.Header,
+                DataIndex = c.DataIndex,
+                Title = c.Header,
+                Name = c.Header,
+                Type = !string.IsNullOrWhiteSpace(c.Type)
+                    ? c.Type
+                    : fieldTypes.GetValueOrDefault(c.DataIndex!, "string"),
+                Sortable = c.Sortable,
+                Groupable = c.Groupable,
+                Hidden = false
+            })
+            .ToList();
+
+        return new GridDataHandler
+        {
+            TotalCount = metaData?.PagingInfo?.TotalRows ?? data.Count,
+            Skip = metaData?.PagingInfo?.StartRow ?? 0,
+            Take = metaData?.PagingInfo?.NumberRows ?? data.Count,
+            Sort = !string.IsNullOrWhiteSpace(metaData?.SortInfo?.Field)
+                ? $"{metaData!.SortInfo!.Field}:{metaData.SortInfo.Direction}"
+                : null,
+            Data = data,
+            Columns = columns
+        };
+    }
+
+    private static Dictionary<string, object> MapJsonDictionaryToObjects(Dictionary<string, JsonElement> rawRow)
+    {
+        return rawRow.ToDictionary(kvp => kvp.Key, kvp => ConvertJsonElement(kvp.Value));
+    }
+
+    private static object ConvertJsonElement(JsonElement element)
+    {
+        return element.ValueKind switch
+        {
+            JsonValueKind.String => element.GetString() ?? string.Empty,
+            JsonValueKind.Number when element.TryGetInt64(out var intValue) => intValue,
+            JsonValueKind.Number when element.TryGetDecimal(out var decimalValue) => decimalValue,
+            JsonValueKind.True => true,
+            JsonValueKind.False => false,
+            JsonValueKind.Null => string.Empty,
+            JsonValueKind.Undefined => string.Empty,
+            _ => element.GetRawText()
+        };
+    }
+
+    private static string BuildGridDefName(WorkspaceFullData workspaceData, string? userRole)
+    {
+        var workspaceName = workspaceData.Workspace.Name;
+        var roleName = string.IsNullOrWhiteSpace(userRole) ? "ResponsiveAnalyst" : userRole;
+        return $"{workspaceName}.{roleName}.List";
+    }
+
+    private static string BuildSearchInfoPayload(WorkspaceFullData workspaceData, Guid searchId)
+    {
+        var validatedSearch = workspaceData.ValidatedSearches?
+            .FirstOrDefault(s => Guid.TryParse(s.Id, out var id) && id == searchId);
+
+        if (!string.IsNullOrWhiteSpace(validatedSearch?.Query))
+        {
+            return validatedSearch.Query;
         }
-        return result;
-    }
 
-    [Obsolete("Use GetValidatedSearchAsync(Workspace, WorkspaceData, CancellationToken) instead")]
-    public async Task<Result<List<ValidatedSearch>>> GetValidatedSearchAsync(CancellationToken ct)
-    {
-        var workspace = _stateService.RoleWorkspaces?.Workspaces?.FirstOrDefault();
-#pragma warning disable CS0618
-        var workspaceData = _stateService.WorkspaceData;
-#pragma warning restore CS0618
-
-        if (workspace == null || workspaceData == null)
-            return Result<List<ValidatedSearch>>.Failure("Required data not available");
-
-        return await GetValidatedSearchAsync(workspace, workspaceData, ct);
-    }
-
-    [Obsolete("Use GetGridDataAsync with workspaceId parameter")]
-    public async Task<Result<GridDataHandler>> GetGridDataAsync(
-        Guid searchId,
-        int skip = 0,
-        int take = 50,
-        CancellationToken ct = default)
-    {
-        var workspace = _stateService.RoleWorkspaces?.Workspaces?.FirstOrDefault();
-        if (workspace == null)
-            return Result<GridDataHandler>.Failure("No workspace available");
-
-        return await GetGridDataAsync(workspace.Id, searchId, skip, take, ct);
+        return searchId.ToString("D");
     }
 
     //=====================================================================
@@ -1217,6 +1454,44 @@ public sealed class IvantiClient : IIvantiClient
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error making POST request to {Endpoint}", endpoint);
+            return Result<T>.Failure($"Error: {ex.Message}");
+        }
+    }
+
+    private async Task<Result<T>> PostFormAsync<T>(
+        string endpoint,
+        Dictionary<string, string> formValues,
+        string csrfToken,
+        CancellationToken ct)
+    {
+        try
+        {
+            using var request = new HttpRequestMessage(HttpMethod.Post, endpoint)
+            {
+                Content = new FormUrlEncodedContent(formValues)
+            };
+
+            if (!string.IsNullOrWhiteSpace(csrfToken))
+            {
+                request.Headers.TryAddWithoutValidation("_csrfToken", csrfToken);
+            }
+
+            request.Headers.TryAddWithoutValidation("Accept", "application/json, text/plain, */*");
+
+            var response = await _http.SendAsync(request, ct);
+            if (!response.IsSuccessStatusCode)
+            {
+                _logger.LogError("HTTP form request failed with status {StatusCode}", response.StatusCode);
+                return Result<T>.Failure($"HTTP request failed with status {response.StatusCode}");
+            }
+
+            var json = await response.Content.ReadAsStringAsync(ct);
+            var content = System.Text.Json.JsonSerializer.Deserialize<T>(json, JsonOptions);
+            return Result<T>.Success(content!);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error making form POST request to {Endpoint}", endpoint);
             return Result<T>.Failure($"Error: {ex.Message}");
         }
     }

@@ -37,7 +37,7 @@ public class RoleSelectionViewModel
     /// <summary>
     /// Gets the list of available Ivanti roles.
     /// </summary>
-    public List<AvailableRole> AvailableRoles { get; private set; } = new();
+    public List<AvailableRole> AvailableRoles { get; private set; } = new();    
 
     /// <summary>
     /// Gets whether data is currently loading.
@@ -63,6 +63,8 @@ public class RoleSelectionViewModel
     /// Gets the verification token for role selection.
     /// </summary>
     private string VerificationToken { get; set; } = string.Empty;
+
+
 
     /// <summary>
     /// Initializes the role selection page by loading available roles from localStorage.
@@ -114,6 +116,7 @@ public class RoleSelectionViewModel
                 return;
             }
 
+
             AvailableRoles = selectRoleData.AvailableRoles;
             VerificationToken = selectRoleData.VerificationToken;
 
@@ -148,6 +151,12 @@ public class RoleSelectionViewModel
             return;
         }
 
+        if (IsLoading)
+        {
+            _logger.LogDebug("Role selection already in progress, ignoring duplicate request");
+            return;
+        }
+
         IsLoading = true;
         HasError = false;
         ErrorMessage = string.Empty;
@@ -168,7 +177,8 @@ public class RoleSelectionViewModel
                 // Store session marker for future session restoration
                 await _storageService.SetItemAsync(SessionValidKey, DateTime.UtcNow.ToString("O"));
 
-                // Navigate to workspace selection
+                // Navigate to workspace - if this succeeds, we leave the page
+                // If it fails, IsLoading will be reset in finally block
                 _navigationService.NavigateToSelectRole();
             }
             else
@@ -178,6 +188,11 @@ public class RoleSelectionViewModel
                 ErrorMessage = result.Error ?? "Failed to select role. Please try again.";
             }
         }
+        catch (TaskCanceledException)
+        {
+            // Navigation may cause TaskCanceledException - log and allow retry
+            _logger.LogWarning("Task was cancelled during role selection");
+        }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error selecting role");
@@ -186,6 +201,7 @@ public class RoleSelectionViewModel
         }
         finally
         {
+            // Always reset loading state to allow retry if navigation failed
             IsLoading = false;
         }
     }
@@ -211,10 +227,18 @@ public class RoleSelectionViewModel
     {
         _logger.LogInformation("User initiated logout from role selection");
 
-        // Clear stored role data
-        await _storageService.RemoveItemAsync(SelectRoleDataKey);
+        try
+        {
+            // Clear stored role data
+            await _storageService.RemoveItemAsync(SelectRoleDataKey);
 
-        await _authenticationService.LogoutAsync();
-        _navigationService.NavigateToLogin();
+            await _authenticationService.LogoutAsync();
+            _navigationService.NavigateToLogin();
+        }
+        catch (TaskCanceledException)
+        {
+            // Navigation may cause TaskCanceledException if the circuit is closing
+            _logger.LogDebug("Task was cancelled during logout, likely due to navigation");
+        }
     }
 }

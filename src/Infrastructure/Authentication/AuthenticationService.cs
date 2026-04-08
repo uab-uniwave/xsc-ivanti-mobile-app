@@ -113,16 +113,16 @@ public class AuthenticationService : IAuthenticationService
     }
 
     public async Task<Result<AuthenticationResult>> SelectRoleAsync(
-        string roleId,
+        string roleName,
         string verificationToken,
         CancellationToken ct = default)
     {
         try
         {
-            _logger.LogInformation("Selecting role: {RoleId}", roleId);
+            _logger.LogInformation("Selecting role: {RoleId}", roleName);
 
             // Select the role
-            var selectResult = await _ivantiClient.SelectRoleAsync(roleId, verificationToken, ct);
+            var selectResult = await _ivantiClient.SelectRoleAsync(roleName, verificationToken, ct);
             if (selectResult.IsFailure)
             {
                 _logger.LogError("Failed to select role: {Error}", selectResult.Error);
@@ -134,7 +134,7 @@ public class AuthenticationService : IAuthenticationService
             // =====================================================================
 
             // 1. POST InitializeSession
-            _logger.LogInformation("Step 1/8: Initializing session...");
+            _logger.LogInformation("Step 1/3: Initializing session...");
             var sessionResult = await _ivantiClient.InitializeSessionAsync(ct);
             if (sessionResult.IsFailure)
             {
@@ -143,7 +143,7 @@ public class AuthenticationService : IAuthenticationService
             }
 
             // 2. POST GetUserData
-            _logger.LogInformation("Step 2/8: Getting user data...");
+            _logger.LogInformation("Step 2/3: Getting user data...");
             var userDataResult = await _ivantiClient.GetUserDataAsync(ct);
             if (userDataResult.IsFailure)
             {
@@ -151,8 +151,8 @@ public class AuthenticationService : IAuthenticationService
                 return Result<AuthenticationResult>.Failure($"Failed to get user data: {userDataResult.Error}");
             }
 
-            // 3. POST GetRoleWorkspaces
-            _logger.LogInformation("Step 3/8: Getting role workspaces...");
+            // 3. POST GetRoleWorkspaces (minimal data for navigation)
+            _logger.LogInformation("Step 3/3: Getting role workspaces...");
             var roleWorkspacesResult = await _ivantiClient.GetRoleWorkspacesAsync(ct);
             if (roleWorkspacesResult.IsFailure)
             {
@@ -160,50 +160,7 @@ public class AuthenticationService : IAuthenticationService
                 return Result<AuthenticationResult>.Failure($"Failed to get role workspaces: {roleWorkspacesResult.Error}");
             }
 
-            // 4. POST GetWorkspaceData
-            _logger.LogInformation("Step 4/8: Getting workspace data...");
-            var workspaceDataResult = await _ivantiClient.GetWorkspaceDataAsync(ct);
-            if (workspaceDataResult.IsFailure)
-            {
-                _logger.LogError("Failed to get workspace data: {Error}", workspaceDataResult.Error);
-                return Result<AuthenticationResult>.Failure($"Failed to get workspace data: {workspaceDataResult.Error}");
-            }
-
-            // 5. POST FindFormViewData
-            _logger.LogInformation("Step 5/8: Finding form view data...");
-            var formViewDataResult = await _ivantiClient.FindFormViewDataAsync(ct);
-            if (formViewDataResult.IsFailure)
-            {
-                _logger.LogError("Failed to find form view data: {Error}", formViewDataResult.Error);
-                return Result<AuthenticationResult>.Failure($"Failed to find form view data: {formViewDataResult.Error}");
-            }
-
-            // 6. POST GetFormDefaultData
-            _logger.LogInformation("Step 6/8: Getting form default data...");
-            var formDefaultDataResult = await _ivantiClient.GetFormDefaultDataAsync(ct);
-            if (formDefaultDataResult.IsFailure)
-            {
-                _logger.LogError("Failed to get form default data: {Error}", formDefaultDataResult.Error);
-                return Result<AuthenticationResult>.Failure($"Failed to get form default data: {formDefaultDataResult.Error}");
-            }
-
-            // 7. POST GetFormValidationListData
-            _logger.LogInformation("Step 7/8: Getting form validation list data...");
-            var formValidationListDataResult = await _ivantiClient.GetFormValidationListDataAsync(ct);
-            if (formValidationListDataResult.IsFailure)
-            {
-                _logger.LogError("Failed to get form validation list data: {Error}", formValidationListDataResult.Error);
-                return Result<AuthenticationResult>.Failure($"Failed to get form validation list data: {formValidationListDataResult.Error}");
-            }
-
-            // 8. POST GetValidatedSearch
-            _logger.LogInformation("Step 8/8: Getting validated searches...");
-            var validatedSearchResult = await _ivantiClient.GetValidatedSearchAsync(ct);
-            if (validatedSearchResult.IsFailure)
-            {
-                _logger.LogError("Failed to get validated searches: {Error}", validatedSearchResult.Error);
-                return Result<AuthenticationResult>.Failure($"Failed to get validated searches: {validatedSearchResult.Error}");
-            }
+            // Note: WorkspaceData, FormViewData, etc. are loaded lazily when user navigates to a workspace
 
             // =====================================================================
             // All data collected successfully - create authentication result
@@ -214,11 +171,11 @@ public class AuthenticationService : IAuthenticationService
                 SessionData = sessionResult.Value!,
                 UserData = userDataResult.Value!,
                 AuthenticatedAt = DateTime.UtcNow,
-                SelectedRole = roleId
+                SelectedRole = roleName
             };
 
-            _logger.LogInformation("Authentication complete for user: {DisplayName} with role: {Role}. All 8 data calls completed successfully.", 
-                _currentAuthentication.UserData.DisplayName, roleId);
+            _logger.LogInformation("Authentication complete for user: {DisplayName} with role: {Role}. Workspace data will be lazy-loaded on navigation.", 
+                _currentAuthentication.UserData.DisplayName, roleName);
 
             return Result<AuthenticationResult>.Success(_currentAuthentication);
         }

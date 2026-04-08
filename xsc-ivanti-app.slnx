@@ -2,6 +2,7 @@
   <Folder Name="/.github/">
     <File Path=".github/copilot-blazor-separation.md" />
     <File Path=".github/copilot-instructions-documents-management.md" />
+    <File Path=".github/copilot-instructions.md" />
   </Folder>
   <Folder Name="/assets/" />
   <Folder Name="/assets/MobileAppJsons/">
@@ -20,6 +21,7 @@
   <Folder Name="/assets/MobileAppJsons/Respones/">
     <File Path="0.GetVerificationResponse.html" />
     <File Path="8.ValidatedSearch.json" />
+    <File Path="9.GridDataHandlerResponse.json" />
     <File Path="assets/MobileAppJsons/Responses/1.InitializeSession.json" />
     <File Path="assets/MobileAppJsons/Responses/2.GetUserData.Json" />
     <File Path="assets/MobileAppJsons/Responses/3.GetRolesWorkspace.json" />
@@ -29,7 +31,7 @@
     <File Path="assets/MobileAppJsons/Responses/7.GetFormValidationListData.json" />
     <File Path="CorrectRequestBody.json" />
   </Folder>
-  <Folder Name="/assets/ocs/" />
+  <Folder Name="/docs/" />
   <Folder Name="/src/">
     <Project Path="src/Application/Application.csproj" />
     <Project Path="src/Domain/Domain.csproj" Id="88056bd8-d351-4be8-8637-c58dad5eb1bf" />

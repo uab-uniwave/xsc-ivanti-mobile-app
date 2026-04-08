@@ -23,7 +23,6 @@ builder.Services.AddRazorComponents()
 builder.Services.AddScoped<IncidentsViewModel>();
 builder.Services.AddScoped<LoginViewModel>();
 builder.Services.AddScoped<RoleSelectionViewModel>();
-builder.Services.AddScoped<SelectRoleViewModel>();
 
 // Register Navigation Service
 builder.Services.AddScoped<INavigationService, NavigationService>();

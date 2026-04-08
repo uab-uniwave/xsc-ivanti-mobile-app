@@ -2,13 +2,11 @@
 using System.Net.Http.Headers;
 using Application.Interfaces.Authentication;
 using Application.Interfaces.State;
-using Application.Interfaces.Workspaces;
 using Application.Services;
 using Infrastructure.Authentication;
 using Infrastructure.Ivanti;
 using Infrastructure.Ivanti.Configuration;
 using Infrastructure.Mapping;
-using Infrastructure.Workspaces;
 using Infrastructure.State;
 using Mapster;
 using MapsterMapper;
@@ -137,9 +135,6 @@ public static class DependencyInjection
             UseCookies = true,
             AllowAutoRedirect = false
         });
-
-        // Register IWorkspaceService
-        services.AddScoped<IWorkspaceService, WorkspaceService>();
 
         // Register Ivanti State Service (must be Scoped to persist within Blazor circuit)
         services.AddScoped<IIvantiStateService,IvantiStateService>();

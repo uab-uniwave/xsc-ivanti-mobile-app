@@ -58,18 +58,27 @@ public sealed class IncidentsViewModel
         {
             _logger.LogInformation("Initializing Incidents page...");
 
-            // Data should already be loaded by AuthenticationService.SelectRoleAsync
-            // Just extract saved searches from the state service
-            if (_stateService.WorkspaceData?.SearchData?.Favorites != null)
+            // Ensure Incidents workspace form data is loaded
+            var incidentsWorkspace = _stateService.GetWorkspaceByName("Incident")
+                ?? _stateService.GetWorkspaceByName("Incidents");
+
+            if (incidentsWorkspace == null)
             {
-                SavedSearches = _stateService.WorkspaceData.SearchData.Favorites;
-                _logger.LogInformation("Found {Count} saved searches", SavedSearches.Count);
+                _logger.LogWarning("Incidents workspace not found in state. Attempting to load by name...");
+                var loadResult = await _ivanti.LoadWorkspaceFormDataByNameAsync("Incident", ct);
+                if (loadResult.IsFailure)
+                {
+                    HasError = true;
+                    ErrorMessage = loadResult.Error;
+                    return;
+                }
+
+                incidentsWorkspace = loadResult.Value;
             }
-            else
-            {
-                _logger.LogWarning("No saved searches found in workspace data");
-                SavedSearches = new List<WsFavorite>();
-            }
+
+            // Extract saved searches from incidents workspace data
+            SavedSearches = incidentsWorkspace.WorkspaceData?.SearchData?.Favorites ?? new List<WsFavorite>();
+            _logger.LogInformation("Found {Count} saved searches", SavedSearches.Count);
 
             // Select default search or first available
             SelectedSearch = SavedSearches.FirstOrDefault(s => s.IsDefault) ?? SavedSearches.FirstOrDefault();
@@ -153,7 +162,23 @@ public sealed class IncidentsViewModel
             _logger.LogInformation("Calling GridDataHandler for search: {SearchName} (ID: {SearchId})", 
                 search.Name, searchId);
 
-            var result = await _ivanti.GetGridDataAsync(searchId, skip: 0, take: 50, ct);
+            var incidentsWorkspace = _stateService.GetWorkspaceByName("Incident")
+                ?? _stateService.GetWorkspaceByName("Incidents");
+
+            if (incidentsWorkspace == null)
+            {
+                _logger.LogError("Incidents workspace not found in state");
+                HasError = true;
+                ErrorMessage = "Incidents workspace not found";
+                return;
+            }
+
+            var result = await _ivanti.GetGridDataAsync(
+                incidentsWorkspace.Workspace.Id,
+                searchId,
+                skip: 0,
+                take: 50,
+                ct: ct);
 
             if (result.IsFailure)
             {
@@ -197,6 +222,18 @@ public sealed class IncidentsViewModel
             return;
         }
 
+        var incidentsWorkspace = _stateService.GetWorkspaceByName("Incident")
+            ?? _stateService.GetWorkspaceByName("Incidents");
+
+        if (incidentsWorkspace == null)
+        {
+            _logger.LogError("Incidents workspace not found in state");
+            HasError = true;
+            ErrorMessage = "Incidents workspace not found";
+            NotifyStateChanged();
+            return;
+        }
+
         IsLoading = true;
         HasError = false;
         NotifyStateChanged();
@@ -209,7 +246,12 @@ public sealed class IncidentsViewModel
             _logger.LogInformation("Loading page {PageNumber} (Skip: {Skip}, Take: {Take})", 
                 pageNumber, skip, pageSize);
 
-            var result = await _ivanti.GetGridDataAsync(searchId, skip, pageSize, ct);
+            var result = await _ivanti.GetGridDataAsync(
+                incidentsWorkspace.Workspace.Id,
+                searchId,
+                skip,
+                pageSize,
+                ct);
 
             if (result.IsFailure)
             {

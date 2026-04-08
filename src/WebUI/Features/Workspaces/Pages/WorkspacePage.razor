@@ -1,16 +1,16 @@
 @page "/workspace/{WorkspaceId}"
 @page "/workspace/name/{WorkspaceName}"
-@using MudBlazor
-@using Application.Features.Workspaces.Models
-@using Application.Features.Workspaces.Models.WorkspaceData
-@using WebUI.Services
+@rendermode InteractiveServer
+@using Application.Features.Workspaces.Models.GridDataHandler
+@using Application.Services
 @inject IvantiNavigationService NavigationService
+@inject IIvantiClient IvantiClient
 @inject NavigationManager Navigation
 @inject ILogger<WorkspacePage> Logger
 
 <PageTitle>@(CurrentWorkspace?.Workspace.Name ?? "Workspace")</PageTitle>
 
-<MudContainer MaxWidth="MaxWidth.False" Class="pa-0">
+<MudContainer MaxWidth="MaxWidth.False" Class="pa-0" Style="height: 100%; display: flex; flex-direction: column;">
     @if (IsLoading)
     {
         <MudPaper Class="pa-8 d-flex flex-column align-center justify-center" Style="min-height: 400px;">
@@ -29,8 +29,8 @@
     }
     else if (CurrentWorkspace != null)
     {
-        @* Workspace Header *@
-        <MudToolBar Elevation="1" Class="mb-2">
+        @* Workspace Toolbar *@
+        <MudToolBar Dense="true" Class="px-4">
             <MudIcon Icon="@NavigationService.GetWorkspaceIcon(CurrentWorkspace.Workspace)" 
                     Color="Color.Primary" Class="mr-2" />
             <MudText Typo="Typo.h6">@CurrentWorkspace.Workspace.Name</MudText>
@@ -42,17 +42,17 @@
 
             <MudSpacer />
 
-            @* Saved Searches Dropdown *@
+            @* Saved Searches Selector *@
             @if (SavedSearches.Any())
             {
                 <MudSelect T="WorkspaceFavorite"
-                          Label="Saved Searches"
                           Value="SelectedSearch"
                           ValueChanged="OnSearchChanged"
                           ToStringFunc="@(f => f?.Name ?? "Select Search")"
                           Variant="Variant.Outlined"
                           Margin="Margin.Dense"
                           Dense="true"
+                          Class="mr-4"
                           Style="min-width: 250px;">
                     @foreach (var search in SavedSearches)
                     {
@@ -69,48 +69,82 @@
                     }
                 </MudSelect>
             }
-
-            <MudSpacer />
-
-            @* New Record Button *@
-            <MudButton Variant="Variant.Filled" 
-                      Color="Color.Primary" 
-                      StartIcon="@Icons.Material.Filled.Add"
-                      OnClick="CreateNewRecord">
-                New @CurrentWorkspace.Workspace.Name
-            </MudButton>
         </MudToolBar>
 
-        @* Workspace Content - Placeholder for grid/data *@
-        <MudPaper Class="pa-4 ma-2" Elevation="1">
-            <MudText Typo="Typo.body1" Class="mud-text-secondary">
-                Workspace: @CurrentWorkspace.Workspace.Name
-            </MudText>
-            <MudText Typo="Typo.body2" Class="mud-text-secondary">
-                Layout: @CurrentWorkspace.Workspace.LayoutName
-            </MudText>
-            <MudText Typo="Typo.body2" Class="mud-text-secondary">
-                Object ID: @CurrentWorkspace.WorkspaceData?.ObjectId
-            </MudText>
-            <MudText Typo="Typo.body2" Class="mud-text-secondary">
-                Is Fully Loaded: @CurrentWorkspace.IsFullyLoaded
-            </MudText>
+        <MudDivider />
 
-            @if (!CurrentWorkspace.IsFullyLoaded && !string.IsNullOrEmpty(CurrentWorkspace.ErrorMessage))
-            {
-                <MudAlert Severity="Severity.Warning" Class="mt-2" Dense="true">
-                    @CurrentWorkspace.ErrorMessage
-                </MudAlert>
-            }
-        </MudPaper>
+        @* Main Content Area *@
+        <MudGrid Class="ma-0">
+            <MudItem xs="12">
+                <MudPaper Class="flex-grow-1 ma-2 pa-4" Elevation="1" Style="overflow: auto;">
+                    @if (IsLoadingData)
+                    {
+                        <MudStack AlignItems="AlignItems.Center" Spacing="3" Class="py-8">
+                            <MudProgressCircular Indeterminate="true" Color="Color.Primary" />
+                            <MudText Typo="Typo.body2">Loading records...</MudText>
+                        </MudStack>
+                    }
+                    else if (Records.Any())
+                    {
+                        @* Records Grid - Generic display for any workspace *@
+                        <MudDataGrid T="Dictionary<string, object?>" 
+                                    Items="@Records"
+                                    Dense="true"
+                                    Hover="true"
+                                    Striped="true"
+                                    RowClick="OnRowClick"
+                                    Class="cursor-pointer">
+                            <Columns>
+                                @foreach (var column in DisplayColumns)
+                                {
+                                    var colKey = column.DataIndex ?? string.Empty;
+                                    var colTitle = column.Header ?? colKey;
+                                    <TemplateColumn T="Dictionary<string, object?>"
+                                                    Title="@colTitle"
+                                                    Sortable="@column.Sortable"
+                                                    Groupable="@column.Groupable">
+                                        <CellTemplate>
+                                            @(context.Item.GetValueOrDefault(colKey)?.ToString() ?? "")
+                                        </CellTemplate>
+                                    </TemplateColumn>
+                                }
+                            </Columns>
+                        </MudDataGrid>
+                    }
+                    else
+                    {
+                        <MudStack AlignItems="AlignItems.Center" Spacing="3" Class="py-8">
+                            <MudIcon Icon="@Icons.Material.Filled.Inbox" Size="Size.Large" Color="Color.Default" />
+                            <MudText Typo="Typo.body1" Color="Color.Secondary">
+                                @if (SelectedSearch != null)
+                                {
+                                    @:No records found for "@SelectedSearch.Name"
+                                }
+                                else
+                                {
+                                    @:Select a saved search to load records
+                                }
+                            </MudText>
+                        </MudStack>
+                    }
+                </MudPaper>
+            </MudItem>
+        </MudGrid>
 
-        @* Grid Content - TODO: Add MudDataGrid with actual data *@
-        <MudPaper Class="pa-4 ma-2" Elevation="1">
-            <MudText Typo="Typo.subtitle1">Records</MudText>
-            <MudText Typo="Typo.body2" Class="mud-text-secondary mt-2">
-                Select a saved search to load records, or implement GridDataHandler.
-            </MudText>
-        </MudPaper>
+        @* Floating Action Button for New Record *@
+        <MudFab Color="Color.Primary" 
+               StartIcon="@Icons.Material.Filled.Add" 
+               Label="New"
+               OnClick="CreateNewRecord"
+               Style="position: fixed; bottom: 24px; right: 24px; z-index: 100;" />
+
+        @* Workspace Info Panel (debug info - can be removed later) *@
+        @if (!CurrentWorkspace.IsFullyLoaded && !string.IsNullOrEmpty(CurrentWorkspace.ErrorMessage))
+        {
+            <MudAlert Severity="Severity.Warning" Class="ma-2" Dense="true">
+                @CurrentWorkspace.ErrorMessage
+            </MudAlert>
+        }
     }
     else
     {
@@ -127,24 +161,45 @@
     [Parameter]
     public string? WorkspaceName { get; set; }
 
+    // Track previous parameter values to avoid reload loops
+    private string? _previousWorkspaceId;
+    private string? _previousWorkspaceName;
+
     private WorkspaceFullData? CurrentWorkspace { get; set; }
     private List<WorkspaceFavorite> SavedSearches { get; set; } = new();
     private WorkspaceFavorite? SelectedSearch { get; set; }
 
+    // Generic record storage - works for any workspace type
+    private List<Dictionary<string, object?>> Records { get; set; } = new();
+    private List<GridDataMetaColumn> DisplayColumns { get; set; } = new();
+
     private bool IsLoading { get; set; }
+    private bool IsLoadingData { get; set; }
     private bool HasError { get; set; }
     private string? ErrorMessage { get; set; }
 
     protected override async Task OnParametersSetAsync()
     {
-        await LoadWorkspaceAsync();
+        // Only reload if parameters actually changed
+        var parametersChanged = WorkspaceId != _previousWorkspaceId || WorkspaceName != _previousWorkspaceName;
+
+        if (parametersChanged)
+        {
+            _previousWorkspaceId = WorkspaceId;
+            _previousWorkspaceName = WorkspaceName;
+            await LoadWorkspaceAsync();
+        }
     }
 
     private async Task LoadWorkspaceAsync()
     {
+        // Guard against re-entry
+        if (IsLoading) return;
+
         IsLoading = true;
         HasError = false;
         ErrorMessage = null;
+        Records.Clear();
         StateHasChanged();
 
         try
@@ -172,8 +227,17 @@
             SavedSearches = CurrentWorkspace.WorkspaceData?.SearchData?.Favorites ?? new();
             SelectedSearch = SavedSearches.FirstOrDefault(s => s.IsDefault) ?? SavedSearches.FirstOrDefault();
 
+            // Set up display columns based on workspace type
+            SetupDisplayColumns();
+
             Logger.LogInformation("Workspace loaded: {WorkspaceName}, Searches: {SearchCount}", 
                 CurrentWorkspace.Workspace.Name, SavedSearches.Count);
+
+            // Auto-load data if there's a default search
+            if (SelectedSearch != null)
+            {
+                await LoadRecordsAsync();
+            }
         }
         catch (Exception ex)
         {
@@ -188,19 +252,150 @@
         }
     }
 
+    private void SetupDisplayColumns()
+    {
+        // Set up columns based on workspace type (object display name or workspace name)
+        var objectName = CurrentWorkspace?.WorkspaceData?.ObjectDisplay?.ToLower() ?? 
+                        CurrentWorkspace?.Workspace.Name?.ToLower() ?? "";
+
+        DisplayColumns = objectName switch
+        {
+            "incident" => new List<GridDataMetaColumn>
+            {
+                new() { Header = "ID", DataIndex = "RecId", Type = "string", Sortable = true },
+                new() { Header = "Subject", DataIndex = "Subject", Type = "string", Sortable = true },
+                new() { Header = "Status", DataIndex = "Status", Type = "string", Sortable = true, Groupable = true },
+                new() { Header = "Priority", DataIndex = "Priority", Type = "string", Sortable = true, Groupable = true },
+                new() { Header = "Owner", DataIndex = "Owner", Type = "string", Sortable = true },
+                new() { Header = "Category", DataIndex = "Category", Type = "string", Sortable = true, Groupable = true },
+                new() { Header = "Created", DataIndex = "CreatedDateTime", Type = "datetime", Sortable = true }
+            },
+            "task" => new List<GridDataMetaColumn>
+            {
+                 new() { Header = "ID", DataIndex = "RecId", Type = "string", Sortable = true },
+                new() { Header = "Subject", DataIndex = "Subject", Type = "string", Sortable = true },
+                new() { Header = "Status", DataIndex = "Status", Type = "string", Sortable = true, Groupable = true },
+                new() { Header = "Priority", DataIndex = "Priority", Type = "string", Sortable = true },
+                new() { Header = "Owner", DataIndex = "Owner", Type = "string", Sortable = true },
+                new() { Header = "Due Date", DataIndex = "DueDate", Type = "datetime", Sortable = true }
+            },
+            "servicereq" or "service request" => new List<GridDataMetaColumn>
+            {
+                new() { Header = "ID", DataIndex = "RecId", Type = "string", Sortable = true },
+                new() { Header = "Subject", DataIndex = "Subject", Type = "string", Sortable = true },
+                new() { Header = "Status", DataIndex = "Status", Type = "string", Sortable = true, Groupable = true },
+                new() { Header = "Priority", DataIndex = "Priority", Type = "string", Sortable = true },
+                new() { Header = "Owner", DataIndex = "Owner", Type = "string", Sortable = true },
+                new() { Header = "Requested For", DataIndex = "RequestedFor", Type = "string", Sortable = true },
+                new() { Header = "Created", DataIndex    = "CreatedDateTime", Type = "datetime", Sortable = true }
+            },
+            "ci" => new List<GridDataMetaColumn>
+            {
+                new() { Header = "ID", DataIndex = "RecId", Type = "string", Sortable = true },
+                new() { Header = "Header", DataIndex = "Header", Type = "string", Sortable = true },
+                new() { Header = "Status", DataIndex = "Status", Type = "string", Sortable = true, Groupable = true },
+                new() { Header = "Type", DataIndex = "Type", Type = "string", Sortable = true, Groupable = true },
+                new() { Header = "Owner", DataIndex  = "Owner", Type = "string", Sortable = true }
+            },
+            _ => new List<GridDataMetaColumn>
+            {
+                new() { Header = "ID", DataIndex = "RecId", Type = "string", Sortable = true },
+                new() { Header = "Subject", DataIndex    = "Subject", Type = "string", Sortable = true },
+                new() { Header = "Status", DataIndex = "Status", Type = "string", Sortable = true, Groupable = true },
+                new() { Header = "Owner", DataIndex  = "Owner", Type = "string", Sortable = true }
+            }
+        };
+    }
+
+    private async Task LoadRecordsAsync()
+    {
+        if (SelectedSearch == null || CurrentWorkspace == null) return;
+
+        IsLoadingData = true;
+        HasError = false;
+        StateHasChanged();
+
+        try
+        {
+            Logger.LogInformation("Loading records for search: {SearchName} (ID: {SearchId})", 
+                SelectedSearch.Name, SelectedSearch.Id);
+
+            if (string.IsNullOrWhiteSpace(SelectedSearch.Id) || !Guid.TryParse(SelectedSearch.Id, out var searchId))
+            {
+                Logger.LogWarning("Cannot load grid data: invalid search ID {SearchId}", SelectedSearch.Id);
+                return;
+            }
+
+            var result = await IvantiClient.GetGridDataAsync(
+                CurrentWorkspace.Workspace.Id,
+                searchId,
+                skip: 0,
+                take: 50,
+                ct: CancellationToken.None);
+
+            if (result.IsFailure)
+            {
+                Logger.LogError("GridDataHandler failed for workspace {WorkspaceName}: {Error}",
+                    CurrentWorkspace.Workspace.Name,
+                    result.Error);
+                HasError = true;
+                ErrorMessage = result.Error;
+                return;
+            }
+
+            Records.Clear();
+            var gridData = result.Value;
+
+            if (gridData?.Data != null)
+            {
+                Records = gridData.Data
+                    .Select(row => row.ToDictionary(kvp => kvp.Key, kvp => (object?)kvp.Value))
+                    .ToList();
+            }
+
+            if (gridData?.Columns?.Any(c => !c.Hidden && !string.IsNullOrWhiteSpace(c.DataIndex)) == true)
+            {
+                DisplayColumns = gridData.Columns
+                    .Where(c => !c.Hidden && !string.IsNullOrWhiteSpace(c.DataIndex))
+                    .ToList();
+            }
+
+            Logger.LogInformation("Records loaded: {Count}", Records.Count);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error loading records");
+        }
+        finally
+        {
+            IsLoadingData = false;
+            StateHasChanged();
+        }
+    }
+
     private async Task RetryLoad()
     {
         await LoadWorkspaceAsync();
     }
 
-    private void OnSearchChanged(WorkspaceFavorite? search)
+    private async Task OnSearchChanged(WorkspaceFavorite? search)
     {
         if (search == null) return;
 
         SelectedSearch = search;
         Logger.LogInformation("Search selected: {SearchName}", search.Name);
 
-        // TODO: Call GridDataHandler to load data
+        await LoadRecordsAsync();
+    }
+
+    private void OnRowClick(DataGridRowClickEventArgs<Dictionary<string, object?>> args)
+    {
+        var record = args.Item;
+        if (record.TryGetValue("RecId", out var recId))
+        {
+            Logger.LogInformation("Record clicked: {RecId}", recId);
+            // TODO: Navigate to record detail page or open dialog
+        }
     }
 
     private void CreateNewRecord()

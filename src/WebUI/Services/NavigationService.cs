@@ -34,8 +34,9 @@ public class NavigationService : INavigationService
 
     public void NavigateToSelectRole()
     {
-        _logger.LogInformation("Navigating to workspace selection page");
-        _navigationManager.NavigateTo("/select-role");
+        // After role selection, navigate to default workspace
+        _logger.LogInformation("Navigating to default workspace page");
+        _navigationManager.NavigateTo("/workspace/name/Incident");
     }
 
     public void NavigateToHome()
@@ -46,14 +47,14 @@ public class NavigationService : INavigationService
 
     public void NavigateToFirstWorkspace()
     {
-        _logger.LogInformation("Navigating to first workspace (Incidents)");
-        _navigationManager.NavigateTo("/incidents");
+        _logger.LogInformation("Navigating to first workspace (Incident)");
+        _navigationManager.NavigateTo("/workspace/name/Incident");
     }
 
     public void NavigateToWorkspace(string workspaceName)
     {
         _logger.LogInformation("Navigating to workspace: {WorkspaceName}", workspaceName);
-        var path = $"/{workspaceName.ToLowerInvariant()}";
+        var path = $"/workspace/name/{workspaceName}";
         _navigationManager.NavigateTo(path);
     }
 

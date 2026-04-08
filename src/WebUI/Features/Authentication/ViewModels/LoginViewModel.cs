@@ -199,6 +199,12 @@ public class LoginViewModel
             return;
         }
 
+        if (IsLoading)
+        {
+            _logger.LogDebug("Login already in progress, ignoring duplicate request");
+            return;
+        }
+
         IsLoading = true;
         HasError = false;
         ErrorMessage = string.Empty;
@@ -254,6 +260,11 @@ public class LoginViewModel
                 IsInitialized = false;
             }
         }
+        catch (TaskCanceledException)
+        {
+            // Navigation may cause TaskCanceledException - log and allow retry
+            _logger.LogWarning("Task was cancelled during login");
+        }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error during login");
@@ -262,6 +273,7 @@ public class LoginViewModel
         }
         finally
         {
+            // Always reset loading state to allow retry if navigation failed
             IsLoading = false;
         }
     }

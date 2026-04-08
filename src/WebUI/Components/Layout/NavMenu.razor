@@ -13,81 +13,71 @@ else if (!string.IsNullOrEmpty(NavigationService.ErrorMessage))
         @NavigationService.ErrorMessage
     </MudAlert>
 }
-else if (NavigationService.AllWorkspaces.Any())
+else if (!NavigationService.HasWorkspaces)
+{
+    @* Do not show navigation buttons until workspaces are loaded *@
+    <MudContainer Class="d-flex justify-center align-center pa-8">
+        <MudProgressCircular Color="Color.Primary" Indeterminate="true" />
+    </MudContainer>
+}
+else
 {
     <MudNavMenu>
         <MudText Typo="Typo.overline" Class="px-4 py-2 mud-text-secondary">
             Workspaces
         </MudText>
 
-        @foreach (var workspaceData in NavigationService.VisibleWorkspaces)
+        @foreach (var workspace in NavigationService.VisibleWorkspaces)
         {
-            var workspace = workspaceData.Workspace;
             var isActive = NavigationService.CurrentWorkspace?.Workspace.Id == workspace.Id;
+            var tooltip = !string.IsNullOrEmpty(workspace.LayoutName) 
+                ? $"Layout: {workspace.LayoutName}" 
+                : workspace.Name;
 
-            <MudNavLink Href="@NavigationService.GetWorkspaceUrl(workspace)"
-                       Match="NavLinkMatch.Prefix"
-                       Icon="@NavigationService.GetWorkspaceIcon(workspace)"
-                       IconColor="@(isActive ? Color.Primary : Color.Default)">
-                <MudStack Row="true" Spacing="1" AlignItems="AlignItems.Center" Class="flex-grow-1">
-                    <MudText>@workspace.Name</MudText>
-                    @if (workspace.Default)
-                    {
-                        <MudChip T="string" Size="Size.Small" Color="Color.Info" Variant="Variant.Text">
-                            Default
-                        </MudChip>
-                    }
-                </MudStack>
-            </MudNavLink>
+            <MudTooltip Text="@tooltip" Placement="Placement.Right" Arrow="true">
+                <MudNavLink Href="@NavigationService.GetWorkspaceUrl(workspace)"
+                           Match="NavLinkMatch.Prefix"
+                           Icon="@NavigationService.GetWorkspaceIcon(workspace)"
+                           IconColor="@(isActive ? Color.Primary : Color.Default)">
+                    <MudStack Row="true" Spacing="1" AlignItems="AlignItems.Center" Class="flex-grow-1">
+                        <MudText>@workspace.Name</MudText>
+                        @if (workspace.Default)
+                        {
+                            <MudChip T="string" Size="Size.Small" Color="Color.Info" Variant="Variant.Text">
+                                Default
+                            </MudChip>
+                        }
+                    </MudStack>
+                </MudNavLink>
+            </MudTooltip>
         }
 
         @* Show additional workspaces in a collapsible section if there are hidden ones *@
         @{
-            var hiddenWorkspaces = NavigationService.AllWorkspaces
-                .Where(w => !w.Workspace.Visible || !w.Workspace.VisibleInMainMenu)
-                .ToList();
+            var hiddenWorkspaces = NavigationService.HiddenWorkspaces.ToList();
         }
 
         @if (hiddenWorkspaces.Any())
         {
             <MudDivider Class="my-2" />
             <MudNavGroup Title="More" Icon="@Icons.Material.Filled.MoreHoriz" Expanded="false">
-                @foreach (var workspaceData in hiddenWorkspaces)
+                @foreach (var workspace in hiddenWorkspaces)
                 {
-                    var workspace = workspaceData.Workspace;
-                    <MudNavLink Href="@NavigationService.GetWorkspaceUrl(workspace)"
-                               Match="NavLinkMatch.Prefix"
-                               Icon="@NavigationService.GetWorkspaceIcon(workspace)">
-                        @workspace.Name
-                    </MudNavLink>
+                    var tooltip = !string.IsNullOrEmpty(workspace.LayoutName) 
+                        ? $"Layout: {workspace.LayoutName}" 
+                        : workspace.Name;
+
+                    <MudTooltip Text="@tooltip" Placement="Placement.Right" Arrow="true">
+                        <MudNavLink Href="@NavigationService.GetWorkspaceUrl(workspace)"
+                                   Match="NavLinkMatch.Prefix"
+                                   Icon="@NavigationService.GetWorkspaceIcon(workspace)">
+                            @workspace.Name
+                        </MudNavLink>
+                    </MudTooltip>
                 }
             </MudNavGroup>
         }
     </MudNavMenu>
-}
-else if (NavigationService.RoleWorkspaces?.Workspaces != null && NavigationService.RoleWorkspaces.Workspaces.Any())
-{
-    @* Fallback to RoleWorkspaces if AllWorkspacesData hasn't been loaded yet *@
-    <MudNavMenu>
-        <MudText Typo="Typo.overline" Class="px-4 py-2 mud-text-secondary">
-            Workspaces
-        </MudText>
-
-        @foreach (var workspace in NavigationService.RoleWorkspaces.Workspaces.Where(w => w.Visible && w.VisibleInMainMenu))
-        {
-            <MudNavLink Href="@NavigationService.GetWorkspaceUrl(workspace)"
-                       Match="NavLinkMatch.Prefix"
-                       Icon="@NavigationService.GetWorkspaceIcon(workspace)">
-                @workspace.Name
-            </MudNavLink>
-        }
-    </MudNavMenu>
-}
-else
-{
-    <MudAlert Severity="Severity.Info" Class="ma-2" Dense="true">
-        No workspaces available
-    </MudAlert>
 }
 
 @code {

@@ -1,9 +1,5 @@
 using Application.Common.Models.SessonData;
 using Application.Common.Models.UserData;
-using Application.Features.Workspaces.Models;
-using Application.Features.Workspaces.Models.FormDefaultData;
-using Application.Features.Workspaces.Models.FormValidationListData;
-using Application.Features.Workspaces.Models.FormViewData;
 using Application.Features.Workspaces.Models.RoleWorkspaces;
 using Application.Features.Workspaces.Models.WorkspaceData;
 
@@ -42,30 +38,6 @@ public interface IIvantiStateService
     WorkspaceFullData? CurrentWorkspace { get; set; }
 
     /// <summary>
-    /// Gets or sets the current workspace data (legacy - use AllWorkspacesData instead).
-    /// </summary>
-    [Obsolete("Use AllWorkspacesData or CurrentWorkspace instead")]
-    WorkspaceData? WorkspaceData { get; set; }
-
-    /// <summary>
-    /// Gets or sets the form view data (legacy - use AllWorkspacesData instead).
-    /// </summary>
-    [Obsolete("Use AllWorkspacesData or CurrentWorkspace instead")]
-    FormViewData? FormViewData { get; set; }
-
-    /// <summary>
-    /// Gets or sets the form default data (legacy - use AllWorkspacesData instead).
-    /// </summary>
-    [Obsolete("Use AllWorkspacesData or CurrentWorkspace instead")]
-    FormDefaultData? FormDefaultData { get; set; }
-
-    /// <summary>
-    /// Gets or sets the form validation list data (legacy - use AllWorkspacesData instead).
-    /// </summary>
-    [Obsolete("Use AllWorkspacesData or CurrentWorkspace instead")]
-    FormValidationListData? FormValidationListData { get; set; }
-
-    /// <summary>
     /// Gets whether the session has been initialized.
     /// </summary>
     bool IsSessionInitialized { get; }
@@ -84,6 +56,18 @@ public interface IIvantiStateService
     /// Gets workspace data by workspace name.
     /// </summary>
     WorkspaceFullData? GetWorkspaceByName(string workspaceName);
+
+    /// <summary>
+    /// Gets a workspace definition from RoleWorkspaces by ID.
+    /// Used before WorkspaceFullData is loaded.
+    /// </summary>
+    Workspace? GetWorkspaceDefinitionById(string workspaceId);
+
+    /// <summary>
+    /// Gets a workspace definition from RoleWorkspaces by name.
+    /// Used before WorkspaceFullData is loaded.
+    /// </summary>
+    Workspace? GetWorkspaceDefinitionByName(string workspaceName);
 
     /// <summary>
     /// Clears all state data (used on logout).

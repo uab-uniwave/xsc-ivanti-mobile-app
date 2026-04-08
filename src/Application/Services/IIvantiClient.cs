@@ -2,7 +2,6 @@ using Application.Common;
 using Application.Common.Models.SessonData;
 using Application.Common.Models.UserData;
 using Application.Features.Authentication.DTOs;
-using Application.Features.Workspaces.Models;
 using Application.Features.Workspaces.Models.FormDefaultData;
 using Application.Features.Workspaces.Models.FormValidationListData;
 using Application.Features.Workspaces.Models.FormViewData;
@@ -106,7 +105,7 @@ public interface IIvantiClient
     /// <summary>
     /// Gets form validation list data for a specific workspace.
     /// </summary>
-    Task<Result<FormValidationListData>> GetFormValidationListDataAsync(Workspace workspace, FormViewData formViewData, CancellationToken ct);
+    Task<Result<FormValidationListData>> GetFormValidationListDataAsync(Workspace workspace, FormViewData formViewData, FormDefaultData formDefaultData, CancellationToken ct);
 
     /// <summary>
     /// Gets validated searches for a specific workspace.
@@ -122,27 +121,5 @@ public interface IIvantiClient
     /// Called when user selects a saved search from the dropdown.
     /// </summary>
     Task<Result<GridDataHandler>> GetGridDataAsync(string workspaceId, Guid searchId, int skip = 0, int take = 50, CancellationToken ct = default);
-
-    //=====================================================================
-    // Legacy Methods (deprecated - for backward compatibility)
-    //=====================================================================
-
-    [Obsolete("Use GetWorkspaceDataAsync(Workspace, CancellationToken) instead")]
-    Task<Result<WorkspaceData>> GetWorkspaceDataAsync(CancellationToken ct);
-
-    [Obsolete("Use FindFormViewDataAsync(Workspace, WorkspaceData, CancellationToken) instead")]
-    Task<Result<FormViewData>> FindFormViewDataAsync(CancellationToken ct);
-
-    [Obsolete("Use GetFormDefaultDataAsync(Workspace, WorkspaceData, FormViewData, CancellationToken) instead")]
-    Task<Result<FormDefaultData>> GetFormDefaultDataAsync(CancellationToken ct);
-
-    [Obsolete("Use GetFormValidationListDataAsync(Workspace, FormViewData, CancellationToken) instead")]
-    Task<Result<FormValidationListData>> GetFormValidationListDataAsync(CancellationToken ct);
-
-    [Obsolete("Use GetValidatedSearchAsync(Workspace, WorkspaceData, CancellationToken) instead")]
-    Task<Result<List<ValidatedSearch>>> GetValidatedSearchAsync(CancellationToken ct);
-
-    [Obsolete("Use GetGridDataAsync with workspaceId parameter")]
-    Task<Result<GridDataHandler>> GetGridDataAsync(Guid searchId, int skip = 0, int take = 50, CancellationToken ct = default);
 }
 

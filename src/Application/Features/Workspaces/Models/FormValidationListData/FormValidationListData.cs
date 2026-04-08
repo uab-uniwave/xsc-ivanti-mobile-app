@@ -6,65 +6,65 @@ namespace Application.Features.Workspaces.Models.FormValidationListData;
 public class FormValidationListData
 {
     [JsonPropertyName("ActualCategory")]
-    public FieldData? ActualCategory { get; set; }
+    public FormValidationFieldData? ActualCategory { get; set; }
 
     [JsonPropertyName("Category")]
-    public FieldData? Category { get; set; }
+    public FormValidationFieldData? Category { get; set; }
 
     [JsonPropertyName("CauseCode")]
-    public FieldData? CauseCode { get; set; }
+    public FormValidationFieldData? CauseCode { get; set; }
 
     [JsonPropertyName("Impact")]
-    public FieldData? Impact { get; set; }
+    public FormValidationFieldData? Impact { get; set; }
 
     [JsonPropertyName("Priority")]
-    public FieldData? Priority { get; set; }
+    public FormValidationFieldData? Priority { get; set; }
 
     [JsonPropertyName("Service")]
-    public FieldData? Service { get; set; }
+    public FormValidationFieldData? Service { get; set; }
 
     [JsonPropertyName("Source")]
-    public FieldData? Source { get; set; }
+    public FormValidationFieldData? Source { get; set; }
 
     [JsonPropertyName("Status")]
-    public FieldData? Status { get; set; }
+    public FormValidationFieldData? Status { get; set; }
 
     [JsonPropertyName("Urgency")]
-    public FieldData? Urgency { get; set; }
+    public FormValidationFieldData? Urgency { get; set; }
 
     [JsonPropertyName("Owner")]
-    public FieldData? Owner { get; set; }
+    public FormValidationFieldData? Owner { get; set; }
 
     [JsonPropertyName("OwnerTeam")]
-    public FieldData? OwnerTeam { get; set; }
+    public FormValidationFieldData? OwnerTeam { get; set; }
 
     [JsonPropertyName("ActualService")]
-    public FieldData? ActualService { get; set; }
+    public FormValidationFieldData? ActualService { get; set; }
 
     [JsonPropertyName("OwningOrgUnitId")]
-    public FieldData? OwningOrgUnitId { get; set; }
+    public FormValidationFieldData? OwningOrgUnitId { get; set; }
 
     [JsonPropertyName("ReportingOrgUnitID")]
-    public FieldData? ReportingOrgUnitID { get; set; }
+    public FormValidationFieldData? ReportingOrgUnitID { get; set; }
 
     [JsonPropertyName("Subcategory")]
-    public FieldData? Subcategory { get; set; }
+    public FormValidationFieldData? Subcategory { get; set; }
 
     [JsonPropertyName("helpdesk_Priority")]
-    public FieldData? HelpdeskPriority { get; set; }
+    public FormValidationFieldData? HelpdeskPriority { get; set; }
 
     [JsonPropertyName("CustomerLocation")]
-    public FieldData? CustomerLocation { get; set; }
+    public FormValidationFieldData? CustomerLocation { get; set; }
 
     [JsonPropertyName("Approver")]
-    public FieldData? Approver { get; set; }
+    public FormValidationFieldData? Approver { get; set; }
 
     [JsonPropertyName("HoursOfOperation")]
-    public FieldData? HoursOfOperation { get; set; }
+    public FormValidationFieldData? HoursOfOperation { get; set; }
 
     [JsonPropertyName("Cost_Currency")]
-    public FieldData? CostCurrency { get; set; }
+    public FormValidationFieldData? CostCurrency { get; set; }
 
     [JsonPropertyName("CostPerMinute_Currency")]
-    public FieldData? CostPerMinuteCurrency { get; set; }
+    public FormValidationFieldData? CostPerMinuteCurrency { get; set; }
 }

@@ -1,8 +1,8 @@
 using Application.Common.Models.SessonData;
 using Application.Common.Models.UserData;
 using Application.Features.Authentication.Models;
-using Application.Features.Workspaces.Models;
 using Application.Features.Workspaces.Models.RoleWorkspaces;
+using Application.Features.Workspaces.Models.WorkspaceData;
 using Application.Interfaces.State;
 using Application.Services;
 using MudBlazor;
@@ -50,17 +50,37 @@ public class IvantiNavigationService
     public List<WorkspaceFullData> AllWorkspaces => _stateService.AllWorkspacesData;
 
     /// <summary>
+    /// Gets all available workspaces from RoleWorkspaces for navigation menu.
+    /// This is used before workspace data is lazy-loaded.
+    /// </summary>
+    public IReadOnlyList<Workspace> AvailableWorkspaces =>
+        _stateService.RoleWorkspaces?.Workspaces ?? new List<Workspace>();
+
+    /// <summary>
     /// Gets the current/active workspace.
     /// </summary>
     public WorkspaceFullData? CurrentWorkspace => _stateService.CurrentWorkspace;
 
     /// <summary>
     /// Gets visible workspaces for navigation menu (only those with Visible=true).
+    /// Uses RoleWorkspaces.Workspaces directly for fast nav menu rendering.
     /// </summary>
-    public IEnumerable<WorkspaceFullData> VisibleWorkspaces => 
-        _stateService.AllWorkspacesData
-            .Where(w => w.Workspace.Visible && w.Workspace.VisibleInMainMenu)
-            .OrderBy(w => w.Workspace.Default ? 0 : 1); // Default workspace first
+    public IEnumerable<Workspace> VisibleWorkspaces => 
+        AvailableWorkspaces
+            .Where(w => w.Visible && w.VisibleInMainMenu)
+            .OrderBy(w => w.Default ? 0 : 1); // Default workspace first
+
+    /// <summary>
+    /// Gets hidden workspaces (not visible in main menu).
+    /// </summary>
+    public IEnumerable<Workspace> HiddenWorkspaces =>
+        AvailableWorkspaces
+            .Where(w => !w.Visible || !w.VisibleInMainMenu);
+
+    /// <summary>
+    /// Whether workspaces are available for navigation.
+    /// </summary>
+    public bool HasWorkspaces => AvailableWorkspaces.Any();
 
     /// <summary>
     /// Whether the session is initialized.
@@ -74,6 +94,7 @@ public class IvantiNavigationService
 
     /// <summary>
     /// Initializes the Ivanti session by calling the required APIs in sequence.
+    /// Only loads essential data - workspace form data is loaded lazily when navigating.
     /// </summary>
     public async Task<bool> InitializeAsync(CancellationToken cancellationToken = default)
     {
@@ -111,7 +132,7 @@ public class IvantiNavigationService
             }
             _logger.LogInformation("User data retrieved: {DisplayName}", UserData?.DisplayName);
 
-            // Step 3: Get Role Workspaces
+            // Step 3: Get Role Workspaces (minimal data for navigation)
             var workspacesResult = await _ivantiClient.GetRoleWorkspacesAsync(cancellationToken);
             if (workspacesResult.IsFailure)
             {
@@ -119,21 +140,10 @@ public class IvantiNavigationService
                 _logger.LogError(ErrorMessage);
                 return false;
             }
-            _logger.LogInformation("Loaded {Count} workspaces", RoleWorkspaces?.Workspaces?.Count ?? 0);
+            _logger.LogInformation("Loaded {Count} workspaces. Detailed workspace data will be lazy-loaded on navigation.", 
+                RoleWorkspaces?.Workspaces?.Count ?? 0);
 
-            // Step 4: Load WorkspaceData for ALL workspaces
-            var allWorkspacesResult = await _ivantiClient.LoadAllWorkspacesBasicDataAsync(cancellationToken);
-            if (allWorkspacesResult.IsFailure)
-            {
-                _logger.LogWarning("Failed to load all workspaces data: {Error}", allWorkspacesResult.Error);
-                // Non-fatal - continue
-            }
-            else
-            {
-                var loadedCount = allWorkspacesResult.Value?.Count(w => w.WorkspaceData != null) ?? 0;
-                _logger.LogInformation("Loaded WorkspaceData for {Loaded}/{Total} workspaces", 
-                    loadedCount, RoleWorkspaces?.Workspaces?.Count ?? 0);
-            }
+            // Note: WorkspaceData, FormViewData, etc. are loaded lazily when user navigates to a workspace
 
             ErrorMessage = null;
             return true;
@@ -170,20 +180,9 @@ public class IvantiNavigationService
     /// </summary>
     public string GetWorkspaceUrl(Workspace workspace)
     {
-        // Map workspace names to URL-friendly paths
-        var name = workspace.Name?.ToLower() ?? "";
-        return name switch
-        {
-            "incident" => "/incidents",
-            "task" => "/tasks",
-            "service request" or "servicerequest" => "/service-requests",
-            "change" => "/changes",
-            "problem" => "/problems",
-            "knowledge" => "/knowledge",
-            "ci" or "configuration item" => "/configuration-items",
-            "release" => "/releases",
-            _ => $"/{name.Replace(" ", "-")}"
-        };
+        // Use generic workspace page with workspace name
+        var name = workspace.Name?.Trim() ?? "Incident";
+        return $"/workspace/name/{Uri.EscapeDataString(name)}";
     }
 
     /// <summary>

@@ -1,10 +1,10 @@
+using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace Application.Features.Workspaces.Models.GridDataHandler;
 
 /// <summary>
-/// Represents the grid data result from a search query.
-/// Contains paging information and the actual data rows.
+/// Response for GridDataHandler API payloads that return metadata and rows directly.
 /// </summary>
 public class GridDataHandler
 {
@@ -27,26 +27,11 @@ public class GridDataHandler
     public List<Dictionary<string, object>>? Data { get; set; }
 
     [JsonPropertyName("Columns")]
-    public List<GridColumn>? Columns { get; set; }
-}
+    public List<GridDataMetaColumn>? Columns { get; set; }
 
-/// <summary>
-/// Represents a column definition in the grid.
-/// </summary>
-public class GridColumn
-{
-    [JsonPropertyName("Field")]
-    public string? Field { get; set; }
+    [JsonPropertyName("metaData")]
+    public GridDataMetaData? MetaData { get; set; }
 
-    [JsonPropertyName("Title")]
-    public string? Title { get; set; }
-
-    [JsonPropertyName("Width")]
-    public string? Width { get; set; }
-
-    [JsonPropertyName("Type")]
-    public string? Type { get; set; }
-
-    [JsonPropertyName("Hidden")]
-    public bool Hidden { get; set; }
+    [JsonPropertyName("rows")]
+    public List<Dictionary<string, JsonElement>>? Rows { get; set; }
 }

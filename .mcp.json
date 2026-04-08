@@ -1,0 +1,13 @@
+{
+  "inputs": [],
+  "servers": {
+    "MudBlazor": {
+      "type": "stdio",
+      "command": "C:\\MCP\\MudMCP\\publish\\win-x64\\MudBlazor.Mcp.exe",
+      "args": ["--stdio","--version","9.2.0"],
+      "env": {
+        
+      }
+    }
+  }
+}

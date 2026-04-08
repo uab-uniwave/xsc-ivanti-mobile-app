@@ -32,6 +32,7 @@
 
   <ItemGroup>
     <Folder Include="Http\" />
+    <Folder Include="Workspaces\" />
   </ItemGroup>
 
 </Project>

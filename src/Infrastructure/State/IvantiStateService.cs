@@ -1,9 +1,5 @@
 using Application.Common.Models.SessonData;
 using Application.Common.Models.UserData;
-using Application.Features.Workspaces.Models;
-using Application.Features.Workspaces.Models.FormDefaultData;
-using Application.Features.Workspaces.Models.FormValidationListData;
-using Application.Features.Workspaces.Models.FormViewData;
 using Application.Features.Workspaces.Models.RoleWorkspaces;
 using Application.Features.Workspaces.Models.WorkspaceData;
 using Application.Interfaces.State;
@@ -45,22 +41,6 @@ public class IvantiStateService : IIvantiStateService
     public WorkspaceFullData? CurrentWorkspace { get; set; }
 
     /// <inheritdoc />
-    [Obsolete("Use AllWorkspacesData or CurrentWorkspace instead")]
-    public WorkspaceData? WorkspaceData { get; set; }
-
-    /// <inheritdoc />
-    [Obsolete("Use AllWorkspacesData or CurrentWorkspace instead")]
-    public FormViewData? FormViewData { get; set; }
-
-    /// <inheritdoc />
-    [Obsolete("Use AllWorkspacesData or CurrentWorkspace instead")]
-    public FormDefaultData? FormDefaultData { get; set; }
-
-    /// <inheritdoc />
-    [Obsolete("Use AllWorkspacesData or CurrentWorkspace instead")]
-    public FormValidationListData? FormValidationListData { get; set; }
-
-    /// <inheritdoc />
     public bool IsSessionInitialized => SessionData != null;
 
     /// <inheritdoc />
@@ -81,6 +61,20 @@ public class IvantiStateService : IIvantiStateService
     }
 
     /// <inheritdoc />
+    public Workspace? GetWorkspaceDefinitionById(string workspaceId)
+    {
+        return RoleWorkspaces?.Workspaces.FirstOrDefault(w => 
+            w.Id.Equals(workspaceId, StringComparison.OrdinalIgnoreCase));
+    }
+
+    /// <inheritdoc />
+    public Workspace? GetWorkspaceDefinitionByName(string workspaceName)
+    {
+        return RoleWorkspaces?.Workspaces.FirstOrDefault(w => 
+            w.Name.Equals(workspaceName, StringComparison.OrdinalIgnoreCase));
+    }
+
+    /// <inheritdoc />
     public void Clear()
     {
         _logger.LogInformation("Clearing Ivanti state service data");
@@ -90,13 +84,5 @@ public class IvantiStateService : IIvantiStateService
         RoleWorkspaces = null;
         AllWorkspacesData.Clear();
         CurrentWorkspace = null;
-
-        // Legacy properties
-#pragma warning disable CS0618 // Suppress obsolete warnings
-        WorkspaceData = null;
-        FormViewData = null;
-        FormDefaultData = null;
-        FormValidationListData = null;
-#pragma warning restore CS0618
     }
 }
