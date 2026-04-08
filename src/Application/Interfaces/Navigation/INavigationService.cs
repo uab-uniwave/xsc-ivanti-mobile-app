@@ -12,9 +12,19 @@ public interface INavigationService
     void NavigateToLogin();
 
     /// <summary>
-    /// Navigates to the role selection page.
+    /// Navigates to the Ivanti role selection page.
+    /// </summary>
+    void NavigateToRoleSelection();
+
+    /// <summary>
+    /// Navigates to the workspace selection page.
     /// </summary>
     void NavigateToSelectRole();
+
+    /// <summary>
+    /// Navigates to the home page (default landing page after authentication).
+    /// </summary>
+    void NavigateToHome();
 
     /// <summary>
     /// Navigates to the first available workspace (typically Incidents).

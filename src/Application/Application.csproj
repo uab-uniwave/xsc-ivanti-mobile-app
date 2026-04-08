@@ -9,8 +9,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Helpers\**" />
+    <Compile Remove="Responses\**" />
     <Compile Remove="UseCases\**" />
+    <EmbeddedResource Remove="Helpers\**" />
+    <EmbeddedResource Remove="Responses\**" />
     <EmbeddedResource Remove="UseCases\**" />
+    <None Remove="Helpers\**" />
+    <None Remove="Responses\**" />
     <None Remove="UseCases\**" />
   </ItemGroup>
 
@@ -24,14 +30,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Domain\Domain.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Helpers\" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="Responses\GetFormDefaultDataResponse.cs" />
   </ItemGroup>
 
 </Project>

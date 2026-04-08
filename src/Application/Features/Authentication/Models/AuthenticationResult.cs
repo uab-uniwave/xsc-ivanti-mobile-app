@@ -13,4 +13,9 @@ public class AuthenticationResult
     public string? AccessToken { get; set; }
     public DateTime AuthenticatedAt { get; set; } = DateTime.UtcNow;
     public bool IsAuthenticated => SessionData != null && UserData != null;
+
+    /// <summary>
+    /// The selected role ID for the authenticated session.
+    /// </summary>
+    public string? SelectedRole { get; set; }
 }

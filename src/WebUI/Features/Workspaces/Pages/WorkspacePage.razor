@@ -1,0 +1,211 @@
+@page "/workspace/{WorkspaceId}"
+@page "/workspace/name/{WorkspaceName}"
+@using MudBlazor
+@using Application.Features.Workspaces.Models
+@using Application.Features.Workspaces.Models.WorkspaceData
+@using WebUI.Services
+@inject IvantiNavigationService NavigationService
+@inject NavigationManager Navigation
+@inject ILogger<WorkspacePage> Logger
+
+<PageTitle>@(CurrentWorkspace?.Workspace.Name ?? "Workspace")</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.False" Class="pa-0">
+    @if (IsLoading)
+    {
+        <MudPaper Class="pa-8 d-flex flex-column align-center justify-center" Style="min-height: 400px;">
+            <MudProgressCircular Indeterminate="true" Size="Size.Large" Color="Color.Primary" />
+            <MudText Typo="Typo.body1" Class="mt-4">Loading workspace data...</MudText>
+        </MudPaper>
+    }
+    else if (HasError)
+    {
+        <MudAlert Severity="Severity.Error" Class="ma-4">
+            @ErrorMessage
+        </MudAlert>
+        <MudButton Variant="Variant.Outlined" Color="Color.Primary" OnClick="RetryLoad" Class="ma-4">
+            Retry
+        </MudButton>
+    }
+    else if (CurrentWorkspace != null)
+    {
+        @* Workspace Header *@
+        <MudToolBar Elevation="1" Class="mb-2">
+            <MudIcon Icon="@NavigationService.GetWorkspaceIcon(CurrentWorkspace.Workspace)" 
+                    Color="Color.Primary" Class="mr-2" />
+            <MudText Typo="Typo.h6">@CurrentWorkspace.Workspace.Name</MudText>
+
+            @if (CurrentWorkspace.Workspace.Default)
+            {
+                <MudChip T="string" Size="Size.Small" Color="Color.Info" Class="ml-2">Default</MudChip>
+            }
+
+            <MudSpacer />
+
+            @* Saved Searches Dropdown *@
+            @if (SavedSearches.Any())
+            {
+                <MudSelect T="WorkspaceFavorite"
+                          Label="Saved Searches"
+                          Value="SelectedSearch"
+                          ValueChanged="OnSearchChanged"
+                          ToStringFunc="@(f => f?.Name ?? "Select Search")"
+                          Variant="Variant.Outlined"
+                          Margin="Margin.Dense"
+                          Dense="true"
+                          Style="min-width: 250px;">
+                    @foreach (var search in SavedSearches)
+                    {
+                        <MudSelectItem Value="@search">
+                            <MudStack Row="true" Spacing="2" AlignItems="AlignItems.Center">
+                                @if (search.IsDefault)
+                                {
+                                    <MudIcon Icon="@Icons.Material.Filled.Star" 
+                                            Color="Color.Warning" Size="Size.Small" />
+                                }
+                                <MudText>@search.Name</MudText>
+                            </MudStack>
+                        </MudSelectItem>
+                    }
+                </MudSelect>
+            }
+
+            <MudSpacer />
+
+            @* New Record Button *@
+            <MudButton Variant="Variant.Filled" 
+                      Color="Color.Primary" 
+                      StartIcon="@Icons.Material.Filled.Add"
+                      OnClick="CreateNewRecord">
+                New @CurrentWorkspace.Workspace.Name
+            </MudButton>
+        </MudToolBar>
+
+        @* Workspace Content - Placeholder for grid/data *@
+        <MudPaper Class="pa-4 ma-2" Elevation="1">
+            <MudText Typo="Typo.body1" Class="mud-text-secondary">
+                Workspace: @CurrentWorkspace.Workspace.Name
+            </MudText>
+            <MudText Typo="Typo.body2" Class="mud-text-secondary">
+                Layout: @CurrentWorkspace.Workspace.LayoutName
+            </MudText>
+            <MudText Typo="Typo.body2" Class="mud-text-secondary">
+                Object ID: @CurrentWorkspace.WorkspaceData?.ObjectId
+            </MudText>
+            <MudText Typo="Typo.body2" Class="mud-text-secondary">
+                Is Fully Loaded: @CurrentWorkspace.IsFullyLoaded
+            </MudText>
+
+            @if (!CurrentWorkspace.IsFullyLoaded && !string.IsNullOrEmpty(CurrentWorkspace.ErrorMessage))
+            {
+                <MudAlert Severity="Severity.Warning" Class="mt-2" Dense="true">
+                    @CurrentWorkspace.ErrorMessage
+                </MudAlert>
+            }
+        </MudPaper>
+
+        @* Grid Content - TODO: Add MudDataGrid with actual data *@
+        <MudPaper Class="pa-4 ma-2" Elevation="1">
+            <MudText Typo="Typo.subtitle1">Records</MudText>
+            <MudText Typo="Typo.body2" Class="mud-text-secondary mt-2">
+                Select a saved search to load records, or implement GridDataHandler.
+            </MudText>
+        </MudPaper>
+    }
+    else
+    {
+        <MudAlert Severity="Severity.Warning" Class="ma-4">
+            Workspace not found or not loaded.
+        </MudAlert>
+    }
+</MudContainer>
+
+@code {
+    [Parameter]
+    public string? WorkspaceId { get; set; }
+
+    [Parameter]
+    public string? WorkspaceName { get; set; }
+
+    private WorkspaceFullData? CurrentWorkspace { get; set; }
+    private List<WorkspaceFavorite> SavedSearches { get; set; } = new();
+    private WorkspaceFavorite? SelectedSearch { get; set; }
+
+    private bool IsLoading { get; set; }
+    private bool HasError { get; set; }
+    private string? ErrorMessage { get; set; }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await LoadWorkspaceAsync();
+    }
+
+    private async Task LoadWorkspaceAsync()
+    {
+        IsLoading = true;
+        HasError = false;
+        ErrorMessage = null;
+        StateHasChanged();
+
+        try
+        {
+            Logger.LogInformation("Loading workspace: ID={WorkspaceId}, Name={WorkspaceName}", WorkspaceId, WorkspaceName);
+
+            // Try to find workspace by ID first, then by name
+            if (!string.IsNullOrEmpty(WorkspaceId))
+            {
+                CurrentWorkspace = await NavigationService.LoadWorkspaceFormDataAsync(WorkspaceId);
+            }
+            else if (!string.IsNullOrEmpty(WorkspaceName))
+            {
+                CurrentWorkspace = await NavigationService.LoadWorkspaceFormDataByNameAsync(WorkspaceName);
+            }
+
+            if (CurrentWorkspace == null)
+            {
+                HasError = true;
+                ErrorMessage = "Workspace not found.";
+                return;
+            }
+
+            // Load saved searches from workspace data
+            SavedSearches = CurrentWorkspace.WorkspaceData?.SearchData?.Favorites ?? new();
+            SelectedSearch = SavedSearches.FirstOrDefault(s => s.IsDefault) ?? SavedSearches.FirstOrDefault();
+
+            Logger.LogInformation("Workspace loaded: {WorkspaceName}, Searches: {SearchCount}", 
+                CurrentWorkspace.Workspace.Name, SavedSearches.Count);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error loading workspace");
+            HasError = true;
+            ErrorMessage = ex.Message;
+        }
+        finally
+        {
+            IsLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task RetryLoad()
+    {
+        await LoadWorkspaceAsync();
+    }
+
+    private void OnSearchChanged(WorkspaceFavorite? search)
+    {
+        if (search == null) return;
+
+        SelectedSearch = search;
+        Logger.LogInformation("Search selected: {SearchName}", search.Name);
+
+        // TODO: Call GridDataHandler to load data
+    }
+
+    private void CreateNewRecord()
+    {
+        Logger.LogInformation("Creating new record for workspace: {WorkspaceName}", CurrentWorkspace?.Workspace.Name);
+        // TODO: Navigate to new record form or open dialog
+    }
+}

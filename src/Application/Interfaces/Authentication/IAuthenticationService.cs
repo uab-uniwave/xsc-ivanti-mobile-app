@@ -17,15 +17,27 @@ public interface IAuthenticationService
 
     /// <summary>
     /// Authenticates the user with username and password.
-    /// Returns session data including CSRF token and user information.
+    /// Returns SelectRolePageData with available roles for selection.
     /// </summary>
     /// <param name="username">User's login name</param>
     /// <param name="password">User's password</param>
     /// <param name="verificationToken">Anti-forgery token from login page</param>
     /// <param name="ct">Cancellation token</param>
-    Task<Result<AuthenticationResult>> LoginAsync(
+    Task<Result<SelectRolePageData>> LoginAsync(
         string username,
         string password,
+        string verificationToken,
+        CancellationToken ct = default);
+
+    /// <summary>
+    /// Selects a role for the authenticated user.
+    /// Completes the authentication flow after role selection.
+    /// </summary>
+    /// <param name="roleId">The role ID to select</param>
+    /// <param name="verificationToken">Anti-forgery token from SelectRole page</param>
+    /// <param name="ct">Cancellation token</param>
+    Task<Result<AuthenticationResult>> SelectRoleAsync(
+        string roleId,
         string verificationToken,
         CancellationToken ct = default);
 
@@ -43,4 +55,9 @@ public interface IAuthenticationService
     /// Gets the current authentication result with session and user data.
     /// </summary>
     AuthenticationResult? CurrentAuthentication { get; }
+
+    /// <summary>
+    /// Gets the SelectRolePageData from the last login attempt.
+    /// </summary>
+    SelectRolePageData? SelectRoleData { get; }
 }

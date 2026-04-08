@@ -5,6 +5,7 @@ using WebUI.Features.Incidents.ViewModels;
 using WebUI.Features.Authentication.ViewModels;
 using WebUI.Services;
 using Application.Interfaces.Navigation;
+using Application.Interfaces.Storage;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,10 +22,14 @@ builder.Services.AddRazorComponents()
 // Register ViewModels
 builder.Services.AddScoped<IncidentsViewModel>();
 builder.Services.AddScoped<LoginViewModel>();
+builder.Services.AddScoped<RoleSelectionViewModel>();
 builder.Services.AddScoped<SelectRoleViewModel>();
 
 // Register Navigation Service
 builder.Services.AddScoped<INavigationService, NavigationService>();
+
+// Register Client Storage Service (localStorage)
+builder.Services.AddScoped<IClientStorageService, LocalStorageService>();
 
 // Register Legacy IvantiNavigationService for backward compatibility
 builder.Services.AddScoped<IvantiNavigationService>();

@@ -425,7 +425,7 @@
             "ChatEnabled": "False",
             "Config Homepage for ESM": "True",
             "Config Homepage for MSP": "False",
-            "ConfigureGithubIntegrationUrl": "githubactions-deploymentrules.azurewebsites.net/api/CreateGithubAPICache?code=REDACTED-z_WAzFuDSLOpw==",
+            "ConfigureGithubIntegrationUrl": "githubactions-deploymentrules.azurewebsites.net/api/CreateGithubAPICache?code=REDACTED",
             "DefaultComputerProvApprover": "admin@saasitdemo.com",
             "DefaultFromAddress": "no-reply_{Tenant}@it.com",
             "DefaultKBFeedbackIncidentOwner": "ETrout",

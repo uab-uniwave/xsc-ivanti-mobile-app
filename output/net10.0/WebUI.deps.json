@@ -8,6 +8,7 @@
     ".NETCoreApp,Version=v10.0": {
       "WebUI/1.0.0": {
         "dependencies": {
+          "Application": "1.0.0",
           "Infrastructure": "1.0.0",
           "MudBlazor": "9.2.0"
         },

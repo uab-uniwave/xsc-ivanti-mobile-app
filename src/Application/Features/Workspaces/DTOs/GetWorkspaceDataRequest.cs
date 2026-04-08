@@ -8,8 +8,11 @@ namespace Application.Features.Workspaces.DTOs;
 /// </summary>
 public class GetWorkspaceDataRequest
 {
-    [JsonPropertyName("SearchId")]
-    public Guid? SearchId { get; init; }
+    [JsonPropertyName("ObjectId")]
+    public string? ObjectId { get; init; }
+
+    [JsonPropertyName("LayoutName")]
+    public string? LayoutName { get; init; }
 
     [JsonPropertyName("_csrfToken")]
     public string? CsrfToken { get; init; }

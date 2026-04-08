@@ -29,6 +29,7 @@
     <File Path="assets/MobileAppJsons/Responses/7.GetFormValidationListData.json" />
     <File Path="CorrectRequestBody.json" />
   </Folder>
+  <Folder Name="/assets/ocs/" />
   <Folder Name="/src/">
     <Project Path="src/Application/Application.csproj" />
     <Project Path="src/Domain/Domain.csproj" Id="88056bd8-d351-4be8-8637-c58dad5eb1bf" />

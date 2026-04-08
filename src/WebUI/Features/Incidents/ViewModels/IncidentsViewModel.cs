@@ -1,7 +1,12 @@
 using Application.Common;
 using Application.Features.Incidents.DTOs;
 using Application.Features.Workspaces.Models.WorkspaceData;
+using Application.Features.Workspaces.Models.GridDataHandler;
+using Application.Interfaces.State;
+using WsFavorite = Application.Features.Workspaces.Models.WorkspaceData.WorkspaceFavorite;
+
 using Application.Services;
+using Microsoft.Extensions.Logging;
 
 namespace WebUI.Features.Incidents.ViewModels;
 
@@ -12,34 +17,38 @@ namespace WebUI.Features.Incidents.ViewModels;
 public sealed class IncidentsViewModel
 {
     private readonly IIvantiClient _ivanti;
+    private readonly IIvantiStateService _stateService;
+    private readonly ILogger<IncidentsViewModel> _logger;
 
     public List<IncidentListItemDto> Items { get; private set; } = new();
     public PagedResult<IncidentListItemDto>? CurrentPage { get; private set; }
-    public List<WorkspaceData.WorkspaceFavorite> SavedSearches { get; private set; } = new();
-    public WorkspaceData.WorkspaceFavorite? SelectedSearch { get; set; }
+    public List<WsFavorite> SavedSearches { get; private set; } = new();
+    public WsFavorite? SelectedSearch { get; set; }
+    public GridDataHandler? CurrentGridData { get; private set; }
 
     public bool IsLoading { get; private set; }
     public bool HasError { get; private set; }
     public string? ErrorMessage { get; private set; }
 
-    public IncidentsViewModel(IIvantiClient ivanti)
+    /// <summary>
+    /// Event raised when state changes to notify UI to re-render.
+    /// </summary>
+    public event Action? OnStateChanged;
+
+    public IncidentsViewModel(
+        IIvantiClient ivanti,
+        IIvantiStateService stateService,
+        ILogger<IncidentsViewModel> logger)
     {
         _ivanti = ivanti;
+        _stateService = stateService;
+        _logger = logger;
     }
 
     /// <summary>
-    /// Loads the first page of incidents.
-    /// Initializes session and retrieves incidents list.
+    /// Initializes the incidents page using data already loaded after role selection.
     /// </summary>
-    public async Task LoadFirstPageAsync(CancellationToken ct)
-    {
-        await LoadPageAsync(1, ct);
-    }
-
-    /// <summary>
-    /// Loads a specific page of incidents.
-    /// </summary>
-    public async Task LoadPageAsync(int pageNumber, CancellationToken ct)
+    public async Task InitializeAsync(CancellationToken ct = default)
     {
         IsLoading = true;
         HasError = false;
@@ -47,92 +56,181 @@ public sealed class IncidentsViewModel
 
         try
         {
-            // Initialize session (csrfToken icluded )
-            //========================================================================
-            var sessionResult = await _ivanti.InitializeSessionAsync(ct);
-            if (sessionResult.IsFailure)
+            _logger.LogInformation("Initializing Incidents page...");
+
+            // Data should already be loaded by AuthenticationService.SelectRoleAsync
+            // Just extract saved searches from the state service
+            if (_stateService.WorkspaceData?.SearchData?.Favorites != null)
             {
-                throw new InvalidOperationException($"Failed to initialize session: {sessionResult.Error}");
+                SavedSearches = _stateService.WorkspaceData.SearchData.Favorites;
+                _logger.LogInformation("Found {Count} saved searches", SavedSearches.Count);
+            }
+            else
+            {
+                _logger.LogWarning("No saved searches found in workspace data");
+                SavedSearches = new List<WsFavorite>();
             }
 
-            // Get user data (including role)
-            //========================================================================
-            var userDataResult = await _ivanti.GetUserDataAsync(ct);
-                if (userDataResult.IsFailure)
-            {
-                throw new InvalidOperationException($"Failed to get user data: {userDataResult.Error}");
-            }
-
-            //Get user role Workspaces
-            //========================================================================
-            var roleWorkspacesResult = await _ivanti.GetRoleWorkspacesAsync(ct);
-            if (roleWorkspacesResult.IsFailure)
-            {
-                throw new InvalidOperationException($"Failed to role workspace: {roleWorkspacesResult.Error}");
-            }
-
-
-            //Get !!! Incident user role Workspace Data
-            //========================================================================
-            var workspaceDataResult = await _ivanti.GetWorkspaceDataAsync(ct); //TODO: Later shoudl there is taken FirstOrDefault workspace based on user role and workspace type (incidents)
-            if (workspaceDataResult.IsFailure)
-            {
-                throw new InvalidOperationException($"Failed to get worksapace data: {workspaceDataResult.Error}");
-            }
-
-            // Extract saved searches from workspace data
-            SavedSearches = workspaceDataResult.Value?.SearchData?.Favorites ?? new List<WorkspaceData.WorkspaceFavorite>();
+            // Select default search or first available
             SelectedSearch = SavedSearches.FirstOrDefault(s => s.IsDefault) ?? SavedSearches.FirstOrDefault();
 
-            //Get Incident view data based on user role workspace
-            //========================================================================
-            var formViewDataResult = await _ivanti.FindFormViewDataAsync(ct); //TODO: Later shoudl there is taken FirstOrDefault workspace based on user role and workspace type (incidents)
-            if (formViewDataResult.IsFailure)
+            // If we have a selected search, load its data
+            if (SelectedSearch != null && !string.IsNullOrEmpty(SelectedSearch.Id))
             {
-                throw new InvalidOperationException($"Failed to find form view data: {formViewDataResult.Error}");
+                _logger.LogInformation("Loading default search: {SearchName}", SelectedSearch.Name);
+                await LoadGridDataAsync(SelectedSearch, ct);
             }
-
-            //Get !!! Incident new  form data based on user role workspace data and view data
-            //========================================================================
-            var formDataDefaultResult = await _ivanti.GetFormDefaultDataAsync(ct); //TODO: Later shoudl there is taken FirstOrDefault workspace based on user role and workspace type (incidents)
-            if (formDataDefaultResult.IsFailure)
-            {
-                throw new InvalidOperationException($"Failed to get form default data: {formDataDefaultResult.Error}");
-            }
-
-            var FormValidationListDataResult = await _ivanti.GetFormValidationListDataAsync(ct); //TODO: Later shoudl there is taken FirstOrDefault workspace based on user role and workspace type (incidents)
-            if (FormValidationListDataResult.IsFailure)
-            {
-                throw new InvalidOperationException($"Failed to get form validation list data: {FormValidationListDataResult.Error}");
-            }
-
-
-
-            // Load incidents
-            var query = new PagedQuery
-            {
-                Page = pageNumber,
-                PageSize = 10
-            };
-
-            //var result = await _ivanti.GetIncidentsAsync(query, ct);
-
-            //if (result.IsFailure)
-            //{
-            //    throw new InvalidOperationException($"Failed to load incidents: {result.Error}");
-            //}
-
-            //CurrentPage = result.Value;
-            //Items = result.Value?.Items ?? new();
         }
         catch (Exception ex)
         {
+            _logger.LogError(ex, "Error initializing Incidents page");
             HasError = true;
             ErrorMessage = ex.Message;
         }
         finally
         {
             IsLoading = false;
+            NotifyStateChanged();
+        }
+    }
+
+    /// <summary>
+    /// Loads the first page of incidents (legacy method - calls InitializeAsync).
+    /// </summary>
+    public async Task LoadFirstPageAsync(CancellationToken ct)
+    {
+        await InitializeAsync(ct);
+    }
+
+    /// <summary>
+    /// Handles search selection change from the MudSelect dropdown.
+    /// Calls GridDataHandler to fetch data for the selected search.
+    /// </summary>
+    public async Task OnSearchChangedAsync(WsFavorite? selectedSearch, CancellationToken ct = default)
+    {
+        if (selectedSearch == null)
+        {
+            _logger.LogWarning("Search selection cleared");
+            SelectedSearch = null;
+            CurrentGridData = null;
+            NotifyStateChanged();
+            return;
+        }
+
+        _logger.LogInformation("Search changed to: {SearchName} (ID: {SearchId})", 
+            selectedSearch.Name, selectedSearch.Id);
+
+        SelectedSearch = selectedSearch;
+        await LoadGridDataAsync(selectedSearch, ct);
+    }
+
+    /// <summary>
+    /// Loads grid data for a specific saved search using GridDataHandler.
+    /// </summary>
+    private async Task LoadGridDataAsync(WsFavorite search, CancellationToken ct)
+    {
+        if (string.IsNullOrEmpty(search.Id))
+        {
+            _logger.LogWarning("Cannot load grid data: Search ID is empty");
+            return;
+        }
+
+        IsLoading = true;
+        HasError = false;
+        ErrorMessage = null;
+        NotifyStateChanged();
+
+        try
+        {
+            if (!Guid.TryParse(search.Id, out var searchId))
+            {
+                _logger.LogError("Invalid search ID format: {SearchId}", search.Id);
+                HasError = true;
+                ErrorMessage = "Invalid search ID format";
+                return;
+            }
+
+            _logger.LogInformation("Calling GridDataHandler for search: {SearchName} (ID: {SearchId})", 
+                search.Name, searchId);
+
+            var result = await _ivanti.GetGridDataAsync(searchId, skip: 0, take: 50, ct);
+
+            if (result.IsFailure)
+            {
+                _logger.LogError("GridDataHandler failed: {Error}", result.Error);
+                HasError = true;
+                ErrorMessage = result.Error;
+                return;
+            }
+
+            CurrentGridData = result.Value;
+            _logger.LogInformation("GridDataHandler returned {Count} records (Total: {Total})", 
+                CurrentGridData?.Data?.Count ?? 0, CurrentGridData?.TotalCount ?? 0);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error loading grid data for search: {SearchName}", search.Name);
+            HasError = true;
+            ErrorMessage = ex.Message;
+        }
+        finally
+        {
+            IsLoading = false;
+            NotifyStateChanged();
+        }
+    }
+
+    /// <summary>
+    /// Loads a specific page of grid data.
+    /// </summary>
+    public async Task LoadPageAsync(int pageNumber, CancellationToken ct)
+    {
+        if (SelectedSearch == null || string.IsNullOrEmpty(SelectedSearch.Id))
+        {
+            _logger.LogWarning("Cannot load page: No search selected");
+            return;
+        }
+
+        if (!Guid.TryParse(SelectedSearch.Id, out var searchId))
+        {
+            _logger.LogError("Invalid search ID format: {SearchId}", SelectedSearch.Id);
+            return;
+        }
+
+        IsLoading = true;
+        HasError = false;
+        NotifyStateChanged();
+
+        try
+        {
+            int pageSize = 50;
+            int skip = (pageNumber - 1) * pageSize;
+
+            _logger.LogInformation("Loading page {PageNumber} (Skip: {Skip}, Take: {Take})", 
+                pageNumber, skip, pageSize);
+
+            var result = await _ivanti.GetGridDataAsync(searchId, skip, pageSize, ct);
+
+            if (result.IsFailure)
+            {
+                _logger.LogError("Failed to load page: {Error}", result.Error);
+                HasError = true;
+                ErrorMessage = result.Error;
+                return;
+            }
+
+            CurrentGridData = result.Value;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error loading page {PageNumber}", pageNumber);
+            HasError = true;
+            ErrorMessage = ex.Message;
+        }
+        finally
+        {
+            IsLoading = false;
+            NotifyStateChanged();
         }
     }
 
@@ -188,4 +286,6 @@ public sealed class IncidentsViewModel
             return false;
         }
     }
+
+    private void NotifyStateChanged() => OnStateChanged?.Invoke();
 }

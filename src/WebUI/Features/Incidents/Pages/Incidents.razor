@@ -1,7 +1,8 @@
-﻿@page "/"
-@page "/incident"
+﻿@page "/incident"
+@page "/incidents"
 @using Application.Features.Incidents.DTOs
 @using Application.Features.Workspaces.Models.WorkspaceData
+@using WsFavorite = Application.Features.Workspaces.Models.WorkspaceData.WorkspaceFavorite
 @using Domain.Entities
 @using MudBlazor
 @using TaskEntity = Domain.Entities.Task
@@ -15,7 +16,7 @@
     @* Main Toolbar with Saved Searches and New Button *@
     <MudToolBar Elevation="1" Class="mb-2" Dense="@_isMobile">
         @* Left Side - Saved Searches Dropdown *@
-        <MudSelect T="WorkspaceData.WorkspaceFavorite" 
+        <MudSelect T="WsFavorite"
                   Label="Saved Searches" 
                   Value="ViewModel.SelectedSearch"
                   ValueChanged="HandleSearchChanged"
@@ -265,19 +266,17 @@
         _isDense = CurrentBreakpoint <= Breakpoint.Md;
     }
 
-    private void HandleSearchChanged(WorkspaceData.WorkspaceFavorite? selectedSearch)
+    private void HandleSearchChanged(WsFavorite selectedSearch)
     {
         if (selectedSearch is not null)
         {
-            ViewModel.SelectedSearch = selectedSearch;
-
             Logger.LogInformation("Search changed to: {SearchName} (ID: {SearchId})", 
                 selectedSearch.Name, selectedSearch.Id);
 
-            Snackbar.Add($"Applied search: {selectedSearch.Name}", Severity.Info);
+            Snackbar.Add($"Loading search: {selectedSearch.Name}", Severity.Info);
 
-            // TODO: Apply search filters to the data grid
-            // Load validated search and apply conditions
+            // Call ViewModel to load grid data for the selected search
+            _ = ViewModel.OnSearchChangedAsync(selectedSearch, CancellationToken.None);
         }
     }
 

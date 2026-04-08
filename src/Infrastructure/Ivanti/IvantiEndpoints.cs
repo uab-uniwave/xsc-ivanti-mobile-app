@@ -9,6 +9,17 @@ public class IvantiEndpoints
         _tenant = tenant;
     }
 
+    public string GetVerifiationToken =>
+    $"{_tenant}/";
+
+    public string Login =>
+    $"{_tenant}/";
+
+    public string SelectRole =>
+    $"{_tenant}/Account/SelectRole";
+
+
+
     public string Incidents =>
         $"{_tenant}/api/odata/businessobject/incidents";
     public string InitializeSession =>
@@ -30,4 +41,6 @@ public class IvantiEndpoints
     public string GetValidatedSearch =>
      $"{_tenant}/Services/Search.asmx/GetValidatedSearch";
 
+    public string GridDataHandler =>
+     $"{_tenant}/Services/Search.asmx/GridDataHandler";
 }

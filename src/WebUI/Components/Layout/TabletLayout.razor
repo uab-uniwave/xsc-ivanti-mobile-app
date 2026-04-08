@@ -1,4 +1,6 @@
 ﻿@inject IvantiNavigationService NavigationService
+@inject Application.Interfaces.Authentication.IAuthenticationService AuthenticationService
+@inject Application.Interfaces.Navigation.INavigationService Navigation
 @inherits LayoutComponentBase
 
 <MudLayout>
@@ -96,11 +98,26 @@
 @code {
     private bool _drawerOpen = true;
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (!NavigationService.IsInitialized)
+        if (!firstRender)
         {
-            await NavigationService.InitializeAsync();
+            return;
+        }
+
+        // Check if user is authenticated (only runs during interactive rendering, not prerender)
+        if (!AuthenticationService.IsAuthenticated)
+        {
+            // Redirect to login page
+            Navigation.NavigateToLogin();
+            return;
+        }
+
+        // Navigation service reads from IIvantiStateService which is already populated
+        // Just notify to refresh the UI
+        if (NavigationService.IsInitialized)
+        {
+            StateHasChanged();
         }
     }
 

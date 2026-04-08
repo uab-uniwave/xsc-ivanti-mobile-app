@@ -1,8 +1,10 @@
-﻿@page "/login"
+﻿@page "/"
+@page "/login"
+@rendermode InteractiveServer
 @using MudBlazor
 
 <MudContainer MaxWidth="MaxWidth.Small" Class="d-flex align-center justify-center" Style="min-height: 100vh;">
-    <MudPaper Elevation="4" Class="pa-8" Style="width: 100%; max-width: 400px;">
+    <MudPaper Elevation="4" Class="pa-8 rounded" Style="width: 100%; max-width: 400px;">
         <MudStack Spacing="4">
 
             <MudText Typo="Typo.h4" Align="Align.Center" GutterBottom="true">
@@ -23,12 +25,13 @@
                              AdornmentIcon="@Icons.Material.Filled.Person"
                              Required="true"
                              RequiredError="Username is required"
-                             Disabled="@ViewModel.IsLoading" />
+                             Disabled="@ViewModel.IsLoading"
+                             Class = "rounded" />
             </MudStack>
 
             @* Password Field *@
             <MudStack Spacing="1">
-                <MudText Typo="Typo.body1" Color="Color.Dark">
+                <MudText Typo="Typo.body1" Co"lor="Color.Dark">
                     Password
                 </MudText>
                 <MudTextField @bind-Value="ViewModel.Password"
@@ -39,7 +42,8 @@
                              AdornmentIcon="@Icons.Material.Filled.Lock"
                              Required="true"
                              RequiredError="Password is required"
-                             Disabled="@ViewModel.IsLoading" />
+                             Disabled="@ViewModel.IsLoading"
+                              Class="rounded" />
             </MudStack>
 
             <MudButton Variant="Variant.Filled"
@@ -47,7 +51,8 @@
                       FullWidth="true"
                       Size="Size.Large"
                       OnClick="HandleLogin"
-                      Disabled="@ViewModel.IsLoading">
+                      Disabled="@ViewModel.IsLoading"
+                       Class="rounded">
                 @if (ViewModel.IsLoading)
                 {
                     <MudProgressCircular Size="Size.Small" Indeterminate="true" Class="mr-2" />

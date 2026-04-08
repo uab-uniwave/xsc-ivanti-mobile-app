@@ -26,10 +26,22 @@ public class NavigationService : INavigationService
         _navigationManager.NavigateTo("/login");
     }
 
+    public void NavigateToRoleSelection()
+    {
+        _logger.LogInformation("Navigating to Ivanti role selection page");
+        _navigationManager.NavigateTo("/role-selection");
+    }
+
     public void NavigateToSelectRole()
     {
-        _logger.LogInformation("Navigating to role selection page");
+        _logger.LogInformation("Navigating to workspace selection page");
         _navigationManager.NavigateTo("/select-role");
+    }
+
+    public void NavigateToHome()
+    {
+        _logger.LogInformation("Navigating to home page");
+        _navigationManager.NavigateTo("/");
     }
 
     public void NavigateToFirstWorkspace()
