@@ -1,6 +1,5 @@
 {
-    "d": {
-        "__type": "SaaS.WebUI.ObjectWorkspace.FormViewData",
+          "__type": "SaaS.WebUI.ObjectWorkspace.FormViewData",
         "viewName": "responsive.analyst.new",
         "formDef": {
             "TableMeta": {

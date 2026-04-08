@@ -4,7 +4,10 @@
     <File Path=".github/copilot-instructions-documents-management.md" />
   </Folder>
   <Folder Name="/assets/" />
-  <Folder Name="/assets/MobileAppJsons/" />
+  <Folder Name="/assets/MobileAppJsons/">
+    <File Path="CorrectRequestBody.json" />
+    <File Path="WrongRequestBody.json" />
+  </Folder>
   <Folder Name="/assets/MobileAppJsons/Requests/">
     <File Path="assets/MobileAppJsons/Requests/1.InitializeSession.json" />
     <File Path="assets/MobileAppJsons/Requests/2.GetUserData.Json" />
@@ -15,6 +18,8 @@
     <File Path="assets/MobileAppJsons/Requests/7.GetFormValidationListData.json" />
   </Folder>
   <Folder Name="/assets/MobileAppJsons/Respones/">
+    <File Path="0.GetVerificationResponse.html" />
+    <File Path="8.ValidatedSearch.json" />
     <File Path="assets/MobileAppJsons/Responses/1.InitializeSession.json" />
     <File Path="assets/MobileAppJsons/Responses/2.GetUserData.Json" />
     <File Path="assets/MobileAppJsons/Responses/3.GetRolesWorkspace.json" />
@@ -22,6 +27,7 @@
     <File Path="assets/MobileAppJsons/Responses/5.FindFormViewdata.json" />
     <File Path="assets/MobileAppJsons/Responses/6.GetFormDefaultData.json" />
     <File Path="assets/MobileAppJsons/Responses/7.GetFormValidationListData.json" />
+    <File Path="CorrectRequestBody.json" />
   </Folder>
   <Folder Name="/src/">
     <Project Path="src/Application/Application.csproj" />

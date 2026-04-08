@@ -1,0 +1,113 @@
+﻿<!DOCTYPE html>
+
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title></title>
+
+    <link href="/HEAT/cssbundles/login-new?v=RGTwok8jTdomga-VIvpkntQztyaS2uHCd_V-Eou4Pj41" rel="stylesheet" />
+
+    <script src="/HEAT/bundles/jquery?v=JmcMa1Mc9WHC3Bw-UmilWve6RkNYjLIQya-8QksYE0A1"></script>
+
+
+    <link rel="stylesheet" type="text/css" href="/HEAT/LoginStylesGenerator/GenerateCssFromSetting" />
+
+
+    <!--[if lt IE 9]>
+        <link rel="stylesheet" type="text/css" href="/HEAT/css/login2ie8override.css" />
+    <![endif]-->
+
+
+    <script src="/HEAT/lib/RespondJs/respond.min.js" type="text/javascript"></script>
+</head>
+
+<body class="login-layout LoginLayoutCloud">
+
+
+    <div class="leftbar"></div>
+    <div class="logo"></div>
+    <div class="title">
+        <h1>Service Manager</h1>
+    </div>
+
+    <div class="content-body">
+
+
+
+        <div class="content-inner row-fluid">
+            <form action="/HEAT/" class="form-horizontal" method="post" role="form">
+                <input name="__RequestVerificationToken" type="hidden" value="iD1sN3CIMyliueV1Sklb82URP07CPCj514rd1a2pTXCli1dnnFO2pwnUiWE1cDrJJp4-9A-STJsdxFve_xnLGDWbO5c1" />
+                <div class="form-group">
+                    <label class="hidden-xs col-sm-3 col-md-3 control-label" for="UserName">User name</label>
+                    <div class="col-xs-12 col-sm-8">
+                        <input autocomplete="off" class="form-control has-success has-feedback" id="UserName" name="UserName" placeholder="User Name" type="text" value="" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="hidden-xs col-sm-3 col-md-3 control-label" for="Password">Password</label>
+                    <div class="col-xs-12 col-sm-8">
+                        <input autocomplete="off" class="form-control" id="Password" name="Password" placeholder="Password" type="password" />
+                    </div>
+                </div>
+                <div class="form-group" id="enableBioMetrics" style="display:none">
+                    <div class="col-xs-2 col-sm-3 col-md-3" style="padding-left: 0; padding-right:0;">
+                        <input class="control-label pull-right" id="EnableBiometric" name="EnableBiometric" type="checkbox" value="true" /><input name="EnableBiometric" type="hidden" value="false" />
+                        <span id="fancymove" style="display:none"></span>
+                    </div>
+                    <div id="fancyscreen" class="col-xs-10 col-sm-8 col-md-8">
+                        <label for="EnableBiometric" style="padding-top: 1px;">Enable Biometric Authentication</label>
+                    </div>
+                </div>
+                <input id="Tenant" name="Tenant" type="hidden" value="stg-heat20254.synergy.lt" /><input id="IsUrlSharedByTenants" name="IsUrlSharedByTenants" type="hidden" value="False" /><input id="ClientTimeOffset" name="ClientTimeOffset" type="hidden" value="0" /><input id="ClientTimezoneName" name="ClientTimezoneName" type="hidden" value="" /><input id="ReturnUrl" name="ReturnUrl" type="hidden" value="" /><input id="PrefferedRole" name="PrefferedRole" type="hidden" value="" /><input id="IsForgotPasswordAllowed" name="IsForgotPasswordAllowed" type="hidden" value="False" /><input id="IsFrame" name="IsFrame" type="hidden" value="False" /><input id="OpenIDSignIn" name="OpenIDSignIn" type="hidden" value="" /><input id="SsoReturnUrl" name="SsoReturnUrl" type="hidden" value="" />
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Login</button>
+                </div>
+            </form>
+            <div class="form-group" id="bioMetricsButton" style="display:none">
+                <label style="text-align:center">OR</label>
+                <div class="col-xs-12 col-sm-8" style="padding-left: 0; padding-right:0;">
+                    <button class="form-control has-success has-feedback" style="text-align:left">Login using Biometric Authentication</button>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+
+    <div class="content-footer">
+        <div class="additional-text"></div>
+        <p>
+            To&nbsp;learn more about our innovative IT&nbsp;Service Management solutions, visit our website at&nbsp;<a href="https://www.ivanti.com/" target="_blank">Ivanti</a>
+        </p>
+        <p>Copyright &copy;&nbsp;2005-2025 Ivanti. All&nbsp;rights reserved.</p>
+        <p>
+            <a href="https://www.ivanti.com/company/legal" target="_blank">Privacy Policy</a> -
+            <a href="https://www.ivanti.com/company/legal" target="_blank">Legal Terms and Notices</a> -
+            <a href="https://www.ivanti.com/company/legal/ivanti-patents" target="_blank">Protected by Patents</a>
+        </p>
+    </div>
+
+    <script type="text/javascript" src="/HEAT/scripts/LoginTemplates/_LoginLayoutCloud.js"></script>
+
+
+
+    <script type="text/javascript" src="/HEAT/lib/jstz.min.js"></script>
+
+    <input id="SelectRoleUrl" name="SelectRoleUrl" type="hidden" value="/HEAT/Account/SelectRole?returnUrl=ReplaceReturnUrl" />
+    <input id="LoginUrl" name="LoginUrl" type="hidden" value="/HEAT/?returnUrl=ReplaceReturnUrl" />
+    <input id="ResetPasswordUrl" name="ResetPasswordUrl" type="hidden" value="/HEAT/Account/ResetPassword?returnUrl=ReplaceReturnUrl" />
+    <input id="authenticateBioMetricUrl" name="authenticateBioMetricUrl" type="hidden" value="/HEAT/Account/AuthenticateBioMetric" />
+    <input id="TenantUrl" name="TenantUrl" type="hidden" value="stg-heat20254.synergy.lt" />
+    <input id="ModelReturnUrl" name="ModelReturnUrl" type="hidden" value="" />
+
+    <script type="text/javascript" src="/HEAT/scripts/account/Login.js"></script>
+
+
+
+
+    <input id="LoginStylesGeneratorUrl" name="LoginStylesGeneratorUrl" type="hidden" value="/HEAT/LoginStylesGenerator/GenerateCssFromDefinition" />
+    <script type="text/javascript" src="/HEAT/scripts/account/_loginLayout.js"></script>
+</body>
+
+</html>

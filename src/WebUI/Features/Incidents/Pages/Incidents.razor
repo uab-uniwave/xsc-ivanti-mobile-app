@@ -1,0 +1,376 @@
+﻿@page "/"
+@page "/incident"
+@using Application.Features.Incidents.DTOs
+@using Application.Features.Workspaces.Models.WorkspaceData
+@using Domain.Entities
+@using MudBlazor
+@using TaskEntity = Domain.Entities.Task
+@using Microsoft.Extensions.Logging
+
+@inject ILogger<Incidents> Logger
+
+<MudBreakpointProvider>
+<MudContainer MaxWidth="MaxWidth.False" Class="pa-0">
+
+    @* Main Toolbar with Saved Searches and New Button *@
+    <MudToolBar Elevation="1" Class="mb-2" Dense="@_isMobile">
+        @* Left Side - Saved Searches Dropdown *@
+        <MudSelect T="WorkspaceData.WorkspaceFavorite" 
+                  Label="Saved Searches" 
+                  Value="ViewModel.SelectedSearch"
+                  ValueChanged="HandleSearchChanged"
+                  ToStringFunc="@(f => f?.Name ?? "Select Search")"
+                  Variant="Variant.Outlined"
+                  Margin="Margin.Dense"
+                  Dense="true"
+                  Style="min-width: 250px;"
+                  Disabled="@(!ViewModel.SavedSearches.Any())">
+            @foreach (var favorite in ViewModel.SavedSearches)
+            {
+                <MudSelectItem Value="@favorite">
+                    <MudStack Row="true" Spacing="2" AlignItems="AlignItems.Center">
+                        @if (favorite.IsDefault)
+                        {
+                            <MudIcon Icon="@Icons.Material.Filled.Star" 
+                                    Color="Color.Warning" 
+                                    Size="Size.Small" />
+                        }
+                        <MudText>@favorite.Name</MudText>
+                    </MudStack>
+                </MudSelectItem>
+            }
+        </MudSelect>
+
+        <MudSpacer />
+
+        @* Right Side - New Incident Button *@
+        @if (_isMobile)
+        {
+            <MudFab Color="Color.Primary" 
+                   StartIcon="@Icons.Material.Filled.Add" 
+                   Size="Size.Small"
+                   OnClick="HandleNewIncident"
+                   aria-label="New Incident" />
+        }
+        else
+        {
+            <MudFab Color="Color.Primary" 
+                   StartIcon="@Icons.Material.Filled.Add" 
+                   Size="Size.Medium"
+                   Label="New Incident"
+                   OnClick="HandleNewIncident" />
+        }
+    </MudToolBar>
+
+    @* Loading and Error States *@
+    @if (ViewModel.IsLoading)
+    {
+        <MudPaper Class="pa-8 d-flex justify-center">
+            <MudProgressCircular Indeterminate="true" Size="Size.Large" Color="Color.Primary" />
+        </MudPaper>
+    }
+    else if (ViewModel.HasError)
+    {
+        <MudAlert Severity="Severity.Error" Class="ma-4">
+            @ViewModel.ErrorMessage
+        </MudAlert>
+    }
+    else
+    {
+        @* Responsive DataGrid *@
+        <MudDataGrid T="Incident"
+                     Items="@_incidents"
+                     Dense="@_isDense"
+                     Hover="true"
+                     Bordered="true"
+                     Striped="true"
+                     Filterable="true"
+                     FilterMode="DataGridFilterMode.Simple"
+                     SortMode="SortMode.Multiple"
+                     Groupable="false"
+                     Height="@(_isMobile ? "calc(100vh - 200px)" : "calc(100vh - 250px)")"
+                     FixedHeader="true"
+                     Class="@(_isMobile ? "mobile-grid" : "")">
+
+            <Columns>
+                @* Essential columns - always visible *@
+                <PropertyColumn Property="x => x.RecId"
+                               Title="ID" 
+                               Sortable="true"
+                               Hidden="@_isMobile">
+                    <CellTemplate>
+                        <MudChip T="string" Size="Size.Small" Color="Color.Info">
+                            @context.Item.RecId.Substring(0, Math.Min(8, context.Item.RecId.Length))
+                        </MudChip>
+                    </CellTemplate>
+                </PropertyColumn>
+
+                <PropertyColumn Property="x => x.Subject" 
+                               Title="Subject" 
+                               Sortable="true">
+                    <CellTemplate>
+                        <MudText Typo="@(_isMobile ? Typo.body2 : Typo.body1)">
+                            @(string.IsNullOrEmpty(context.Item.Subject) ? "No Subject" : context.Item.Subject)
+                        </MudText>
+                    </CellTemplate>
+                </PropertyColumn>
+
+                <PropertyColumn Property="x => x.Status" 
+                               Title="Status" 
+                               Sortable="true">
+                    <CellTemplate>
+                        <MudChip T="string" 
+                                Size="@(_isMobile ? Size.Small : Size.Medium)" 
+                                Color="@GetStatusColor(context.Item.Status)">
+                            @context.Item.Status
+                        </MudChip>
+                    </CellTemplate>
+                </PropertyColumn>
+
+                <PropertyColumn Property="x => x.Priority" 
+                               Title="Priority" 
+                               Sortable="true"
+                               Hidden="@_isMobile">
+                    <CellTemplate>
+                        <MudChip T="string" 
+                                Size="Size.Small" 
+                                Color="@GetPriorityColor(context.Item.Priority)">
+                            @context.Item.Priority
+                        </MudChip>
+                    </CellTemplate>
+                </PropertyColumn>
+
+                @* Desktop/Tablet columns *@
+                <PropertyColumn Property="x => x.Category" 
+                               Title="Category" 
+                               Sortable="true"
+                               Hidden="@(_currentBreakpoint < Breakpoint.Md)">
+                </PropertyColumn>
+
+                <PropertyColumn Property="x => x.Urgency" 
+                               Title="Urgency" 
+                               Sortable="true"
+                               Hidden="@(_currentBreakpoint < Breakpoint.Lg)">
+                    <CellTemplate>
+                        <MudChip T="string" Size="Size.Small" Color="@GetUrgencyColor(context.Item.Urgency)">
+                            @context.Item.Urgency
+                        </MudChip>
+                    </CellTemplate>
+                </PropertyColumn>
+
+                <PropertyColumn Property="x => x.Owner" 
+                               Title="Owner" 
+                               Sortable="true"
+                               Hidden="@(_currentBreakpoint < Breakpoint.Md)">
+                </PropertyColumn>
+
+                <PropertyColumn Property="x => x.Service" 
+                               Title="Service" 
+                               Sortable="true"
+                               Hidden="@(_currentBreakpoint < Breakpoint.Lg)">
+                </PropertyColumn>
+
+                <PropertyColumn Property="x => x.CreatedDateTime" 
+                               Title="Created" 
+                               Sortable="true"
+                               Hidden="@(_currentBreakpoint < Breakpoint.Lg)"
+                               Format="MM/dd/yyyy">
+                </PropertyColumn>
+
+                <PropertyColumn Property="x => x.LastModDateTime" 
+                               Title="Modified" 
+                               Sortable="true"
+                               Hidden="@(_currentBreakpoint < Breakpoint.Xl)"
+                               Format="MM/dd/yyyy HH:mm">
+                </PropertyColumn>
+
+                @* VIP indicator *@
+                <TemplateColumn Title="VIP" 
+                               Hidden="@(_currentBreakpoint < Breakpoint.Md)"
+                               Sortable="false">
+                    <CellTemplate>
+                        @if (context.Item.IsVIP == true)
+                        {
+                            <MudIcon Icon="@Icons.Material.Filled.Star" Color="Color.Warning" Size="Size.Small" />
+                        }
+                    </CellTemplate>
+                </TemplateColumn>
+
+                @* Actions column *@
+                <TemplateColumn Title="Actions" 
+                               Sortable="false"
+                               Filterable="false">
+                    <CellTemplate>
+                        @if (_isMobile)
+                        {
+                            <MudIconButton Icon="@Icons.Material.Filled.MoreVert" 
+                                         Size="Size.Small" 
+                                         OnClick="@(() => HandleView(context.Item.RecId))">
+                            </MudIconButton>
+                        }
+                        else
+                        {
+                            <MudStack Row="true" Spacing="1">
+                                <MudIconButton Icon="@Icons.Material.Filled.Edit" 
+                                             Size="Size.Small" 
+                                             Color="Color.Primary"
+                                             OnClick="@(() => HandleEdit(context.Item.RecId))">
+                                </MudIconButton>
+                                <MudIconButton Icon="@Icons.Material.Filled.Visibility" 
+                                             Size="Size.Small" 
+                                             Color="Color.Info"
+                                             OnClick="@(() => HandleView(context.Item.RecId))">
+                                </MudIconButton>
+                            </MudStack>
+                        }
+                    </CellTemplate>
+                </TemplateColumn>
+
+            </Columns>
+
+            <PagerContent>
+                <MudDataGridPager T="Incident" />
+            </PagerContent>
+
+        </MudDataGrid>
+    }
+
+</MudContainer>
+</MudBreakpointProvider>
+
+@code {
+    private List<Incident> _incidents = new();
+    private bool _isMobile;
+    private bool _isTablet;
+    private bool _isDense;
+    private Breakpoint _currentBreakpoint = Breakpoint.Always;
+
+    [CascadingParameter]
+    public Breakpoint CurrentBreakpoint { get; set; }
+
+    protected override async System.Threading.Tasks.Task OnInitializedAsync()
+    {
+        // Load data
+        await ViewModel.LoadFirstPageAsync(CancellationToken.None);
+
+        // Map to Incident entities (temporary - replace with actual data from ViewModel)
+        _incidents = GetSampleIncidents();
+    }
+
+    protected override void OnParametersSet()
+    {
+        _currentBreakpoint = CurrentBreakpoint;
+        _isMobile = CurrentBreakpoint <= Breakpoint.Sm;
+        _isTablet = CurrentBreakpoint == Breakpoint.Md;
+        _isDense = CurrentBreakpoint <= Breakpoint.Md;
+    }
+
+    private void HandleSearchChanged(WorkspaceData.WorkspaceFavorite? selectedSearch)
+    {
+        if (selectedSearch is not null)
+        {
+            ViewModel.SelectedSearch = selectedSearch;
+
+            Logger.LogInformation("Search changed to: {SearchName} (ID: {SearchId})", 
+                selectedSearch.Name, selectedSearch.Id);
+
+            Snackbar.Add($"Applied search: {selectedSearch.Name}", Severity.Info);
+
+            // TODO: Apply search filters to the data grid
+            // Load validated search and apply conditions
+        }
+    }
+
+    private void HandleNewIncident()
+    {
+        Snackbar.Add("New Incident dialog - Coming soon!", Severity.Info);
+        // TODO: Implement new incident creation
+        // await DialogService.ShowAsync<NewIncidentDialog>("New Incident");
+    }
+
+    private void HandleEdit(string id)
+    {
+        // TODO: Implement edit
+        // await DialogService.ShowAsync<EditIncidentDialog>("Edit Incident", parameters);
+    }
+
+    private void HandleView(string id)
+    {
+        // TODO: Implement view
+        // NavigationManager.NavigateTo($"/incident/{id}");
+    }
+
+    private Color GetStatusColor(string? status)
+    {
+        return status?.ToLower() switch
+        {
+            "active" => Color.Primary,
+            "closed" => Color.Success,
+            "pending" => Color.Warning,
+            "resolved" => Color.Info,
+            _ => Color.Default
+        };
+    }
+
+    private Color GetPriorityColor(string? priority)
+    {
+        return priority?.ToLower() switch
+        {
+            "1" or "high" or "critical" => Color.Error,
+            "2" or "medium" => Color.Warning,
+            "3" or "low" => Color.Info,
+            _ => Color.Default
+        };
+    }
+
+    private Color GetUrgencyColor(string? urgency)
+    {
+        return urgency?.ToLower() switch
+        {
+            "high" or "urgent" => Color.Error,
+            "medium" => Color.Warning,
+            "low" => Color.Success,
+            _ => Color.Default
+        };
+    }
+
+    // Temporary sample data - replace with actual data from ViewModel
+    private List<Incident> GetSampleIncidents()
+    {
+        return new List<Incident>
+        {
+            new Incident
+            {
+                RecId = Guid.NewGuid().ToString(),
+                Subject = "System Error on Production Server",
+                Status = "Active",
+                Priority = "1",
+                Urgency = "High",
+                Category = "Infrastructure",
+                Owner = "John Doe",
+                OwnerEmail = "john.doe@company.com",
+                Service = "Application Services",
+                CreatedDateTime = DateTimeOffset.Now.AddDays(-2),
+                LastModDateTime = DateTimeOffset.Now.AddHours(-1),
+                IsVIP = true,
+                IsInFinalState = false
+            },
+            new Incident
+            {
+                RecId = Guid.NewGuid().ToString(),
+                Subject = "Network Connectivity Issue",
+                Status = "Pending",
+                Priority = "2",
+                Urgency = "Medium",
+                Category = "Network",
+                Owner = "Jane Smith",
+                OwnerEmail = "jane.smith@company.com",
+                Service = "Network Services",
+                CreatedDateTime = DateTimeOffset.Now.AddDays(-1),
+                LastModDateTime = DateTimeOffset.Now.AddMinutes(-30),
+                IsVIP = false,
+                IsInFinalState = false
+            }
+        };
+    }
+}

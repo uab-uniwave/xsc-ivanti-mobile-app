@@ -1,0 +1,760 @@
+{
+  "d": {
+    "__type": "MetaDataDefinition.Revisions.R1.SearchDefinitionValid",
+    "ExtType": "search-save",
+    "IsValid": true,
+    "Id": "d74c224d-42e4-49dc-9b1a-4450b9d3d524",
+    "CategoryName": "Saved Search",
+    "Name": "My Team's Active Incidents",
+    "isFavorite": true,
+    "RolesDefault": [
+      "ServiceDeskManager",
+      "ResponsiveAnalyst"
+    ],
+    "isDefaultMy": false,
+    "ObjectId": "Incident#",
+    "Description": null,
+    "OwnerId": null,
+    "Query": "[{\"ObjectId\":\"Incident#\",\"ObjectDisplay\":\"Incident\",\"JoinRule\":\"AND\",\"Condition\":\"=\",\"ConditionType\":\"ByField\",\"FieldName\":\"Status\",\"FieldDisplay\":\"Status\",\"FieldAlias\":null,\"FieldType\":\"list\",\"FieldValue\":\"Active\",\"FieldValueDisplay\":\"Active\",\"FieldValueBehavior\":\"single\",\"FieldStartValue\":null,\"FieldEndValue\":null,\"BracketLevel\":0,\"IsClosingBracket\":false,\"IsRelatedObjectQuery\":false,\"RelatedObjectId\":null,\"RelatedObjectDisplay\":null,\"RelatedObjectOp\":null,\"RelatedObjectCount\":1,\"RelatedObjects\":[{\"ID\":\"Incident#\",\"ObjectId\":\"Incident#\",\"Name\":\"Incident\",\"Style\":\"master\",\"ThereCardinality\":\"\"},{\"ID\":\"Journal#.\",\"ObjectId\":\"Journal#\",\"Name\":\"Activity History via IncidentContainsJournal (0...1 : 0...N)\",\"Style\":\"related\",\"ThereCardinality\":\"Many\"},{\"ID\":\"FRS_Approval#.\",\"ObjectId\":\"FRS_Approval#\",\"Name\":\"Approval via IncidentAssociatedFRS_Approval (0...1 : 0...N)\",\"Style\":\"related\",\"ThereCardinality\":\"Many\"},{\"ID\":\"Attachment#.\",\"ObjectId\":\"Attachment#\",\"Name\":\"Attachment via IncidentContainsAttachment (0...1 : N)\",\"Style\":\"related\",\"ThereCardinality\":\"Many\"},{\"ID\":\"Audit_Incident#.\",\"ObjectId\":\"Audit_Incident#\",\"Name\":\"Audit_Incident via AuditHistoryRelationship (1 : 0...N)\",\"Style\":\"related\",\"ThereCardinality\":\"Many\"},{\"ID\":\"Change#.\",\"ObjectId\":\"Change#\",\"Name\":\"Change via IncidentAssociatesChange (0...N : 0...M)\",\"Style\":\"related\",\"ThereCardinality\":\"Many\"},{\"ID\":\"CI#.Active\",\"ObjectId\":\"CI#\",\"Name\":\"CI via CIAssociatedActiveIncident (0...N : 0...M)\",\"Style\":\"related\",\"ThereCardinality\":\"Many\"},{\"ID\":\"CI#.\",\"ObjectId\":\"CI#\",\"Name\":\"CI via IncidentAssociatesCI (0...N : 0...M)\",\"Style\":\"related\",\"ThereCardinality\":\"Many\"},{\"ID\":\"ComputerProvisionAction#.Reverse\",\"ObjectId\":\"ComputerProvisionAction#\",\"Name\":\"Computer Provision Action via IncidentAssociatedComputerProvisionAction (0...1 : 0...N)\",\"Style\":\"related\",\"ThereCardinality\":\"Many\"},{\"ID\":\"Frs_CompositeContract_Contact#.IncidentAssociatedCustomer\",\"ObjectId\":\"Frs_CompositeContract_Contact#\",\"Name\":\"Contact via IncidentAssociatedCustomer (0...N : 0...1)\",\"Style\":\"related\",\"ThereCardinality\":\"One\"},{\"ID\":\"Frs_CompositeContract_Contact#.IncidentAssociatedReportedBy\",\"ObjectId\":\"Frs_CompositeContract_Contact#\",\"Name\":\"Contact via IncidentAssociatedReportedBy (0...N : 0...1)\",\"Style\":\"related\",\"ThereCardinality\":\"One\"},{\"ID\":\"Employee#.owner\",\"ObjectId\":\"Employee#\",\"Name\":\"Employee via IncidentOwnerEmployee (0...N : 0...1)\",\"Style\":\"related\",\"ThereCardinality\":\"One\"},{\"ID\":\"Frs_CompositeContract_Entity#.Entity\",\"ObjectId\":\"Frs_CompositeContract_Entity#\",\"Name\":\"Entity via IncidentAssocFrs_CompositeContract_Entity (0...N : 0...1)\",\"Style\":\"related\",\"ThereCardinality\":\"One\"},{\"ID\":\"Frs_data_escalation_watch#.IncidentAssocClosingEscWatch\",\"ObjectId\":\"Frs_data_escalation_watch#\",\"Name\":\"Escalation Watch via IncidentAssocClosingEscWatch (0...1 : 0...1)\",\"Style\":\"related\",\"ThereCardinality\":\"One\"},{\"ID\":\"Frs_data_escalation_watch#.\",\"ObjectId\":\"Frs_data_escalation_watch#\",\"Name\":\"Escalation Watch via IncidentAssociatedEscalationWatch (0...1 : 0...N)\",\"Style\":\"related\",\"ThereCardinality\":\"Many\"},{\"ID\":\"Frs_data_escalation_watch#.IncidentAssocResolutionEscWatch\",\"ObjectId\":\"Frs_data_escalation_watch#\",\"Name\":\"Escalation Watch via IncidentAssocResolutionEscWatch (0...1 : 0...1)\",\"Style\":\"related\",\"ThereCardinality\":\"One\"},{\"ID\":\"Frs_data_escalation_watch#.IncidentAssocResponseEscalationWatch\",\"ObjectId\":\"Frs_data_escalation_watch#\",\"Name\":\"Escalation Watch via IncidentAssocResponseEscalationWatch (0...1 : 0...1)\",\"Style\":\"related\",\"ThereCardinality\":\"One\"},{\"ID\":\"Frs_data_escalation_watch#.IncidentAssocWaitingEscWatch\",\"ObjectId\":\"Frs_data_escalation_watch#\",\"Name\":\"Escalation Watch via IncidentAssocWaitingEscWatch (0...1 : 0...1)\",\"Style\":\"related\",\"ThereCardinality\":\"One\"},{\"ID\":\"Frs_EVT_Event#.Incident\",\"ObjectId\":\"Frs_EVT_Event#\",\"Name\":\"Event via Frs_EVT_EventAssocIncident (0...1 : 0...N)\",\"Style\":\"related\",\"ThereCardinality\":\"Many\"},{\"ID\":\"Task#WorkOrder.IncidentAssocExternalTask\",\"ObjectId\":\"Task#WorkOrder\",\"Name\":\"External Task via IncidentAssocExternalTask (0...1 : 0...N)\",\"Style\":\"related\",\"ThereCardinality\":\"Many\"},{\"ID\":\"IncidentDetail#.\",\"ObjectId\":\"IncidentDetail#\",\"Name\":\"Incident Detail via IncidentContainsIncidentDetail (0...1 : 1)\",\"Style\":\"related\",\"ThereCardinality\":\"One\"},{\"ID\":\"Incident#.ChildIncident\",\"ObjectId\":\"Incident#\",\"Name\":\"Incident via IncidentAssocChildIncident (0...1 : 0...N)\",\"Style\":\"related\",\"ThereCardinality\":\"Many\"},{\"ID\":\"Incident#.MasterIncident\",\"ObjectId\":\"Incident#\",\"Name\":\"Incident via IncidentAssocMasterIncident (0...N : 0...1)\",\"Style\":\"related\",\"ThereCardinality\":\"One\"},{\"ID\":\"Frs_ITFM_Transaction#.CostItem\",\"ObjectId\":\"Frs_ITFM_Transaction#\",\"Name\":\"ITFM Cost Item via IncidentAssocFrs_ITFM_Transaction (0...1 : 0...N)\",\"Style\":\"related\",\"ThereCardinality\":\"Many\"},{\"ID\":\"FRS_Knowledge#.\",\"ObjectId\":\"FRS_Knowledge#\",\"Name\":\"Knowledge via IncidentAssocFRS_Knowledge (0...N : 0...M)\",\"Style\":\"related\",\"ThereCardinality\":\"Many\"},{\"ID\":\"FRS_MyItem#.\",\"ObjectId\":\"FRS_MyItem#\",\"Name\":\"My Item via IncidentAssociatedMyItem (0...1 : 0...1)\",\"Style\":\"related\",\"ThereCardinality\":\"One\"},{\"ID\":\"MyShelfItem#.shelftoincident\",\"ObjectId\":\"MyShelfItem#\",\"Name\":\"My Shelf Item via MyShelfItemAssocIncident (0...1 : 0...N)\",\"Style\":\"related\",\"ThereCardinality\":\"Many\"},{\"ID\":\"OrganizationalUnit#.\",\"ObjectId\":\"OrganizationalUnit#\",\"Name\":\"Organizational Unit via IncidentAssocOrganizationalUnit (0...N : 0...1)\",\"Style\":\"related\",\"ThereCardinality\":\"One\"},{\"ID\":\"Problem#.\",\"ObjectId\":\"Problem#\",\"Name\":\"Problem via ProblemAssociatesIncident (0...N : 0...1)\",\"Style\":\"related\",\"ThereCardinality\":\"One\"},{\"ID\":\"Frs_Project#.ProjectIncident\",\"ObjectId\":\"Frs_Project#\",\"Name\":\"Project via Frs_ProjectAssocIncident (0...N : 0...M)\",\"Style\":\"related\",\"ThereCardinality\":\"Many\"},{\"ID\":\"ServiceAgreement#.\",\"ObjectId\":\"ServiceAgreement#\",\"Name\":\"Service Agreement via IncidentAssociatedEmbeddedServiceAgreement (0...N : 0...1)\",\"Style\":\"related\",\"ThereCardinality\":\"One\"},{\"ID\":\"ServiceAgreement#SLA.\",\"ObjectId\":\"ServiceAgreement#SLA\",\"Name\":\"Service Level Agreement via IncidentAssociatedServiceAgreementSLA (0...N : 0...1)\",\"Style\":\"related\",\"ThereCardinality\":\"One\"},{\"ID\":\"ServiceReq#.\",\"ObjectId\":\"ServiceReq#\",\"Name\":\"Service Request via IncidentAssociatedServiceReq (0...1 : 0...1)\",\"Style\":\"related\",\"ThereCardinality\":\"One\"},{\"ID\":\"ServiceReq#.Reverse\",\"ObjectId\":\"ServiceReq#\",\"Name\":\"Service Request via ServiceReqAssociatedByIncident (0...1 : 0...1)\",\"Style\":\"related\",\"ThereCardinality\":\"One\"},{\"ID\":\"CI#Service.IncidentAssociatesService\",\"ObjectId\":\"CI#Service\",\"Name\":\"Service via IncidentAssociatesService (0...N : 0...1)\",\"Style\":\"related\",\"ThereCardinality\":\"One\"},{\"ID\":\"SocialFeeds#.SocialFeedsAssocIncident\",\"ObjectId\":\"SocialFeeds#\",\"Name\":\"Social Feeds via SocialFeedsAssocIncident (0...N : 0...M)\",\"Style\":\"related\",\"ThereCardinality\":\"Many\"},{\"ID\":\"SoftwareAction#.\",\"ObjectId\":\"SoftwareAction#\",\"Name\":\"Software Action via IncidentAssociatedSoftwareAction (0...1 : 0...N)\",\"Style\":\"related\",\"ThereCardinality\":\"Many\"},{\"ID\":\"FRS_SurveySession#.\",\"ObjectId\":\"FRS_SurveySession#\",\"Name\":\"Survey Response via IncidentAssociatedFRS_SurveySession (0...1 : 0...N)\",\"Style\":\"related\",\"ThereCardinality\":\"Many\"},{\"ID\":\"FRS_SurveyResults#.\",\"ObjectId\":\"FRS_SurveyResults#\",\"Name\":\"Survey Result via IncidentAssociatedFRS_SurveyResults (0...1 : 0...N)\",\"Style\":\"related\",\"ThereCardinality\":\"Many\"},{\"ID\":\"Task#.Rev2\",\"ObjectId\":\"Task#\",\"Name\":\"Task group via IncidentAssociatedCancelledTask (0...1 : 0...N)\",\"Style\":\"related\",\"ThereCardinality\":\"Many\"},{\"ID\":\"Task#.\",\"ObjectId\":\"Task#\",\"Name\":\"Task group via IncidentContainsTask (0...1 : 0...N)\",\"Style\":\"related\",\"ThereCardinality\":\"Many\"},{\"ID\":\"Task#Assignment.Rev3\",\"ObjectId\":\"Task#Assignment\",\"Name\":\"Task via IncidentAssocTaskAssignment (0...1 : 0...N)\",\"Style\":\"related\",\"ThereCardinality\":\"Many\"},{\"ID\":\"Task#ComputerProvisioning.\",\"ObjectId\":\"Task#ComputerProvisioning\",\"Name\":\"Task.ComputerProvisioning via IncidentAssociatedTaskComputerProvisioning (0...1 : 0...N)\",\"Style\":\"related\",\"ThereCardinality\":\"Many\"},{\"ID\":\"Task#SoftwareInstallation.Rev3\",\"ObjectId\":\"Task#SoftwareInstallation\",\"Name\":\"Task.SoftwareInstallation via IncidentAssociatedTaskSoftwareInstallation (0...1 : 0...N)\",\"Style\":\"related\",\"ThereCardinality\":\"Many\"},{\"ID\":\"Vendor#.IncidentAssocProfileVendor\",\"ObjectId\":\"Vendor#\",\"Name\":\"Vendor via IncidentAssocProfileVendor (0...N : 0...1)\",\"Style\":\"related\",\"ThereCardinality\":\"One\"},{\"ID\":\"Frs_data_workflow_instance#.\",\"ObjectId\":\"Frs_data_workflow_instance#\",\"Name\":\"Workflow Instance via IncidentAssociatedByWorkflowInstance (0...1 : 0...N)\",\"Style\":\"related\",\"ThereCardinality\":\"Many\"}],\"RelatedRelatedObjects\":null,\"MasterObjectId\":null,\"IsRelatedObjectCondition\":false,\"SubQuery\":null},{\"ObjectId\":\"Incident#\",\"ObjectDisplay\":\"Incident\",\"JoinRule\":\"AND\",\"Condition\":\"()\",\"ConditionType\":\"ByField\",\"FieldName\":\"OwnerTeam\",\"FieldDisplay\":\"Team\",\"FieldAlias\":null,\"FieldType\":\"list\",\"FieldValue\":\"$(CurrentUserTeamNames())\",\"FieldValueDisplay\":\"$(CurrentUserTeamNames())\",\"FieldValueBehavior\":\"list\",\"FieldStartValue\":null,\"FieldEndValue\":null,\"BracketLevel\":0,\"IsClosingBracket\":false,\"IsRelatedObjectQuery\":false,\"RelatedObjectId\":null,\"RelatedObjectDisplay\":null,\"RelatedObjectOp\":null,\"RelatedObjectCount\":1,\"RelatedObjects\":[{\"ID\":\"Incident#\",\"ObjectId\":\"Incident#\",\"Name\":\"Incident\",\"Style\":\"master\",\"ThereCardinality\":\"\"},{\"ID\":\"Journal#.\",\"ObjectId\":\"Journal#\",\"Name\":\"Activity History via IncidentContainsJournal (0...1 : 0...N)\",\"Style\":\"related\",\"ThereCardinality\":\"Many\"},{\"ID\":\"FRS_Approval#.\",\"ObjectId\":\"FRS_Approval#\",\"Name\":\"Approval via IncidentAssociatedFRS_Approval (0...1 : 0...N)\",\"Style\":\"related\",\"ThereCardinality\":\"Many\"},{\"ID\":\"Attachment#.\",\"ObjectId\":\"Attachment#\",\"Name\":\"Attachment via IncidentContainsAttachment (0...1 : N)\",\"Style\":\"related\",\"ThereCardinality\":\"Many\"},{\"ID\":\"Audit_Incident#.\",\"ObjectId\":\"Audit_Incident#\",\"Name\":\"Audit_Incident via AuditHistoryRelationship (1 : 0...N)\",\"Style\":\"related\",\"ThereCardinality\":\"Many\"},{\"ID\":\"Change#.\",\"ObjectId\":\"Change#\",\"Name\":\"Change via IncidentAssociatesChange (0...N : 0...M)\",\"Style\":\"related\",\"ThereCardinality\":\"Many\"},{\"ID\":\"CI#.Active\",\"ObjectId\":\"CI#\",\"Name\":\"CI via CIAssociatedActiveIncident (0...N : 0...M)\",\"Style\":\"related\",\"ThereCardinality\":\"Many\"},{\"ID\":\"CI#.\",\"ObjectId\":\"CI#\",\"Name\":\"CI via IncidentAssociatesCI (0...N : 0...M)\",\"Style\":\"related\",\"ThereCardinality\":\"Many\"},{\"ID\":\"ComputerProvisionAction#.Reverse\",\"ObjectId\":\"ComputerProvisionAction#\",\"Name\":\"Computer Provision Action via IncidentAssociatedComputerProvisionAction (0...1 : 0...N)\",\"Style\":\"related\",\"ThereCardinality\":\"Many\"},{\"ID\":\"Frs_CompositeContract_Contact#.IncidentAssociatedCustomer\",\"ObjectId\":\"Frs_CompositeContract_Contact#\",\"Name\":\"Contact via IncidentAssociatedCustomer (0...N : 0...1)\",\"Style\":\"related\",\"ThereCardinality\":\"One\"},{\"ID\":\"Frs_CompositeContract_Contact#.IncidentAssociatedReportedBy\",\"ObjectId\":\"Frs_CompositeContract_Contact#\",\"Name\":\"Contact via IncidentAssociatedReportedBy (0...N : 0...1)\",\"Style\":\"related\",\"ThereCardinality\":\"One\"},{\"ID\":\"Employee#.owner\",\"ObjectId\":\"Employee#\",\"Name\":\"Employee via IncidentOwnerEmployee (0...N : 0...1)\",\"Style\":\"related\",\"ThereCardinality\":\"One\"},{\"ID\":\"Frs_CompositeContract_Entity#.Entity\",\"ObjectId\":\"Frs_CompositeContract_Entity#\",\"Name\":\"Entity via IncidentAssocFrs_CompositeContract_Entity (0...N : 0...1)\",\"Style\":\"related\",\"ThereCardinality\":\"One\"},{\"ID\":\"Frs_data_escalation_watch#.IncidentAssocClosingEscWatch\",\"ObjectId\":\"Frs_data_escalation_watch#\",\"Name\":\"Escalation Watch via IncidentAssocClosingEscWatch (0...1 : 0...1)\",\"Style\":\"related\",\"ThereCardinality\":\"One\"},{\"ID\":\"Frs_data_escalation_watch#.\",\"ObjectId\":\"Frs_data_escalation_watch#\",\"Name\":\"Escalation Watch via IncidentAssociatedEscalationWatch (0...1 : 0...N)\",\"Style\":\"related\",\"ThereCardinality\":\"Many\"},{\"ID\":\"Frs_data_escalation_watch#.IncidentAssocResolutionEscWatch\",\"ObjectId\":\"Frs_data_escalation_watch#\",\"Name\":\"Escalation Watch via IncidentAssocResolutionEscWatch (0...1 : 0...1)\",\"Style\":\"related\",\"ThereCardinality\":\"One\"},{\"ID\":\"Frs_data_escalation_watch#.IncidentAssocResponseEscalationWatch\",\"ObjectId\":\"Frs_data_escalation_watch#\",\"Name\":\"Escalation Watch via IncidentAssocResponseEscalationWatch (0...1 : 0...1)\",\"Style\":\"related\",\"ThereCardinality\":\"One\"},{\"ID\":\"Frs_data_escalation_watch#.IncidentAssocWaitingEscWatch\",\"ObjectId\":\"Frs_data_escalation_watch#\",\"Name\":\"Escalation Watch via IncidentAssocWaitingEscWatch (0...1 : 0...1)\",\"Style\":\"related\",\"ThereCardinality\":\"One\"},{\"ID\":\"Frs_EVT_Event#.Incident\",\"ObjectId\":\"Frs_EVT_Event#\",\"Name\":\"Event via Frs_EVT_EventAssocIncident (0...1 : 0...N)\",\"Style\":\"related\",\"ThereCardinality\":\"Many\"},{\"ID\":\"Task#WorkOrder.IncidentAssocExternalTask\",\"ObjectId\":\"Task#WorkOrder\",\"Name\":\"External Task via IncidentAssocExternalTask (0...1 : 0...N)\",\"Style\":\"related\",\"ThereCardinality\":\"Many\"},{\"ID\":\"IncidentDetail#.\",\"ObjectId\":\"IncidentDetail#\",\"Name\":\"Incident Detail via IncidentContainsIncidentDetail (0...1 : 1)\",\"Style\":\"related\",\"ThereCardinality\":\"One\"},{\"ID\":\"Incident#.ChildIncident\",\"ObjectId\":\"Incident#\",\"Name\":\"Incident via IncidentAssocChildIncident (0...1 : 0...N)\",\"Style\":\"related\",\"ThereCardinality\":\"Many\"},{\"ID\":\"Incident#.MasterIncident\",\"ObjectId\":\"Incident#\",\"Name\":\"Incident via IncidentAssocMasterIncident (0...N : 0...1)\",\"Style\":\"related\",\"ThereCardinality\":\"One\"},{\"ID\":\"Frs_ITFM_Transaction#.CostItem\",\"ObjectId\":\"Frs_ITFM_Transaction#\",\"Name\":\"ITFM Cost Item via IncidentAssocFrs_ITFM_Transaction (0...1 : 0...N)\",\"Style\":\"related\",\"ThereCardinality\":\"Many\"},{\"ID\":\"FRS_Knowledge#.\",\"ObjectId\":\"FRS_Knowledge#\",\"Name\":\"Knowledge via IncidentAssocFRS_Knowledge (0...N : 0...M)\",\"Style\":\"related\",\"ThereCardinality\":\"Many\"},{\"ID\":\"FRS_MyItem#.\",\"ObjectId\":\"FRS_MyItem#\",\"Name\":\"My Item via IncidentAssociatedMyItem (0...1 : 0...1)\",\"Style\":\"related\",\"ThereCardinality\":\"One\"},{\"ID\":\"MyShelfItem#.shelftoincident\",\"ObjectId\":\"MyShelfItem#\",\"Name\":\"My Shelf Item via MyShelfItemAssocIncident (0...1 : 0...N)\",\"Style\":\"related\",\"ThereCardinality\":\"Many\"},{\"ID\":\"OrganizationalUnit#.\",\"ObjectId\":\"OrganizationalUnit#\",\"Name\":\"Organizational Unit via IncidentAssocOrganizationalUnit (0...N : 0...1)\",\"Style\":\"related\",\"ThereCardinality\":\"One\"},{\"ID\":\"Problem#.\",\"ObjectId\":\"Problem#\",\"Name\":\"Problem via ProblemAssociatesIncident (0...N : 0...1)\",\"Style\":\"related\",\"ThereCardinality\":\"One\"},{\"ID\":\"Frs_Project#.ProjectIncident\",\"ObjectId\":\"Frs_Project#\",\"Name\":\"Project via Frs_ProjectAssocIncident (0...N : 0...M)\",\"Style\":\"related\",\"ThereCardinality\":\"Many\"},{\"ID\":\"ServiceAgreement#.\",\"ObjectId\":\"ServiceAgreement#\",\"Name\":\"Service Agreement via IncidentAssociatedEmbeddedServiceAgreement (0...N : 0...1)\",\"Style\":\"related\",\"ThereCardinality\":\"One\"},{\"ID\":\"ServiceAgreement#SLA.\",\"ObjectId\":\"ServiceAgreement#SLA\",\"Name\":\"Service Level Agreement via IncidentAssociatedServiceAgreementSLA (0...N : 0...1)\",\"Style\":\"related\",\"ThereCardinality\":\"One\"},{\"ID\":\"ServiceReq#.\",\"ObjectId\":\"ServiceReq#\",\"Name\":\"Service Request via IncidentAssociatedServiceReq (0...1 : 0...1)\",\"Style\":\"related\",\"ThereCardinality\":\"One\"},{\"ID\":\"ServiceReq#.Reverse\",\"ObjectId\":\"ServiceReq#\",\"Name\":\"Service Request via ServiceReqAssociatedByIncident (0...1 : 0...1)\",\"Style\":\"related\",\"ThereCardinality\":\"One\"},{\"ID\":\"CI#Service.IncidentAssociatesService\",\"ObjectId\":\"CI#Service\",\"Name\":\"Service via IncidentAssociatesService (0...N : 0...1)\",\"Style\":\"related\",\"ThereCardinality\":\"One\"},{\"ID\":\"SocialFeeds#.SocialFeedsAssocIncident\",\"ObjectId\":\"SocialFeeds#\",\"Name\":\"Social Feeds via SocialFeedsAssocIncident (0...N : 0...M)\",\"Style\":\"related\",\"ThereCardinality\":\"Many\"},{\"ID\":\"SoftwareAction#.\",\"ObjectId\":\"SoftwareAction#\",\"Name\":\"Software Action via IncidentAssociatedSoftwareAction (0...1 : 0...N)\",\"Style\":\"related\",\"ThereCardinality\":\"Many\"},{\"ID\":\"FRS_SurveySession#.\",\"ObjectId\":\"FRS_SurveySession#\",\"Name\":\"Survey Response via IncidentAssociatedFRS_SurveySession (0...1 : 0...N)\",\"Style\":\"related\",\"ThereCardinality\":\"Many\"},{\"ID\":\"FRS_SurveyResults#.\",\"ObjectId\":\"FRS_SurveyResults#\",\"Name\":\"Survey Result via IncidentAssociatedFRS_SurveyResults (0...1 : 0...N)\",\"Style\":\"related\",\"ThereCardinality\":\"Many\"},{\"ID\":\"Task#.Rev2\",\"ObjectId\":\"Task#\",\"Name\":\"Task group via IncidentAssociatedCancelledTask (0...1 : 0...N)\",\"Style\":\"related\",\"ThereCardinality\":\"Many\"},{\"ID\":\"Task#.\",\"ObjectId\":\"Task#\",\"Name\":\"Task group via IncidentContainsTask (0...1 : 0...N)\",\"Style\":\"related\",\"ThereCardinality\":\"Many\"},{\"ID\":\"Task#Assignment.Rev3\",\"ObjectId\":\"Task#Assignment\",\"Name\":\"Task via IncidentAssocTaskAssignment (0...1 : 0...N)\",\"Style\":\"related\",\"ThereCardinality\":\"Many\"},{\"ID\":\"Task#ComputerProvisioning.\",\"ObjectId\":\"Task#ComputerProvisioning\",\"Name\":\"Task.ComputerProvisioning via IncidentAssociatedTaskComputerProvisioning (0...1 : 0...N)\",\"Style\":\"related\",\"ThereCardinality\":\"Many\"},{\"ID\":\"Task#SoftwareInstallation.Rev3\",\"ObjectId\":\"Task#SoftwareInstallation\",\"Name\":\"Task.SoftwareInstallation via IncidentAssociatedTaskSoftwareInstallation (0...1 : 0...N)\",\"Style\":\"related\",\"ThereCardinality\":\"Many\"},{\"ID\":\"Vendor#.IncidentAssocProfileVendor\",\"ObjectId\":\"Vendor#\",\"Name\":\"Vendor via IncidentAssocProfileVendor (0...N : 0...1)\",\"Style\":\"related\",\"ThereCardinality\":\"One\"},{\"ID\":\"Frs_data_workflow_instance#.\",\"ObjectId\":\"Frs_data_workflow_instance#\",\"Name\":\"Workflow Instance via IncidentAssociatedByWorkflowInstance (0...1 : 0...N)\",\"Style\":\"related\",\"ThereCardinality\":\"Many\"}],\"RelatedRelatedObjects\":null,\"MasterObjectId\":null,\"IsRelatedObjectCondition\":false,\"SubQuery\":null}]",
+    "Conditions": [
+      {
+        "__type": "MetaDataDefinition.Revisions.R1.SearchCondition",
+        "ObjectId": "Incident#",
+        "ObjectDisplay": "Incident",
+        "JoinRule": "AND",
+        "Condition": "=",
+        "ConditionType": 0,
+        "FieldName": "Status",
+        "FieldDisplay": "Status",
+        "FieldAlias": null,
+        "FieldType": "list",
+        "FieldValue": "Active",
+        "FieldValueDisplay": "Active",
+        "FieldValueBehavior": "single",
+        "FieldStartValue": null,
+        "FieldEndValue": null,
+        "BracketLevel": 0,
+        "IsClosingBracket": false,
+        "IsRelatedObjectQuery": false,
+        "RelatedObjectId": null,
+        "RelatedObjectDisplay": null,
+        "RelatedObjectOp": null,
+        "RelatedObjectCount": 1,
+        "RelatedObjects": [
+          {
+            "ID": "Incident#",
+            "ObjectId": "Incident#",
+            "Name": "Incident",
+            "Style": "master",
+            "ThereCardinality": ""
+          },
+          {
+            "ID": "Journal#.",
+            "ObjectId": "Journal#",
+            "Name": "Activity History via IncidentContainsJournal (0...1 : 0...N)",
+            "Style": "related",
+            "ThereCardinality": "Many"
+          },
+          {
+            "ID": "FRS_Approval#.",
+            "ObjectId": "FRS_Approval#",
+            "Name": "Approval via IncidentAssociatedFRS_Approval (0...1 : 0...N)",
+            "Style": "related",
+            "ThereCardinality": "Many"
+          },
+          {
+            "ID": "Attachment#.",
+            "ObjectId": "Attachment#",
+            "Name": "Attachment via IncidentContainsAttachment (0...1 : N)",
+            "Style": "related",
+            "ThereCardinality": "Many"
+          },
+          {
+            "ID": "Audit_Incident#.",
+            "ObjectId": "Audit_Incident#",
+            "Name": "Audit_Incident via AuditHistoryRelationship (1 : 0...N)",
+            "Style": "related",
+            "ThereCardinality": "Many"
+          },
+          {
+            "ID": "Change#.",
+            "ObjectId": "Change#",
+            "Name": "Change via IncidentAssociatesChange (0...N : 0...M)",
+            "Style": "related",
+            "ThereCardinality": "Many"
+          },
+          {
+            "ID": "CI#.Active",
+            "ObjectId": "CI#",
+            "Name": "CI via CIAssociatedActiveIncident (0...N : 0...M)",
+            "Style": "related",
+            "ThereCardinality": "Many"
+          },
+          {
+            "ID": "CI#.",
+            "ObjectId": "CI#",
+            "Name": "CI via IncidentAssociatesCI (0...N : 0...M)",
+            "Style": "related",
+            "ThereCardinality": "Many"
+          },
+          {
+            "ID": "ComputerProvisionAction#.Reverse",
+            "ObjectId": "ComputerProvisionAction#",
+            "Name": "Computer Provision Action via IncidentAssociatedComputerProvisionAction (0...1 : 0...N)",
+            "Style": "related",
+            "ThereCardinality": "Many"
+          },
+          {
+            "ID": "Frs_CompositeContract_Contact#.IncidentAssociatedCustomer",
+            "ObjectId": "Frs_CompositeContract_Contact#",
+            "Name": "Contact via IncidentAssociatedCustomer (0...N : 0...1)",
+            "Style": "related",
+            "ThereCardinality": "One"
+          },
+          {
+            "ID": "Frs_CompositeContract_Contact#.IncidentAssociatedReportedBy",
+            "ObjectId": "Frs_CompositeContract_Contact#",
+            "Name": "Contact via IncidentAssociatedReportedBy (0...N : 0...1)",
+            "Style": "related",
+            "ThereCardinality": "One"
+          },
+          {
+            "ID": "Employee#.owner",
+            "ObjectId": "Employee#",
+            "Name": "Employee via IncidentOwnerEmployee (0...N : 0...1)",
+            "Style": "related",
+            "ThereCardinality": "One"
+          },
+          {
+            "ID": "Frs_CompositeContract_Entity#.Entity",
+            "ObjectId": "Frs_CompositeContract_Entity#",
+            "Name": "Entity via IncidentAssocFrs_CompositeContract_Entity (0...N : 0...1)",
+            "Style": "related",
+            "ThereCardinality": "One"
+          },
+          {
+            "ID": "Frs_data_escalation_watch#.IncidentAssocClosingEscWatch",
+            "ObjectId": "Frs_data_escalation_watch#",
+            "Name": "Escalation Watch via IncidentAssocClosingEscWatch (0...1 : 0...1)",
+            "Style": "related",
+            "ThereCardinality": "One"
+          },
+          {
+            "ID": "Frs_data_escalation_watch#.",
+            "ObjectId": "Frs_data_escalation_watch#",
+            "Name": "Escalation Watch via IncidentAssociatedEscalationWatch (0...1 : 0...N)",
+            "Style": "related",
+            "ThereCardinality": "Many"
+          },
+          {
+            "ID": "Frs_data_escalation_watch#.IncidentAssocResolutionEscWatch",
+            "ObjectId": "Frs_data_escalation_watch#",
+            "Name": "Escalation Watch via IncidentAssocResolutionEscWatch (0...1 : 0...1)",
+            "Style": "related",
+            "ThereCardinality": "One"
+          },
+          {
+            "ID": "Frs_data_escalation_watch#.IncidentAssocResponseEscalationWatch",
+            "ObjectId": "Frs_data_escalation_watch#",
+            "Name": "Escalation Watch via IncidentAssocResponseEscalationWatch (0...1 : 0...1)",
+            "Style": "related",
+            "ThereCardinality": "One"
+          },
+          {
+            "ID": "Frs_data_escalation_watch#.IncidentAssocWaitingEscWatch",
+            "ObjectId": "Frs_data_escalation_watch#",
+            "Name": "Escalation Watch via IncidentAssocWaitingEscWatch (0...1 : 0...1)",
+            "Style": "related",
+            "ThereCardinality": "One"
+          },
+          {
+            "ID": "Frs_EVT_Event#.Incident",
+            "ObjectId": "Frs_EVT_Event#",
+            "Name": "Event via Frs_EVT_EventAssocIncident (0...1 : 0...N)",
+            "Style": "related",
+            "ThereCardinality": "Many"
+          },
+          {
+            "ID": "Task#WorkOrder.IncidentAssocExternalTask",
+            "ObjectId": "Task#WorkOrder",
+            "Name": "External Task via IncidentAssocExternalTask (0...1 : 0...N)",
+            "Style": "related",
+            "ThereCardinality": "Many"
+          },
+          {
+            "ID": "IncidentDetail#.",
+            "ObjectId": "IncidentDetail#",
+            "Name": "Incident Detail via IncidentContainsIncidentDetail (0...1 : 1)",
+            "Style": "related",
+            "ThereCardinality": "One"
+          },
+          {
+            "ID": "Incident#.ChildIncident",
+            "ObjectId": "Incident#",
+            "Name": "Incident via IncidentAssocChildIncident (0...1 : 0...N)",
+            "Style": "related",
+            "ThereCardinality": "Many"
+          },
+          {
+            "ID": "Incident#.MasterIncident",
+            "ObjectId": "Incident#",
+            "Name": "Incident via IncidentAssocMasterIncident (0...N : 0...1)",
+            "Style": "related",
+            "ThereCardinality": "One"
+          },
+          {
+            "ID": "Frs_ITFM_Transaction#.CostItem",
+            "ObjectId": "Frs_ITFM_Transaction#",
+            "Name": "ITFM Cost Item via IncidentAssocFrs_ITFM_Transaction (0...1 : 0...N)",
+            "Style": "related",
+            "ThereCardinality": "Many"
+          },
+          {
+            "ID": "FRS_Knowledge#.",
+            "ObjectId": "FRS_Knowledge#",
+            "Name": "Knowledge via IncidentAssocFRS_Knowledge (0...N : 0...M)",
+            "Style": "related",
+            "ThereCardinality": "Many"
+          },
+          {
+            "ID": "FRS_MyItem#.",
+            "ObjectId": "FRS_MyItem#",
+            "Name": "My Item via IncidentAssociatedMyItem (0...1 : 0...1)",
+            "Style": "related",
+            "ThereCardinality": "One"
+          },
+          {
+            "ID": "MyShelfItem#.shelftoincident",
+            "ObjectId": "MyShelfItem#",
+            "Name": "My Shelf Item via MyShelfItemAssocIncident (0...1 : 0...N)",
+            "Style": "related",
+            "ThereCardinality": "Many"
+          },
+          {
+            "ID": "OrganizationalUnit#.",
+            "ObjectId": "OrganizationalUnit#",
+            "Name": "Organizational Unit via IncidentAssocOrganizationalUnit (0...N : 0...1)",
+            "Style": "related",
+            "ThereCardinality": "One"
+          },
+          {
+            "ID": "Problem#.",
+            "ObjectId": "Problem#",
+            "Name": "Problem via ProblemAssociatesIncident (0...N : 0...1)",
+            "Style": "related",
+            "ThereCardinality": "One"
+          },
+          {
+            "ID": "Frs_Project#.ProjectIncident",
+            "ObjectId": "Frs_Project#",
+            "Name": "Project via Frs_ProjectAssocIncident (0...N : 0...M)",
+            "Style": "related",
+            "ThereCardinality": "Many"
+          },
+          {
+            "ID": "ServiceAgreement#.",
+            "ObjectId": "ServiceAgreement#",
+            "Name": "Service Agreement via IncidentAssociatedEmbeddedServiceAgreement (0...N : 0...1)",
+            "Style": "related",
+            "ThereCardinality": "One"
+          },
+          {
+            "ID": "ServiceAgreement#SLA.",
+            "ObjectId": "ServiceAgreement#SLA",
+            "Name": "Service Level Agreement via IncidentAssociatedServiceAgreementSLA (0...N : 0...1)",
+            "Style": "related",
+            "ThereCardinality": "One"
+          },
+          {
+            "ID": "ServiceReq#.",
+            "ObjectId": "ServiceReq#",
+            "Name": "Service Request via IncidentAssociatedServiceReq (0...1 : 0...1)",
+            "Style": "related",
+            "ThereCardinality": "One"
+          },
+          {
+            "ID": "ServiceReq#.Reverse",
+            "ObjectId": "ServiceReq#",
+            "Name": "Service Request via ServiceReqAssociatedByIncident (0...1 : 0...1)",
+            "Style": "related",
+            "ThereCardinality": "One"
+          },
+          {
+            "ID": "CI#Service.IncidentAssociatesService",
+            "ObjectId": "CI#Service",
+            "Name": "Service via IncidentAssociatesService (0...N : 0...1)",
+            "Style": "related",
+            "ThereCardinality": "One"
+          },
+          {
+            "ID": "SocialFeeds#.SocialFeedsAssocIncident",
+            "ObjectId": "SocialFeeds#",
+            "Name": "Social Feeds via SocialFeedsAssocIncident (0...N : 0...M)",
+            "Style": "related",
+            "ThereCardinality": "Many"
+          },
+          {
+            "ID": "SoftwareAction#.",
+            "ObjectId": "SoftwareAction#",
+            "Name": "Software Action via IncidentAssociatedSoftwareAction (0...1 : 0...N)",
+            "Style": "related",
+            "ThereCardinality": "Many"
+          },
+          {
+            "ID": "FRS_SurveySession#.",
+            "ObjectId": "FRS_SurveySession#",
+            "Name": "Survey Response via IncidentAssociatedFRS_SurveySession (0...1 : 0...N)",
+            "Style": "related",
+            "ThereCardinality": "Many"
+          },
+          {
+            "ID": "FRS_SurveyResults#.",
+            "ObjectId": "FRS_SurveyResults#",
+            "Name": "Survey Result via IncidentAssociatedFRS_SurveyResults (0...1 : 0...N)",
+            "Style": "related",
+            "ThereCardinality": "Many"
+          },
+          {
+            "ID": "Task#.Rev2",
+            "ObjectId": "Task#",
+            "Name": "Task group via IncidentAssociatedCancelledTask (0...1 : 0...N)",
+            "Style": "related",
+            "ThereCardinality": "Many"
+          },
+          {
+            "ID": "Task#.",
+            "ObjectId": "Task#",
+            "Name": "Task group via IncidentContainsTask (0...1 : 0...N)",
+            "Style": "related",
+            "ThereCardinality": "Many"
+          },
+          {
+            "ID": "Task#Assignment.Rev3",
+            "ObjectId": "Task#Assignment",
+            "Name": "Task via IncidentAssocTaskAssignment (0...1 : 0...N)",
+            "Style": "related",
+            "ThereCardinality": "Many"
+          },
+          {
+            "ID": "Task#ComputerProvisioning.",
+            "ObjectId": "Task#ComputerProvisioning",
+            "Name": "Task.ComputerProvisioning via IncidentAssociatedTaskComputerProvisioning (0...1 : 0...N)",
+            "Style": "related",
+            "ThereCardinality": "Many"
+          },
+          {
+            "ID": "Task#SoftwareInstallation.Rev3",
+            "ObjectId": "Task#SoftwareInstallation",
+            "Name": "Task.SoftwareInstallation via IncidentAssociatedTaskSoftwareInstallation (0...1 : 0...N)",
+            "Style": "related",
+            "ThereCardinality": "Many"
+          },
+          {
+            "ID": "Vendor#.IncidentAssocProfileVendor",
+            "ObjectId": "Vendor#",
+            "Name": "Vendor via IncidentAssocProfileVendor (0...N : 0...1)",
+            "Style": "related",
+            "ThereCardinality": "One"
+          },
+          {
+            "ID": "Frs_data_workflow_instance#.",
+            "ObjectId": "Frs_data_workflow_instance#",
+            "Name": "Workflow Instance via IncidentAssociatedByWorkflowInstance (0...1 : 0...N)",
+            "Style": "related",
+            "ThereCardinality": "Many"
+          }
+        ],
+        "RelatedRelatedObjects": null,
+        "MasterObjectId": null,
+        "IsRelatedObjectCondition": false,
+        "SubQuery": null
+      },
+      {
+        "__type": "MetaDataDefinition.Revisions.R1.SearchCondition",
+        "ObjectId": "Incident#",
+        "ObjectDisplay": "Incident",
+        "JoinRule": "AND",
+        "Condition": "()",
+        "ConditionType": 0,
+        "FieldName": "OwnerTeam",
+        "FieldDisplay": "Team",
+        "FieldAlias": null,
+        "FieldType": "list",
+        "FieldValue": "$(CurrentUserTeamNames())",
+        "FieldValueDisplay": "$(CurrentUserTeamNames())",
+        "FieldValueBehavior": "list",
+        "FieldStartValue": null,
+        "FieldEndValue": null,
+        "BracketLevel": 0,
+        "IsClosingBracket": false,
+        "IsRelatedObjectQuery": false,
+        "RelatedObjectId": null,
+        "RelatedObjectDisplay": null,
+        "RelatedObjectOp": null,
+        "RelatedObjectCount": 1,
+        "RelatedObjects": [
+          {
+            "ID": "Incident#",
+            "ObjectId": "Incident#",
+            "Name": "Incident",
+            "Style": "master",
+            "ThereCardinality": ""
+          },
+          {
+            "ID": "Journal#.",
+            "ObjectId": "Journal#",
+            "Name": "Activity History via IncidentContainsJournal (0...1 : 0...N)",
+            "Style": "related",
+            "ThereCardinality": "Many"
+          },
+          {
+            "ID": "FRS_Approval#.",
+            "ObjectId": "FRS_Approval#",
+            "Name": "Approval via IncidentAssociatedFRS_Approval (0...1 : 0...N)",
+            "Style": "related",
+            "ThereCardinality": "Many"
+          },
+          {
+            "ID": "Attachment#.",
+            "ObjectId": "Attachment#",
+            "Name": "Attachment via IncidentContainsAttachment (0...1 : N)",
+            "Style": "related",
+            "ThereCardinality": "Many"
+          },
+          {
+            "ID": "Audit_Incident#.",
+            "ObjectId": "Audit_Incident#",
+            "Name": "Audit_Incident via AuditHistoryRelationship (1 : 0...N)",
+            "Style": "related",
+            "ThereCardinality": "Many"
+          },
+          {
+            "ID": "Change#.",
+            "ObjectId": "Change#",
+            "Name": "Change via IncidentAssociatesChange (0...N : 0...M)",
+            "Style": "related",
+            "ThereCardinality": "Many"
+          },
+          {
+            "ID": "CI#.Active",
+            "ObjectId": "CI#",
+            "Name": "CI via CIAssociatedActiveIncident (0...N : 0...M)",
+            "Style": "related",
+            "ThereCardinality": "Many"
+          },
+          {
+            "ID": "CI#.",
+            "ObjectId": "CI#",
+            "Name": "CI via IncidentAssociatesCI (0...N : 0...M)",
+            "Style": "related",
+            "ThereCardinality": "Many"
+          },
+          {
+            "ID": "ComputerProvisionAction#.Reverse",
+            "ObjectId": "ComputerProvisionAction#",
+            "Name": "Computer Provision Action via IncidentAssociatedComputerProvisionAction (0...1 : 0...N)",
+            "Style": "related",
+            "ThereCardinality": "Many"
+          },
+          {
+            "ID": "Frs_CompositeContract_Contact#.IncidentAssociatedCustomer",
+            "ObjectId": "Frs_CompositeContract_Contact#",
+            "Name": "Contact via IncidentAssociatedCustomer (0...N : 0...1)",
+            "Style": "related",
+            "ThereCardinality": "One"
+          },
+          {
+            "ID": "Frs_CompositeContract_Contact#.IncidentAssociatedReportedBy",
+            "ObjectId": "Frs_CompositeContract_Contact#",
+            "Name": "Contact via IncidentAssociatedReportedBy (0...N : 0...1)",
+            "Style": "related",
+            "ThereCardinality": "One"
+          },
+          {
+            "ID": "Employee#.owner",
+            "ObjectId": "Employee#",
+            "Name": "Employee via IncidentOwnerEmployee (0...N : 0...1)",
+            "Style": "related",
+            "ThereCardinality": "One"
+          },
+          {
+            "ID": "Frs_CompositeContract_Entity#.Entity",
+            "ObjectId": "Frs_CompositeContract_Entity#",
+            "Name": "Entity via IncidentAssocFrs_CompositeContract_Entity (0...N : 0...1)",
+            "Style": "related",
+            "ThereCardinality": "One"
+          },
+          {
+            "ID": "Frs_data_escalation_watch#.IncidentAssocClosingEscWatch",
+            "ObjectId": "Frs_data_escalation_watch#",
+            "Name": "Escalation Watch via IncidentAssocClosingEscWatch (0...1 : 0...1)",
+            "Style": "related",
+            "ThereCardinality": "One"
+          },
+          {
+            "ID": "Frs_data_escalation_watch#.",
+            "ObjectId": "Frs_data_escalation_watch#",
+            "Name": "Escalation Watch via IncidentAssociatedEscalationWatch (0...1 : 0...N)",
+            "Style": "related",
+            "ThereCardinality": "Many"
+          },
+          {
+            "ID": "Frs_data_escalation_watch#.IncidentAssocResolutionEscWatch",
+            "ObjectId": "Frs_data_escalation_watch#",
+            "Name": "Escalation Watch via IncidentAssocResolutionEscWatch (0...1 : 0...1)",
+            "Style": "related",
+            "ThereCardinality": "One"
+          },
+          {
+            "ID": "Frs_data_escalation_watch#.IncidentAssocResponseEscalationWatch",
+            "ObjectId": "Frs_data_escalation_watch#",
+            "Name": "Escalation Watch via IncidentAssocResponseEscalationWatch (0...1 : 0...1)",
+            "Style": "related",
+            "ThereCardinality": "One"
+          },
+          {
+            "ID": "Frs_data_escalation_watch#.IncidentAssocWaitingEscWatch",
+            "ObjectId": "Frs_data_escalation_watch#",
+            "Name": "Escalation Watch via IncidentAssocWaitingEscWatch (0...1 : 0...1)",
+            "Style": "related",
+            "ThereCardinality": "One"
+          },
+          {
+            "ID": "Frs_EVT_Event#.Incident",
+            "ObjectId": "Frs_EVT_Event#",
+            "Name": "Event via Frs_EVT_EventAssocIncident (0...1 : 0...N)",
+            "Style": "related",
+            "ThereCardinality": "Many"
+          },
+          {
+            "ID": "Task#WorkOrder.IncidentAssocExternalTask",
+            "ObjectId": "Task#WorkOrder",
+            "Name": "External Task via IncidentAssocExternalTask (0...1 : 0...N)",
+            "Style": "related",
+            "ThereCardinality": "Many"
+          },
+          {
+            "ID": "IncidentDetail#.",
+            "ObjectId": "IncidentDetail#",
+            "Name": "Incident Detail via IncidentContainsIncidentDetail (0...1 : 1)",
+            "Style": "related",
+            "ThereCardinality": "One"
+          },
+          {
+            "ID": "Incident#.ChildIncident",
+            "ObjectId": "Incident#",
+            "Name": "Incident via IncidentAssocChildIncident (0...1 : 0...N)",
+            "Style": "related",
+            "ThereCardinality": "Many"
+          },
+          {
+            "ID": "Incident#.MasterIncident",
+            "ObjectId": "Incident#",
+            "Name": "Incident via IncidentAssocMasterIncident (0...N : 0...1)",
+            "Style": "related",
+            "ThereCardinality": "One"
+          },
+          {
+            "ID": "Frs_ITFM_Transaction#.CostItem",
+            "ObjectId": "Frs_ITFM_Transaction#",
+            "Name": "ITFM Cost Item via IncidentAssocFrs_ITFM_Transaction (0...1 : 0...N)",
+            "Style": "related",
+            "ThereCardinality": "Many"
+          },
+          {
+            "ID": "FRS_Knowledge#.",
+            "ObjectId": "FRS_Knowledge#",
+            "Name": "Knowledge via IncidentAssocFRS_Knowledge (0...N : 0...M)",
+            "Style": "related",
+            "ThereCardinality": "Many"
+          },
+          {
+            "ID": "FRS_MyItem#.",
+            "ObjectId": "FRS_MyItem#",
+            "Name": "My Item via IncidentAssociatedMyItem (0...1 : 0...1)",
+            "Style": "related",
+            "ThereCardinality": "One"
+          },
+          {
+            "ID": "MyShelfItem#.shelftoincident",
+            "ObjectId": "MyShelfItem#",
+            "Name": "My Shelf Item via MyShelfItemAssocIncident (0...1 : 0...N)",
+            "Style": "related",
+            "ThereCardinality": "Many"
+          },
+          {
+            "ID": "OrganizationalUnit#.",
+            "ObjectId": "OrganizationalUnit#",
+            "Name": "Organizational Unit via IncidentAssocOrganizationalUnit (0...N : 0...1)",
+            "Style": "related",
+            "ThereCardinality": "One"
+          },
+          {
+            "ID": "Problem#.",
+            "ObjectId": "Problem#",
+            "Name": "Problem via ProblemAssociatesIncident (0...N : 0...1)",
+            "Style": "related",
+            "ThereCardinality": "One"
+          },
+          {
+            "ID": "Frs_Project#.ProjectIncident",
+            "ObjectId": "Frs_Project#",
+            "Name": "Project via Frs_ProjectAssocIncident (0...N : 0...M)",
+            "Style": "related",
+            "ThereCardinality": "Many"
+          },
+          {
+            "ID": "ServiceAgreement#.",
+            "ObjectId": "ServiceAgreement#",
+            "Name": "Service Agreement via IncidentAssociatedEmbeddedServiceAgreement (0...N : 0...1)",
+            "Style": "related",
+            "ThereCardinality": "One"
+          },
+          {
+            "ID": "ServiceAgreement#SLA.",
+            "ObjectId": "ServiceAgreement#SLA",
+            "Name": "Service Level Agreement via IncidentAssociatedServiceAgreementSLA (0...N : 0...1)",
+            "Style": "related",
+            "ThereCardinality": "One"
+          },
+          {
+            "ID": "ServiceReq#.",
+            "ObjectId": "ServiceReq#",
+            "Name": "Service Request via IncidentAssociatedServiceReq (0...1 : 0...1)",
+            "Style": "related",
+            "ThereCardinality": "One"
+          },
+          {
+            "ID": "ServiceReq#.Reverse",
+            "ObjectId": "ServiceReq#",
+            "Name": "Service Request via ServiceReqAssociatedByIncident (0...1 : 0...1)",
+            "Style": "related",
+            "ThereCardinality": "One"
+          },
+          {
+            "ID": "CI#Service.IncidentAssociatesService",
+            "ObjectId": "CI#Service",
+            "Name": "Service via IncidentAssociatesService (0...N : 0...1)",
+            "Style": "related",
+            "ThereCardinality": "One"
+          },
+          {
+            "ID": "SocialFeeds#.SocialFeedsAssocIncident",
+            "ObjectId": "SocialFeeds#",
+            "Name": "Social Feeds via SocialFeedsAssocIncident (0...N : 0...M)",
+            "Style": "related",
+            "ThereCardinality": "Many"
+          },
+          {
+            "ID": "SoftwareAction#.",
+            "ObjectId": "SoftwareAction#",
+            "Name": "Software Action via IncidentAssociatedSoftwareAction (0...1 : 0...N)",
+            "Style": "related",
+            "ThereCardinality": "Many"
+          },
+          {
+            "ID": "FRS_SurveySession#.",
+            "ObjectId": "FRS_SurveySession#",
+            "Name": "Survey Response via IncidentAssociatedFRS_SurveySession (0...1 : 0...N)",
+            "Style": "related",
+            "ThereCardinality": "Many"
+          },
+          {
+            "ID": "FRS_SurveyResults#.",
+            "ObjectId": "FRS_SurveyResults#",
+            "Name": "Survey Result via IncidentAssociatedFRS_SurveyResults (0...1 : 0...N)",
+            "Style": "related",
+            "ThereCardinality": "Many"
+          },
+          {
+            "ID": "Task#.Rev2",
+            "ObjectId": "Task#",
+            "Name": "Task group via IncidentAssociatedCancelledTask (0...1 : 0...N)",
+            "Style": "related",
+            "ThereCardinality": "Many"
+          },
+          {
+            "ID": "Task#.",
+            "ObjectId": "Task#",
+            "Name": "Task group via IncidentContainsTask (0...1 : 0...N)",
+            "Style": "related",
+            "ThereCardinality": "Many"
+          },
+          {
+            "ID": "Task#Assignment.Rev3",
+            "ObjectId": "Task#Assignment",
+            "Name": "Task via IncidentAssocTaskAssignment (0...1 : 0...N)",
+            "Style": "related",
+            "ThereCardinality": "Many"
+          },
+          {
+            "ID": "Task#ComputerProvisioning.",
+            "ObjectId": "Task#ComputerProvisioning",
+            "Name": "Task.ComputerProvisioning via IncidentAssociatedTaskComputerProvisioning (0...1 : 0...N)",
+            "Style": "related",
+            "ThereCardinality": "Many"
+          },
+          {
+            "ID": "Task#SoftwareInstallation.Rev3",
+            "ObjectId": "Task#SoftwareInstallation",
+            "Name": "Task.SoftwareInstallation via IncidentAssociatedTaskSoftwareInstallation (0...1 : 0...N)",
+            "Style": "related",
+            "ThereCardinality": "Many"
+          },
+          {
+            "ID": "Vendor#.IncidentAssocProfileVendor",
+            "ObjectId": "Vendor#",
+            "Name": "Vendor via IncidentAssocProfileVendor (0...N : 0...1)",
+            "Style": "related",
+            "ThereCardinality": "One"
+          },
+          {
+            "ID": "Frs_data_workflow_instance#.",
+            "ObjectId": "Frs_data_workflow_instance#",
+            "Name": "Workflow Instance via IncidentAssociatedByWorkflowInstance (0...1 : 0...N)",
+            "Style": "related",
+            "ThereCardinality": "Many"
+          }
+        ],
+        "RelatedRelatedObjects": null,
+        "MasterObjectId": null,
+        "IsRelatedObjectCondition": false,
+        "SubQuery": null
+      }
+    ],
+    "RoleScope": [
+      "Admin",
+      "BusinessUnitManager",
+      "ChangeManager",
+      "Executive",
+      "KnowledgeManager",
+      "ProblemManager",
+      "SelfService",
+      "ServiceDeskAnalyst",
+      "ServiceDeskManager",
+      "Help Desk Demo",
+      "ResponsiveAnalyst",
+      "SelfServiceSecOps",
+      "SelfserviceFM"
+    ],
+    "TeamScopes": null,
+    "TeamDefaults": null,
+    "RoleScopelabel": null,
+    "pureName": "My Team's Active Incidents",
+    "SearchRights": {
+      "Create": false,
+      "Edit": false,
+      "Delete": false,
+      "GlobalEdit": false
+    },
+    "CanExport": false,
+    "CanEmail": false,
+    "SortInfo": "[]",
+    "SortFields": [],
+    "LastModified": "/Date(1641801395000)/",
+    "CreatedBy": null,
+    "LastModBy": "Ivnt_Kuldeep",
+    "HiddenExpression": null,
+    "Permissions": 3
+  }
+}

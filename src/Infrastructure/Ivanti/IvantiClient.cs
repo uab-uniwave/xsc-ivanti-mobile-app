@@ -2,18 +2,17 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Application.Common;
-using Application.DTOs;
-using Application.Models.FormDefaultData;
-using Application.Models.FormValidationListData;
-using Application.Models.FormViewData;
-using Application.Models.RoleWorkspaces;
-using Application.Models.SessonData;
-using Application.Models.UserData;
-using Application.Models.WorkspaceData;
-using Application.Requests;
-using Application.Responses;
+using Application.Common.Models.SessonData;
+using Application.Common.Models.UserData;
+using Application.Features.Authentication.DTOs;
+using Application.Features.Workspaces.DTOs;
+using Application.Features.Workspaces.Models.FormDefaultData;
+using Application.Features.Workspaces.Models.FormValidationListData;
+using Application.Features.Workspaces.Models.FormViewData;
+using Application.Features.Workspaces.Models.RoleWorkspaces;
+using Application.Features.Workspaces.Models.WorkspaceData;
+using Application.Features.Workspaces.Models.ValidatedSearch;
 using Application.Services;
-using Mapster.Models;
 using MapsterMapper;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -38,14 +37,15 @@ public sealed class IvantiClient :IIvantiClient
     private WorkspaceData _workspaceData;
     private FormViewData _formViewData;
     private FormDefaultData _formDefaultData;
-
+    private FormValidationListData _formValidationListData;   
+    
     private static readonly JsonSerializerOptions JsonOptions = new()
     {
         PropertyNameCaseInsensitive = true,
         PropertyNamingPolicy = null,
         DefaultIgnoreCondition = JsonIgnoreCondition.Never,
         NumberHandling = JsonNumberHandling.AllowReadingFromString,
-         UnknownTypeHandling = JsonUnknownTypeHandling.JsonElement,
+        UnknownTypeHandling = JsonUnknownTypeHandling.JsonElement,
     };
 
     public IvantiClient(
@@ -60,68 +60,96 @@ public sealed class IvantiClient :IIvantiClient
         _mapper = mapper;
     }
 
-
-
-    // Session and initialization endpoints (must be called in sequence first)
     //=====================================================================
-    // SESSION DATA
+    // Session and authentication endpoints
     //=====================================================================
     public async Task<Result<SessionData>>
         InitializeSessionAsync(CancellationToken ct)
     {
 
+        try {
 
-        var request = new InitializeSessionRequest();
-        var response = await PostAsync<InitializeSessionResponse>(_endpoints.InitializeSession,
-            request,
-            ct);
+            var request = new InitializeSessionRequest();
+            var response = await PostAsync<InitializeSessionResponse>(_endpoints.InitializeSession,
+                request,
+                ct);
 
-        if(response.IsFailure || response.Value == null)
-        {
-            _logger.LogError("Failed to initialize session: {Error}", response.Error);
-            return Result<SessionData>.Failure(response.Error ?? "Unknown error");
+            if (response.IsFailure || response.Value == null)
+            {
+                _logger.LogError("Failed to initialize session: {Error}", response.Error);
+                return Result<SessionData>.Failure(response.Error ?? "Unknown error");
+            }
+            _sessionData = _mapper.Map<SessionData>(response.Value.D);
+
+
+            return Result<SessionData>.Success(_sessionData);
         }
-        _sessionData =_mapper.Map<SessionData>(response.Value.D);
+        catch (JsonSerializationException ex)
+        {
+            _logger.LogError(ex, "JSON deserialization error while initialize session");
+            return Result<SessionData>.Failure(ex.Message ?? "Unknown error");
+        }
+        catch (HttpRequestException ex)
+        {
+            _logger.LogError(ex, "HTTP request error while initialize session");
+            return Result<SessionData>.Failure(ex.Message ?? "Unknown error");
+        }
+        catch (Exception ex)
+        {
 
-
-        return Result<SessionData>.Success(_sessionData);
-
+            _logger.LogError("Exception while initialize session: {Message}", ex.Message);
+            return Result<SessionData>.Failure(ex.Message ?? "Unknown error");
+        }
 
     }
 
     //=====================================================================
-    // USERDATA
+    // Get User Data
     //=====================================================================
     public async Task<Result<UserData>>
         GetUserDataAsync(CancellationToken ct)
     {
-        _logger.LogInformation("Initializing user data...");
+        try {
+            _logger.LogInformation("Initializing user data...");
 
-        var request = new GetUserDataRequest() {
-            TimeZoneOffset = GetTimezoneOffset(_sessionData.TimezoneName),
-            CsrfToken = _sessionData.SessionCsrfToken
+            var request = new GetUserDataRequest() {
+                TimeZoneOffset = GetTimezoneOffset(_sessionData.TimezoneName),
+                CsrfToken = _sessionData.SessionCsrfToken
 
-        };
+            };
 
+            var response = await PostAsync<GetUserDataResponse>(_endpoints.GetUserData,
+                request,
+                ct);
 
-    
-        var response = await PostAsync<GetUserDataResponse>(_endpoints.GetUserData,
-            request,
-            ct);
+            if (response.IsFailure || response.Value == null)
+            {
+                _logger.LogError("Failed to get user data: {Error}", response.Error);
+                return Result<UserData>.Failure(response.Error ?? "Unknown error");
+            }
 
-        if (response.IsFailure || response.Value == null)
-        {
-            _logger.LogError("Failed to get user data: {Error}", response.Error);   
-            return Result<UserData>.Failure(response.Error ?? "Unknown error");
+            _userData = _mapper.Map<UserData>(response.Value.D);
+
+            return Result<UserData>.Success(_userData);
+
         }
-       
-        
-        
-        _userData = _mapper.Map<UserData>(response.Value.D);
+        catch (JsonSerializationException ex)
+        {
 
-        return Result<UserData>.Success(_userData);
+            _logger.LogError(ex, "JSON deserialization error while geting user data");
+            return Result<UserData>.Failure(ex.Message ?? "Unknown error");
+        }
+        catch (HttpRequestException ex)
+        {
+            _logger.LogError(ex, "HTTP request error while geting user data");
+            return Result<UserData>.Failure(ex.Message ?? "Unknown error");
+        }
+        catch (Exception ex)
+        {
 
-
+            _logger.LogError("Exception while geting user data: {Message}", ex.Message);
+            return Result<UserData>.Failure(ex.Message ?? "Unknown error");
+        }
     }
     //=====================================================================
     //  Roles workspaces 
@@ -129,29 +157,47 @@ public sealed class IvantiClient :IIvantiClient
     public async Task<Result<RoleWorkspaces>>
         GetRoleWorkspacesAsync(CancellationToken ct)
     {
+        try {
+
+                var request = new RoleWorkspacesRequest()
+                {
+                    SRole = _userData.UserRole,
+                    CsrfToken = _sessionData.SessionCsrfToken
+
+                };
+                var response = await PostAsync<GetRoleWorkspacesResponse>(_endpoints.GetRoleWorkspaces,
+                request,
+                ct);
+
+                if (response.IsFailure || response.Value == null)
+                {
+                    _logger.LogError("Failed to get role workspaces: {Error}", response.Error);
+                    return Result<RoleWorkspaces>.Failure(response.Error ?? "Unknown error");
+                }
 
 
-        var request = new RoleWorkspacesRequest()
+            _roleWorkspaces = _mapper.Map<RoleWorkspaces>(response.Value.D);
+
+            return Result<RoleWorkspaces>.Success(_roleWorkspaces);
+        }
+        catch (JsonSerializationException ex)
         {
-            SRole = _userData.UserRole,
-            CsrfToken = _sessionData.SessionCsrfToken
 
-        };
-            var response = await PostAsync<GetRoleWorkspacesResponse>(_endpoints.GetRoleWorkspaces,
-            request,
-            ct);
-
-        if (response.IsFailure || response.Value == null)
+            _logger.LogError(ex, "JSON deserialization error while geting role workspaces");
+            return Result<RoleWorkspaces>.Failure(ex.Message ?? "Unknown error");
+        }
+        catch (HttpRequestException ex)
         {
-            _logger.LogError("Failed to get role workspaces: {Error}", response.Error);
-            return Result<RoleWorkspaces>.Failure(response.Error ?? "Unknown error");
+            _logger.LogError(ex, "HTTP request error while geting role workspaces");
+            return Result<RoleWorkspaces>.Failure(ex.Message ?? "Unknown error");
+        }
+        catch (Exception ex)
+        {
+
+            _logger.LogError("Exception while geting role workspaces: {Message}", ex.Message);
+            return Result<RoleWorkspaces>.Failure(ex.Message ?? "Unknown error");
         }
 
-     
-
-         _roleWorkspaces = _mapper.Map<RoleWorkspaces>(response.Value.D);
-
-        return Result<RoleWorkspaces>.Success(_roleWorkspaces);
     }
     //=====================================================================
     // Workspaces data
@@ -159,34 +205,45 @@ public sealed class IvantiClient :IIvantiClient
     public async Task<Result<WorkspaceData>>
         GetWorkspaceDataAsync(CancellationToken ct)
     {
-        var workspace = _roleWorkspaces.Workspaces.FirstOrDefault(w => w.Name == "Incident") 
-            ?? _roleWorkspaces.Workspaces.FirstOrDefault();
-
-        if (workspace == null)
+        try
         {
-            _logger.LogError("No workspace found in role workspaces");
-            return Result<WorkspaceData>.Failure("No workspace found");
+            var request = new GetWorkspaceDataRequest()
+            {
+                SearchId = null,
+                CsrfToken = _sessionData.SessionCsrfToken,
+            };
+
+            var response = await PostAsync<GetValideatedSearchResponse>(_endpoints.GetValidatedSearch,
+                request,
+                ct);
+
+            if (response.IsFailure || response.Value == null)
+            {
+                _logger.LogError("Failed to get workspace data: {Error}", response.Error);
+                return Result<WorkspaceData>.Failure(response.Error ?? "Unknown error");
+            }
+                
+            _workspaceData = _mapper.Map<WorkspaceData>(response.Value.D);
+
+            return Result<WorkspaceData>.Success(_workspaceData);
         }
-
-        var request = new GetWorkspaceDataRequest()
+        catch (JsonSerializationException ex)
         {
-            ObjectId = workspace.Id,
-            LayoutName = workspace.LayoutName,
-            CsrfToken = _sessionData.SessionCsrfToken,
-        };
-        var response = await PostAsync<GetWorkspaceDataResponse>(_endpoints.GetWorkspaceData,
-            request,
-            ct);
 
-        if (response.IsFailure || response.Value == null)
-        {
-            _logger.LogError("Failed to get workspace data: {Error}", response.Error);
-            return Result<WorkspaceData>.Failure(response.Error ?? "Unknown error");
+            _logger.LogError(ex, "JSON deserialization error while geting workspace data");
+            return Result<WorkspaceData>.Failure(ex.Message ?? "Unknown error");
         }
+        catch (HttpRequestException ex)
+        {
+            _logger.LogError(ex, "HTTP request error while geting workspace data");
+            return Result<WorkspaceData>.Failure(ex.Message ?? "Unknown error");
+        }
+        catch (Exception ex)
+        {
 
-        _workspaceData = _mapper.Map<WorkspaceData>(response.Value.D);
-
-        return Result<WorkspaceData>.Success(_workspaceData);
+            _logger.LogError("Exception while  geting workspace data: {Message}", ex.Message);
+            return Result<WorkspaceData>.Failure(ex.Message ?? "Unknown error");
+        }
     }
     //=====================================================================
     // Find Form View Data
@@ -196,24 +253,17 @@ public sealed class IvantiClient :IIvantiClient
     {
         try
         {
-            var workspace = _roleWorkspaces.Workspaces.FirstOrDefault();
-            if (workspace == null)
-            {
-                _logger.LogError("No workspace found in role workspaces");
-                return Result<FormViewData>.Failure("No workspace found");
-            }
 
-            var request = new FindFormViewDataRequest()
+                var request = new FindFormViewDataRequest()
             {
                 CreatedViewsOnClient = new(),
                 IsNewRecord = true,
-                LayoutName = workspace.LayoutName,
+                LayoutName = _roleWorkspaces.Workspaces.FirstOrDefault()?.LayoutName,
                 ObjectId = _workspaceData.ObjectId,
-                ViewName = _workspaceData.LayoutData?.OneNewRecordView ?? "formEdit",
-                CsrfToken = _sessionData.SessionCsrfToken       
+                ViewName = _workspaceData.LayoutData?.OneNewRecordView ?? "formView",
+                CsrfToken = _sessionData.SessionCsrfToken
             };
 
-            //    var json = JsonSerializer.Serialize(request);
 
             var response = await PostAsync<FindFormViewDataResponse>(_endpoints.FindFormViewData,
          request,
@@ -228,7 +278,6 @@ public sealed class IvantiClient :IIvantiClient
             _formViewData = _mapper.Map<FormViewData>(response.Value.D);
 
             return Result<FormViewData>.Success(_formViewData);
-
         }
         catch (JsonSerializationException ex)
         {
@@ -260,22 +309,20 @@ public sealed class IvantiClient :IIvantiClient
         try
         {
 
-            var workspace = _roleWorkspaces.Workspaces.FirstOrDefault(w => w.Name == "Incident")
-        ?? _roleWorkspaces.Workspaces.FirstOrDefault();
+
             var request = new GetFormDefaultDataRequest()
             {
                 
-                FormName = _formViewData.FormDef.FormMeta?.Name,
-                LayoutName = null,
+                FormName = string.Join(".",_roleWorkspaces.Workspaces.FirstOrDefault()?.Name,_userData.UserRole,"NewForm"),
+                LayoutName = _roleWorkspaces.Workspaces.FirstOrDefault()?.LayoutName,
                 MasterData = null,
-                ObjectId = "",
-
-
-                DependentInfo = null,
-                ObjectType = workspace.Id,
+                ObjectId = _workspaceData.ObjectId,
+                ObjectType = _roleWorkspaces.Workspaces.FirstOrDefault()?.Id,
+                Overridings = null,
                 ViewName = _formViewData.ViewName,
-                CsrfToken = _sessionData.SessionCsrfToken
-             
+                CsrfToken = _sessionData.SessionCsrfToken,
+                DependentInfo = null,
+
             };
             var response = await PostAsync<GetFormDefaultDataResponse>(_endpoints.GetFormDefaultData,
   request,
@@ -313,7 +360,7 @@ public sealed class IvantiClient :IIvantiClient
 
 
     //=====================================================================
-    //  Form Validation List    Data
+    //  Form Validation ListData
     //=====================================================================
 
 
@@ -323,26 +370,24 @@ public sealed class IvantiClient :IIvantiClient
         try
         {
 
-            var workspace = _roleWorkspaces.Workspaces.FirstOrDefault(w => w.Name == "Incident")
-        ?? _roleWorkspaces.Workspaces.FirstOrDefault();
-            var request = new GetFormDefaultDataRequest()
-            {
-
-                FormName = _formViewData.FormDef.FormMeta?.Name,
-                LayoutName = null,
-                MasterData = null,
-                ObjectId = "",
 
 
-                DependentInfo = null,
-                ObjectType = workspace.Id,
-                ViewName = _formViewData.ViewName,
+            var request = new GetFormValidationListDataRequest() {
+
+                FormValidationList = new FormValidationList()
+                {
+                    NamedValidators = System.Text.Json.JsonSerializer.Serialize(_formViewData.FormDef?.TableMeta?.ValidatedFields, JsonOptions),
+                    ValidatorsOverride = "{}",
+                    MasterFormValues = null, // TODO: Fix FormDefaultData structure
+                    ObjectId = _roleWorkspaces.Workspaces.FirstOrDefault()?.Id
+                },
                 CsrfToken = _sessionData.SessionCsrfToken
 
             };
-            var response = await PostAsync<FormValidationListDataResponse>(_endpoints.GetFormDefaultData,
-  request,
-  ct);
+
+
+
+            var response = await PostAsync<GetFormValidationListDataResponse>(_endpoints.GetFormValidationListData, request, ct);
 
             if (response.IsFailure || response.Value == null)
             {
@@ -350,9 +395,11 @@ public sealed class IvantiClient :IIvantiClient
                 return Result<FormValidationListData>.Failure(response.Error ?? "Unknown error");
             }
 
-            return Result<FormValidationListData>.Success(response.Value.D);
+            _formValidationListData = _mapper.Map<FormValidationListData>(response.Value.D);
 
+            return Result<FormValidationListData>.Success(_formValidationListData);
         }
+
         catch (JsonSerializationException ex)
         {
 
@@ -371,7 +418,102 @@ public sealed class IvantiClient :IIvantiClient
             return Result<FormValidationListData>.Failure(ex.Message ?? "Unknown error");
         }
     }
+    //=====================================================================
+    //  Validated Search Data - Gets all favorite searches
+    //=====================================================================
 
+    public async Task<Result<List<ValidatedSearch>>>
+        GetValidatedSearchAsync(CancellationToken ct)
+    {
+        try
+        {
+            // Get all favorite searches from workspace data
+            var favoriteSearches = _workspaceData.SearchData?.Favorites;
+
+            if (favoriteSearches == null || !favoriteSearches.Any())
+            {
+                _logger.LogWarning("No favorite searches found in workspace data");
+                return Result<List<ValidatedSearch>>.Success(new List<ValidatedSearch>());
+            }
+
+            _logger.LogInformation("Found {Count} favorite searches to load", favoriteSearches.Count);
+
+            var validatedSearches = new List<ValidatedSearch>();
+
+            // Iterate through each favorite and get its validated search data
+            foreach (var favorite in favoriteSearches)
+            {
+                if (string.IsNullOrEmpty(favorite.Id))
+                {
+                    _logger.LogWarning("Skipping favorite search with empty ID: {Name}", favorite.Name);
+                    continue;
+                }
+
+                try
+                {
+                    var request = new GetValideatedSearchRequest()
+                    {
+                        SearchId = Guid.Parse(favorite.Id),
+                        ObjectId = _workspaceData.ObjectId,
+                        LayoutName = _roleWorkspaces.Workspaces.FirstOrDefault()?.LayoutName,
+                        CsrfToken = _sessionData.SessionCsrfToken
+                    };
+
+                    var response = await PostAsync<GetValideatedSearchResponse>(_endpoints.GetValidatedSearch, request, ct);
+
+                    if (response.IsFailure || response.Value == null)
+                    {
+                        _logger.LogWarning("Failed to get validated search for ID {SearchId}: {Error}", 
+                            favorite.Id, response.Error);
+                        continue;
+                    }
+
+                    var validatedSearch = _mapper.Map<ValidatedSearch>(response.Value.D);
+
+                    _logger.LogInformation("Loaded validated search: {SearchName} (ID: {SearchId}) with {ConditionCount} conditions", 
+                        validatedSearch.Name, 
+                        validatedSearch.Id,
+                        validatedSearch.Conditions.Count);
+
+                    validatedSearches.Add(validatedSearch);
+                }
+                catch (FormatException ex)
+                {
+                    _logger.LogWarning(ex, "Invalid SearchId format for favorite: {FavoriteId}", favorite.Id);
+                    continue;
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogWarning(ex, "Error loading validated search for favorite: {FavoriteId}", favorite.Id);
+                    continue;
+                }
+            }
+
+            if (!validatedSearches.Any())
+            {
+                _logger.LogWarning("No validated searches were successfully loaded");
+                return Result<List<ValidatedSearch>>.Success(new List<ValidatedSearch>());
+            }
+
+            _logger.LogInformation("Successfully loaded {Count} validated searches", validatedSearches.Count);
+            return Result<List<ValidatedSearch>>.Success(validatedSearches);
+        }
+        catch (JsonSerializationException ex)
+        {
+            _logger.LogError(ex, "JSON deserialization error while getting validated search data");
+            return Result<List<ValidatedSearch>>.Failure(ex.Message ?? "Unknown error");
+        }
+        catch (HttpRequestException ex)
+        {
+            _logger.LogError(ex, "HTTP request error while getting validated search data");
+            return Result<List<ValidatedSearch>>.Failure(ex.Message ?? "Unknown error");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Exception getting validated search data: {Message}", ex.Message);
+            return Result<List<ValidatedSearch>>.Failure(ex.Message ?? "Unknown error");
+        }
+    }
 
     private async Task<Result<T>> PostAsync<T>(string endpoint, object request, CancellationToken ct)
     {
@@ -395,8 +537,6 @@ public sealed class IvantiClient :IIvantiClient
         }
     }
 
-
-  
 
     /// <summary>
     /// Calculates the UTC offset in minutes for a given timezone name.

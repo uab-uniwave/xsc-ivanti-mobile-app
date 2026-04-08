@@ -1,5 +1,4 @@
 {
-    "d": {
         "__type": "SaaS.WebUI.Layout.RoleWorkspaces",
         "Workspaces": [
             {
@@ -261,4 +260,3 @@
         "ChatEnabled": false,
         "MSTeamsIntegrationEnabled": false
     }
-}

@@ -1,0 +1,67 @@
+/* Mobile-specific DataGrid styles */
+.mobile-grid .mud-table-cell {
+    padding: 8px 4px !important;
+}
+
+.mobile-grid .mud-table-head {
+    font-size: 0.875rem;
+}
+
+.mobile-grid .mud-table-row:hover {
+    background-color: rgba(0, 0, 0, 0.04);
+    cursor: pointer;
+}
+
+/* Tablet optimizations */
+@media (min-width: 600px) and (max-width: 1279px) {
+    .mud-table-cell {
+        padding: 12px 8px !important;
+    }
+}
+
+/* Desktop optimizations */
+@media (min-width: 1280px) {
+    .mud-table-cell {
+        padding: 16px !important;
+    }
+}
+
+/* Responsive toolbar */
+.responsive-toolbar {
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+@media (max-width: 599px) {
+    .responsive-toolbar .mud-button span {
+        display: none;
+    }
+
+    .responsive-toolbar .mud-button {
+        min-width: auto;
+        padding: 6px 12px;
+    }
+}
+
+/* Status chips responsive sizing */
+.status-chip {
+    font-size: 0.75rem;
+}
+
+@media (min-width: 600px) {
+    .status-chip {
+        font-size: 0.875rem;
+    }
+}
+
+/* Hide scrollbar on mobile for cleaner look */
+@media (max-width: 599px) {
+    .mud-table-container {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+
+    .mud-table-container::-webkit-scrollbar {
+        display: none;
+    }
+}

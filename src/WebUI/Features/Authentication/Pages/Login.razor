@@ -1,0 +1,71 @@
+﻿@page "/login"
+@using MudBlazor
+
+<MudContainer MaxWidth="MaxWidth.Small" Class="d-flex align-center justify-center" Style="min-height: 100vh;">
+    <MudPaper Elevation="4" Class="pa-8" Style="width: 100%; max-width: 400px;">
+        <MudStack Spacing="4">
+
+            <MudText Typo="Typo.h4" Align="Align.Center" GutterBottom="true">
+                Login
+            </MudText>
+
+            <MudDivider />
+
+            @* User Field *@
+            <MudStack Spacing="1">
+                <MudText Typo="Typo.body1" Color="Color.Dark">
+                    User
+                </MudText>
+                <MudTextField @bind-Value="ViewModel.Username"
+                             Variant="Variant.Outlined"
+                             Placeholder="Enter username"
+                             Adornment="Adornment.Start"
+                             AdornmentIcon="@Icons.Material.Filled.Person"
+                             Required="true"
+                             RequiredError="Username is required"
+                             Disabled="@ViewModel.IsLoading" />
+            </MudStack>
+
+            @* Password Field *@
+            <MudStack Spacing="1">
+                <MudText Typo="Typo.body1" Color="Color.Dark">
+                    Password
+                </MudText>
+                <MudTextField @bind-Value="ViewModel.Password"
+                             Variant="Variant.Outlined"
+                             Placeholder="Enter password"
+                             InputType="InputType.Password"
+                             Adornment="Adornment.Start"
+                             AdornmentIcon="@Icons.Material.Filled.Lock"
+                             Required="true"
+                             RequiredError="Password is required"
+                             Disabled="@ViewModel.IsLoading" />
+            </MudStack>
+
+            <MudButton Variant="Variant.Filled"
+                      Color="Color.Primary"
+                      FullWidth="true"
+                      Size="Size.Large"
+                      OnClick="HandleLogin"
+                      Disabled="@ViewModel.IsLoading">
+                @if (ViewModel.IsLoading)
+                {
+                    <MudProgressCircular Size="Size.Small" Indeterminate="true" Class="mr-2" />
+                    <span>Logging in...</span>
+                }
+                else
+                {
+                    <span>Login</span>
+                }
+            </MudButton>
+
+            @if (ViewModel.HasError)
+            {
+                <MudAlert Severity="Severity.Error" Dense="true">
+                    @ViewModel.ErrorMessage
+                </MudAlert>
+            }
+
+        </MudStack>
+    </MudPaper>
+</MudContainer>

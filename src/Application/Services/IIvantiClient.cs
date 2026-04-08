@@ -3,18 +3,17 @@ using System.Net.Http.Json;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Application.Common;
-using Application.Models.FormDefaultData;
-using Application.Models.FormViewData;
-using Application.Models.RoleWorkspaces;
-using Application.Models.SessonData;
-using Application.Models.UserData;
-using Application.Models.WorkspaceData;
-using Application.Requests;
-using Application.Responses;
+using Application.Common.Models.SessonData;
+using Application.Common.Models.UserData;
+using Application.Features.Workspaces.Models.FormDefaultData;
+using Application.Features.Workspaces.Models.FormValidationListData;
+using Application.Features.Workspaces.Models.FormViewData;
+using Application.Features.Workspaces.Models.RoleWorkspaces;
+using Application.Features.Workspaces.Models.WorkspaceData;
+using Application.Features.Workspaces.Models.ValidatedSearch;
 using MapsterMapper;
 
 namespace Application.Services;
-
 
 /// <summary>
 /// Legacy Ivanti API client implementation.
@@ -30,7 +29,7 @@ public interface IIvantiClient
     //=====================================================================
     // USERDATA
     //=====================================================================
-    Task<Result<UserData>>
+    Task<Result<Common.Models.UserData.UserData>>
         GetUserDataAsync(CancellationToken ct);
     //=====================================================================
     //  Roles workspaces 
@@ -50,6 +49,13 @@ public interface IIvantiClient
     Task<Result<FormDefaultData>>
         GetFormDefaultDataAsync(CancellationToken ct);
 
+
+    Task<Result<FormValidationListData>>
+    GetFormValidationListDataAsync(CancellationToken ct);
+
+    Task<Result<List<ValidatedSearch>>>
+    GetValidatedSearchAsync(CancellationToken ct);
+  
 
 }
 

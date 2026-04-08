@@ -1,6 +1,5 @@
 {
-    "d": {
-        "__type": "HEAT.WebUI.Security.Session.UserData",
+         "__type": "HEAT.WebUI.Security.Session.UserData",
         "UserTeamList": [
             "it"
         ],
@@ -547,5 +546,5 @@
         "TelemetryConfig": null,
         "IsSuperAdmin": false,
         "AnalystLOB": ""
-    }
+    
 }

@@ -2,6 +2,9 @@ using MudBlazor.Services;
 using WebUI.Components;
 using Infrastructure;
 using WebUI.Features.Incidents.ViewModels;
+using WebUI.Features.Authentication.ViewModels;
+using WebUI.Services;
+using Application.Interfaces.Navigation;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,8 +18,16 @@ builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
-// Register ViewModel
+// Register ViewModels
 builder.Services.AddScoped<IncidentsViewModel>();
+builder.Services.AddScoped<LoginViewModel>();
+builder.Services.AddScoped<SelectRoleViewModel>();
+
+// Register Navigation Service
+builder.Services.AddScoped<INavigationService, NavigationService>();
+
+// Register Legacy IvantiNavigationService for backward compatibility
+builder.Services.AddScoped<IvantiNavigationService>();
 
 var app = builder.Build();
 

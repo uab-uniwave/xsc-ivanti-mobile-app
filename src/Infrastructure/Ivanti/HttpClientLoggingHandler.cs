@@ -73,9 +73,7 @@ public sealed class HttpClientLoggingHandler : DelegatingHandler
                 var content = await request.Content.ReadAsStringAsync(ct);
                 if (!string.IsNullOrWhiteSpace(content))
                 {
-                    stringBuilder.AppendLine(content.Length > 1000 
-                        ? content.Substring(0, 1000) + "... [truncated]"
-                        : content);
+                    stringBuilder.AppendLine(content);
                 }
                 else
                 {
@@ -134,9 +132,7 @@ public sealed class HttpClientLoggingHandler : DelegatingHandler
                 var content = await response.Content.ReadAsStringAsync(ct);
                 if (!string.IsNullOrWhiteSpace(content))
                 {
-                    stringBuilder.AppendLine(content.Length > 1000 
-                        ? content.Substring(0, 1000) + "... [truncated]"
-                        : content);
+                    stringBuilder.AppendLine(content);
                 }
                 else
                 {

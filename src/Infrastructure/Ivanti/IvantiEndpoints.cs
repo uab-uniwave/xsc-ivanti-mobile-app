@@ -25,7 +25,9 @@ public class IvantiEndpoints
     public string GetFormDefaultData =>
     $"{_tenant}/Services/FormService.asmx/GetFormDefaultData";
 
-    public string FormValidationListData =>
-        $"{_tenant}/Services/Session.asmx/GetFormValidationListData";
+    public string GetFormValidationListData =>
+     $"{_tenant}/Services/FormService.asmx/GetFormValidationListData";
+    public string GetValidatedSearch =>
+     $"{_tenant}/Services/Search.asmx/GetValidatedSearch";
 
 }

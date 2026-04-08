@@ -1,5 +1,4 @@
 {
-    "d": {
         "__type": "HEAT.WebUI.Security.Session.SessionStatus",
         "ActiveRole": "ResponsiveAnalyst",
         "ActiveRoleDisplayName": "Mobile Analyst",
@@ -132,4 +131,3 @@
         "LandscapeName": null,
         "IsWorkflowPriorityEnabled": true
     }
-}

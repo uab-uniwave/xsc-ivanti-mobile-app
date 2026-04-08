@@ -1,4 +1,5 @@
-﻿@inherits LayoutComponentBase
+﻿@inject IvantiNavigationService NavigationService
+@inherits LayoutComponentBase
 
 <MudLayout>
 
@@ -11,6 +12,66 @@
         <MudText Typo="Typo.h6" Class="ml-2">
             Ivanti Mobile
         </MudText>
+
+        <MudSpacer />
+
+        @if (NavigationService.IsInitialized && NavigationService.UserData != null)
+        {
+            <!-- User Initials -->
+            <MudChip T="string" 
+                     Color="Color.Surface" 
+                     Size="Size.Small"
+                     Class="mr-2">
+                @NavigationService.GetUserInitials()
+            </MudChip>
+
+            <!-- User Menu -->
+            <MudMenu Icon="@Icons.Material.Filled.AccountCircle"
+                     Color="Color.Inherit"
+                     AnchorOrigin="Origin.BottomRight"
+                     TransformOrigin="Origin.TopRight"
+                     Dense="true">
+
+                <MudMenuItem Disabled="true">
+                    <MudText Typo="Typo.body2" Class="font-weight-bold">
+                        @NavigationService.GetUserDisplayName()
+                    </MudText>
+                    <MudText Typo="Typo.caption" Class="mud-text-secondary">
+                        @NavigationService.UserData.PrimaryEmail
+                    </MudText>
+                </MudMenuItem>
+
+                <MudDivider />
+
+                <MudMenuItem Icon="@Icons.Material.Filled.Person">
+                    Profile
+                </MudMenuItem>
+
+                <MudMenuItem Icon="@Icons.Material.Filled.Settings">
+                    Settings
+                </MudMenuItem>
+
+                <MudDivider />
+
+                <MudMenuItem Icon="@Icons.Material.Filled.Logout" 
+                            OnClick="SignOut">
+                    Sign Out
+                </MudMenuItem>
+            </MudMenu>
+        }
+        else if (NavigationService.IsLoading)
+        {
+            <MudProgressCircular Color="Color.Surface" Size="Size.Small" Indeterminate="true" />
+        }
+        else
+        {
+            <MudButton Variant="Variant.Text" 
+                      Color="Color.Inherit" 
+                      StartIcon="@Icons.Material.Filled.Login"
+                      OnClick="SignIn">
+                Sign In
+            </MudButton>
+        }
     </MudAppBar>
 
     <MudDrawer @bind-Open="_drawerOpen"
@@ -30,9 +91,28 @@
 @code {
     private bool _drawerOpen;
 
+    protected override async Task OnInitializedAsync()
+    {
+        if (!NavigationService.IsInitialized)
+        {
+            await NavigationService.InitializeAsync();
+        }
+    }
+
     private void ToggleDrawer()
     {
         _drawerOpen = !_drawerOpen;
+    }
+
+    private async Task SignIn()
+    {
+        await NavigationService.InitializeAsync();
+    }
+
+    private async Task SignOut()
+    {
+        await NavigationService.SignOutAsync();
+        _drawerOpen = false;
     }
 
     [Parameter]

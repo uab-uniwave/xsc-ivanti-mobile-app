@@ -1,8 +1,12 @@
 ﻿using System.Net.Http.Headers;
+using Application.Interfaces.Authentication;
+using Application.Interfaces.Workspaces;
 using Application.Services;
+using Infrastructure.Authentication;
 using Infrastructure.Ivanti;
 using Infrastructure.Ivanti.Configuration;
 using Infrastructure.Mapping;
+using Infrastructure.Workspaces;
 using Mapster;
 using MapsterMapper;
 using Microsoft.Extensions.Configuration;
@@ -94,6 +98,28 @@ public static class DependencyInjection
                 "Cookie", options.Cookie);
         })
         .AddHttpMessageHandler<HttpClientLoggingHandler>();
+
+        // ======================================================
+        // APPLICATION SERVICES
+        // ======================================================
+
+        // Register IAuthenticationService with its own HttpClient for login page access
+        services.AddHttpClient<IAuthenticationService, AuthenticationService>((sp, client) =>
+        {
+            var options = sp
+                .GetRequiredService<IOptions<IvantiOptions>>()
+                .Value;
+
+            if (string.IsNullOrWhiteSpace(options.BaseUrl))
+                throw new InvalidOperationException("Ivanti BaseUrl not configured.");
+
+            client.BaseAddress = new Uri(options.BaseUrl);
+            client.DefaultRequestHeaders.TryAddWithoutValidation(
+                "Cookie", options.Cookie);
+        });
+
+        // Register IWorkspaceService
+        services.AddScoped<IWorkspaceService, WorkspaceService>();
 
         return services;
     }
