@@ -10,7 +10,7 @@
 
 <PageTitle>@(CurrentWorkspace?.Workspace.Name ?? "Workspace")</PageTitle>
 
-<MudContainer MaxWidth="MaxWidth.False" Class="pa-0" Style="height: 100%; display: flex; flex-direction: column;">
+<MudContainer MaxWidth="MaxWidth.False" Class="pa-0 pt-16" Style="height: 100%; display: flex; flex-direction: column;">
     @if (IsLoading)
     {
         <MudPaper Class="pa-8 d-flex flex-column align-center justify-center" Style="min-height: 400px;">
@@ -329,8 +329,8 @@
             var result = await IvantiClient.GetGridDataAsync(
                 CurrentWorkspace.Workspace.Id,
                 searchId,
-                skip: 0,
-                take: 50,
+                startRow: 0,
+                pageSize: 24,
                 ct: CancellationToken.None);
 
             if (result.IsFailure)

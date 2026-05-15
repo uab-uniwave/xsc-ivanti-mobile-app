@@ -120,6 +120,6 @@ public interface IIvantiClient
     /// Fetches grid data based on a saved search (favorite).
     /// Called when user selects a saved search from the dropdown.
     /// </summary>
-    Task<Result<GridDataHandler>> GetGridDataAsync(string workspaceId, Guid searchId, int skip = 0, int take = 50, CancellationToken ct = default);
+    Task<Result<GridDataHandler>> GetGridDataAsync(string workspaceId, Guid searchId, int startRow = 0, int pageSize = 24, CancellationToken ct = default);
 }
 

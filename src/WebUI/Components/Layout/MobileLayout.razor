@@ -1,13 +1,12 @@
 ﻿@inject IvantiNavigationService NavigationService
-@inherits LayoutComponentBase
 
 <MudLayout>
 
-    <MudAppBar Elevation="1" Color="Color.Primary">
+    <MudAppBar Color="Color.Primary">
         <MudIconButton Icon="@Icons.Material.Filled.Menu"
                        Color="Color.Inherit"
-                       Edge="Edge.Start"
-                       OnClick="ToggleDrawer" />
+                       OnClick="ToggleDrawer" 
+                       Size="Size.Small" />
 
         <MudText Typo="Typo.h6" Class="ml-2">
             Ivanti Mobile
@@ -27,7 +26,7 @@
 
             <!-- User Menu -->
             <MudMenu Icon="@Icons.Material.Filled.AccountCircle"
-                     Color="Color.Inherit"
+                     Color="Color.Surface"
                      AnchorOrigin="Origin.BottomRight"
                      TransformOrigin="Origin.TopRight"
                      Dense="true">
@@ -74,13 +73,13 @@
         }
     </MudAppBar>
 
-    <MudDrawer @bind-Open="_drawerOpen"
-               Variant="DrawerVariant.Temporary"
-               Elevation="2">
-
-        <NavMenu />
-
-    </MudDrawer>
+    <MudDrawer @bind-Open="@_drawerOpen" Fixed="false" Elevation="1" Variant="@DrawerVariant.Mini" OpenMiniOnHover="true" Breakpoint="Breakpoint.None">
+       
+            <MudDrawerHeader>
+                <MudText Typo="Typo.h5" Class="mt-1">Application</MudText>
+            </MudDrawerHeader>
+            @*NavMenu*@
+        </MudDrawer>
 
     <MudMainContent Class="pa-4">
         @ChildContent

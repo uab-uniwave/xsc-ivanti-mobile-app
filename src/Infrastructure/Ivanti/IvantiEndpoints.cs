@@ -42,5 +42,5 @@ public class IvantiEndpoints
      $"{_tenant}/Services/Search.asmx/GetValidatedSearch";
 
     public string GridDataHandler =>
-     $"{_tenant}/Services/Search.asmx/GridDataHandler";
+     $"{_tenant}/handlers/GridDataHandler/GridDataHandler.ashx";
 }

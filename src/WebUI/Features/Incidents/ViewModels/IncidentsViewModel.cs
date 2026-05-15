@@ -176,8 +176,8 @@ public sealed class IncidentsViewModel
             var result = await _ivanti.GetGridDataAsync(
                 incidentsWorkspace.Workspace.Id,
                 searchId,
-                skip: 0,
-                take: 50,
+                startRow: 0,
+                pageSize: 50,
                 ct: ct);
 
             if (result.IsFailure)
@@ -241,15 +241,15 @@ public sealed class IncidentsViewModel
         try
         {
             int pageSize = 50;
-            int skip = (pageNumber - 1) * pageSize;
+            int startRow = (pageNumber - 1) * pageSize;
 
-            _logger.LogInformation("Loading page {PageNumber} (Skip: {Skip}, Take: {Take})", 
-                pageNumber, skip, pageSize);
+            _logger.LogInformation("Loading page {PageNumber} (StartRow: {StartRow}, PageSize: {PageSize})", 
+                pageNumber, startRow, pageSize);
 
             var result = await _ivanti.GetGridDataAsync(
                 incidentsWorkspace.Workspace.Id,
                 searchId,
-                skip,
+                startRow,
                 pageSize,
                 ct);
 

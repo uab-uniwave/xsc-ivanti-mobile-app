@@ -9,10 +9,10 @@
     <link href="css/incidents.css" rel="stylesheet" />
     <ImportMap />
     <link rel="icon" type="image/ico" href="favicon.ico" />
-    <HeadOutlet />
+    <HeadOutlet @rendermode="InteractiveServer" />
 </head>
 <body>
-    <Routes />
+    <Routes @rendermode="InteractiveServer" />
     <script src="_framework/blazor.web.js"></script>
     <script src=@Assets["_content/MudBlazor/MudBlazor.min.js"]></script>
 </body>

@@ -3,6 +3,7 @@
 
 @if (NavigationService.IsLoading)
 {
+
     <MudContainer Class="d-flex justify-center align-center pa-8">
         <MudProgressCircular Color="Color.Primary" Indeterminate="true" />
     </MudContainer>
@@ -38,8 +39,9 @@ else
                 <MudNavLink Href="@NavigationService.GetWorkspaceUrl(workspace)"
                            Match="NavLinkMatch.Prefix"
                            Icon="@NavigationService.GetWorkspaceIcon(workspace)"
-                           IconColor="@(isActive ? Color.Primary : Color.Default)">
-                    <MudStack Row="true" Spacing="1" AlignItems="AlignItems.Center" Class="flex-grow-1">
+                           IconColor="@(isActive ? Color.Primary : Color.Default)"
+                        >
+                    <MudStack Row="false" Spacing="1" AlignItems="AlignItems.Center" Class="flex-grow-1">
                         <MudText>@workspace.Name</MudText>
                         @if (workspace.Default)
                         {

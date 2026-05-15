@@ -21,6 +21,7 @@ using Newtonsoft.Json;
 using System.Net.Http.Json;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Text.RegularExpressions;
 
 namespace Infrastructure.Ivanti;
 
@@ -471,6 +472,10 @@ public sealed class IvantiClient : IIvantiClient
     {
 
         try {
+
+            // Clear any stale session data so that PostAsync does not attach
+            // an expired CSRF token header to this bootstrapping call.
+            _stateService.SessionData = null;
 
             var request = new InitializeSessionRequest();
             var response = await PostAsync<InitializeSessionResponse>(_endpoints.InitializeSession,
@@ -1245,8 +1250,8 @@ public sealed class IvantiClient : IIvantiClient
     public async Task<Result<GridDataHandler>> GetGridDataAsync(
         string workspaceId,
         Guid searchId,
-        int skip = 0,
-        int take = 50,
+        int startRow = 0,
+        int pageSize = 24,
         CancellationToken ct = default)
     {
         try
@@ -1260,8 +1265,8 @@ public sealed class IvantiClient : IIvantiClient
             var request = new GetGridDataHandlerRequest
             {
                 GridDefName = BuildGridDefName(workspaceData, _stateService.UserData?.UserRole),
-                StartRow = skip,
-                PageSize = take,
+                StartRow = startRow,
+                PageSize = pageSize,
                 BestFit = false,
                 SearchInfo = BuildSearchInfoPayload(workspaceData, searchId)
             };
@@ -1419,6 +1424,11 @@ public sealed class IvantiClient : IIvantiClient
         return $"{workspaceName}.{roleName}.List";
     }
 
+    /// <summary>
+    /// Builds the searchInfo payload expected by the Ivanti GridDataHandler endpoint.
+    /// The endpoint requires a JSON envelope with "ObjectName" and "Query" keys,
+    /// not the raw query array alone. Sending just the query array causes HTTP 551.
+    /// </summary>
     private static string BuildSearchInfoPayload(WorkspaceFullData workspaceData, Guid searchId)
     {
         var validatedSearch = workspaceData.ValidatedSearches?
@@ -1426,7 +1436,12 @@ public sealed class IvantiClient : IIvantiClient
 
         if (!string.IsNullOrWhiteSpace(validatedSearch?.Query))
         {
-            return validatedSearch.Query;
+            // Wrap the query array in the envelope the GridDataHandler expects:
+            // {"ObjectName":"<ObjectId>","Query":[...conditions...]}
+            var objectName = workspaceData.WorkspaceData?.ObjectId ?? workspaceData.Workspace.Id;
+            var queryElement = System.Text.Json.JsonSerializer.Deserialize<JsonElement>(validatedSearch.Query);
+            var envelope = new { ObjectName = objectName, Query = queryElement };
+            return System.Text.Json.JsonSerializer.Serialize(envelope, JsonOptions);
         }
 
         return searchId.ToString("D");
@@ -1440,7 +1455,21 @@ public sealed class IvantiClient : IIvantiClient
     {
         try
         {
-            var response = await _http.PostAsJsonAsync(endpoint, request, JsonOptions, ct);
+            using var httpRequest = new HttpRequestMessage(HttpMethod.Post, endpoint)
+            {
+                Content = JsonContent.Create(request, request.GetType(), options: JsonOptions)
+            };
+
+            // Attach the CSRF token header when a session is active.
+            // InitializeSessionAsync clears SessionData before calling this method,
+            // so the token will be null for that first call and correctly omitted.
+            var csrfToken = _stateService.SessionData?.SessionCsrfToken;
+            if (!string.IsNullOrWhiteSpace(csrfToken))
+            {
+                httpRequest.Headers.TryAddWithoutValidation("_csrfToken", csrfToken);
+            }
+
+            var response = await _http.SendAsync(httpRequest, ct);
             if (!response.IsSuccessStatusCode)
             {
                 _logger.LogError("HTTP request failed with status {StatusCode}", response.StatusCode);
@@ -1486,7 +1515,23 @@ public sealed class IvantiClient : IIvantiClient
             }
 
             var json = await response.Content.ReadAsStringAsync(ct);
-            var content = System.Text.Json.JsonSerializer.Deserialize<T>(json, JsonOptions);
+
+            // The Ivanti .ashx handler returns non-standard JSON with unquoted property names
+            // (JavaScript object literal format). System.Text.Json requires strict JSON compliance,
+            // so use Newtonsoft.Json to parse the lenient format and re-serialize to valid JSON.
+            // Additionally, datetime fields are returned as JavaScript `new Date(ms)` constructor
+            // calls which neither Newtonsoft nor System.Text.Json treat as valid JSON values.
+            // Replace them with ISO 8601 strings before parsing.
+            var sanitized = Regex.Replace(json, @"new\s+Date\((-?\d+)\)", match =>
+            {
+                var ms = long.Parse(match.Groups[1].Value);
+                var dt = DateTimeOffset.FromUnixTimeMilliseconds(ms);
+                return $"\"{dt:yyyy-MM-ddTHH:mm:ss.fffZ}\"";
+            });
+
+            var normalized = Newtonsoft.Json.Linq.JToken.Parse(sanitized).ToString(Formatting.None);
+
+            var content = System.Text.Json.JsonSerializer.Deserialize<T>(normalized, JsonOptions);
             return Result<T>.Success(content!);
         }
         catch (Exception ex)
